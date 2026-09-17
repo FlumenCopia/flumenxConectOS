@@ -11,7 +11,7 @@ module.exports = {
       time: true,
       env: {
         NODE_ENV: 'production',
-        PORT: 5020,
+        PORT: 5040,
       },
       error_file: '../logs/backend-error.log',
       out_file: '../logs/backend-out.log',
@@ -21,7 +21,7 @@ module.exports = {
       name: 'conectos-frontend',
       cwd: './frontend',
       script: 'node_modules/next/dist/bin/next',
-      args: 'start -p 3020',
+      args: 'start -p 3040',
       instances: 1,
       autorestart: true,
       watch: false,
@@ -29,7 +29,7 @@ module.exports = {
       time: true,
       env: {
         NODE_ENV: 'production',
-        PORT: 3020,
+        PORT: 3040,
       },
       error_file: '../logs/frontend-error.log',
       out_file: '../logs/frontend-out.log',

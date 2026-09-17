@@ -21,8 +21,8 @@ cd "${PROJECT_ROOT}"
 echo -e "${GREEN}✓ Project directory:${NC} ${PROJECT_ROOT}"
 
 # 2. Pre-Flight Safety Verification: Verify Assigned Ports are Available
-BACKEND_PORT=5020
-FRONTEND_PORT=3020
+BACKEND_PORT=5040
+FRONTEND_PORT=3040
 
 echo -e "\n${CYAN}>>> Step 1: Pre-flight Port Conflict Check...${NC}"
 check_port() {
@@ -57,9 +57,9 @@ check_port() {
 check_port "${BACKEND_PORT}" "conectos-backend"
 check_port "${FRONTEND_PORT}" "conectos-frontend"
 
-# 3. Verify Isolation from Existing Projects (3000, 3010, 5000)
+# 3. Verify Isolation from Existing Projects (all running sites preserved)
 echo -e "\n${CYAN}>>> Step 2: Verifying existing live projects integrity...${NC}"
-for existing_port in 3000 3001 3004 3005 3010 5000; do
+for existing_port in 3000 3001 3002 3004 3005 3006 3007 3010 3011 3020 3021 3050 5000 5020 8000 8001 8007 8787; do
   if command -v ss >/dev/null 2>&1; then
     if ss -tulpn | grep -q ":${existing_port} "; then
       echo -e "${GREEN}✓ Preserved existing service on port ${existing_port} (untouched).${NC}"
@@ -82,8 +82,8 @@ if [ ! -f "${PROJECT_ROOT}/frontend/.env.local" ]; then
   echo -e "${YELLOW}Notice: frontend/.env.local not found. Creating default production config...${NC}"
   cat << 'EOF' > "${PROJECT_ROOT}/frontend/.env.local"
 NEXT_PUBLIC_API_URL=https://connect.flumenx.in/api/v1
-BACKEND_INTERNAL_URL=http://127.0.0.1:5020
-PORT=3020
+BACKEND_INTERNAL_URL=http://127.0.0.1:5040
+PORT=3040
 EOF
 fi
 
@@ -121,16 +121,16 @@ pm2 save
 echo -e "\n${CYAN}>>> Step 7: Performing Local Health Checks...${NC}"
 sleep 3
 
-echo -n "Checking Backend Health (http://127.0.0.1:5020/api/v1/health)... "
-BACKEND_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:5020/api/v1/health || true)
+echo -n "Checking Backend Health (http://127.0.0.1:5040/api/v1/health)... "
+BACKEND_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:5040/api/v1/health || true)
 if [ "$BACKEND_HTTP_STATUS" = "200" ]; then
   echo -e "${GREEN}OK (HTTP 200)${NC}"
 else
   echo -e "${YELLOW}Returned HTTP $BACKEND_HTTP_STATUS (check logs at logs/backend-error.log)${NC}"
 fi
 
-echo -n "Checking Frontend Response (http://127.0.0.1:3020)... "
-FRONTEND_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3020 || true)
+echo -n "Checking Frontend Response (http://127.0.0.1:3040)... "
+FRONTEND_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3040 || true)
 if [ "$FRONTEND_HTTP_STATUS" = "200" ] || [ "$FRONTEND_HTTP_STATUS" = "307" ] || [ "$FRONTEND_HTTP_STATUS" = "308" ]; then
   echo -e "${GREEN}OK (HTTP $FRONTEND_HTTP_STATUS)${NC}"
 else
@@ -139,7 +139,7 @@ fi
 
 echo -e "\n${GREEN}================================================================${NC}"
 echo -e "${GREEN}🎉 Deployment finished!${NC}"
-echo -e "${GREEN}Backend:  http://127.0.0.1:5020${NC}"
-echo -e "${GREEN}Frontend: http://127.0.0.1:3020${NC}"
+echo -e "${GREEN}Backend:  http://127.0.0.1:5040${NC}"
+echo -e "${GREEN}Frontend: http://127.0.0.1:3040${NC}"
 echo -e "${GREEN}Domain:   https://connect.flumenx.in${NC}"
 echo -e "${GREEN}================================================================${NC}"
