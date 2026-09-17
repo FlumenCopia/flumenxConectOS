@@ -1,0 +1,187 @@
+'use client';
+
+import React, { useState, Suspense } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/Button';
+import { Lock, User, CheckCircle2, ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
+import { acceptInvitationApi } from '@/lib/clients';
+import { getErrorMessage } from '@/lib/api';
+
+function AcceptInviteForm() {
+  const searchParams = useSearchParams();
+  const urlToken = searchParams.get('token') || '';
+
+  const [token, setToken] = useState(urlToken);
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    const activeToken = token.trim() || urlToken;
+    if (!activeToken) {
+      setError('Invitation token is required.');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await acceptInvitationApi({
+        token: activeToken,
+        password,
+        name: name.trim() || undefined,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 select-none">
+      <div className="max-w-md w-full bg-white border border-slate-200 rounded-lg shadow-sm p-8">
+        <div className="text-center mb-6">
+          <div className="h-10 w-10 rounded bg-brand-800 text-white font-bold flex items-center justify-center mx-auto mb-3">
+            FX
+          </div>
+          <h1 className="text-lg font-bold text-slate-900">Accept Workspace Invitation</h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Join your company’s marketing operations workspace on flumenxConectOS.
+          </p>
+        </div>
+
+        {submitted ? (
+          <div className="text-center space-y-4">
+            <div className="p-3 bg-green-50 border border-green-200 rounded-md text-xs text-green-800 flex items-center gap-2 text-left">
+              <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+              <span>Your invitation has been accepted! You can now sign in to your workspace.</span>
+            </div>
+            <Link href="/login" className="inline-block">
+              <Button size="sm">Proceed to Sign In</Button>
+            </Link>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-2.5 bg-red-50 border border-red-200 rounded text-xs text-red-700 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {!urlToken && (
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold text-slate-700">Invitation Token *</label>
+                <input
+                  type="text"
+                  required
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                  placeholder="Paste your invitation token"
+                  className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-1 focus:ring-brand-600 font-mono"
+                />
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <label className="block text-xs font-semibold text-slate-700">Full Name</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <User className="h-4 w-4" />
+                </div>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your full name"
+                  className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-brand-600 text-slate-900"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-semibold text-slate-700">Set Password *</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <Lock className="h-4 w-4" />
+                </div>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="At least 8 characters"
+                  className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-brand-600 text-slate-900"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-semibold text-slate-700">Confirm Password *</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <Lock className="h-4 w-4" />
+                </div>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repeat new password"
+                  className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-brand-600 text-slate-900"
+                />
+              </div>
+            </div>
+
+            <Button type="submit" className="w-full h-9 text-xs font-semibold gap-1.5" disabled={isLoading}>
+              {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              Accept Invitation & Join
+            </Button>
+
+            <div className="pt-2 text-center">
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-900 transition-colors"
+              >
+                <ArrowLeft className="h-3 w-3" />
+                <span>Return to Login</span>
+              </Link>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function AcceptInvitePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center text-xs text-slate-500">
+          Loading invitation...
+        </div>
+      }
+    >
+      <AcceptInviteForm />
+    </Suspense>
+  );
+}

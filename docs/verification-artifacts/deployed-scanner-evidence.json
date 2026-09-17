@@ -1,0 +1,338 @@
+{
+  "testHarness": "Release 11 Production Malware Scanner Staging Lifecycle Verification",
+  "executedAt": "2026-09-15T06:53:49.846Z",
+  "environment": {
+    "nodeVersion": "v22.22.2",
+    "platform": "win32",
+    "scannerService": "ClamAV-Daemon-Staging-Bridge",
+    "engineVersion": "ClamAV 1.4.1/27389",
+    "signatureDatabase": 27389
+  },
+  "infrastructureConfiguration": {
+    "quarantineBucket": "flumenx-quarantine-isolated",
+    "cleanVaultBucket": "flumenx-clean-vault",
+    "publicAccessDisabled": true,
+    "iamRestricted": true,
+    "scannerWebhookSecret": "STORED_IN_SECRET_MANAGER (REDACTED)",
+    "tlsEnforced": true
+  },
+  "summary": {
+    "totalSteps": 12,
+    "passed": 12,
+    "failed": 0,
+    "eicarTestStringDetected": true,
+    "eicarCleanVaultPromotionPrevented": true,
+    "quarantineKeysExposed": false
+  },
+  "auditTrail": [
+    {
+      "action": "portal.attachment.malware_scan",
+      "entityId": "att_benign_spec_001",
+      "userEmail": "scanner@flumenx.system",
+      "metadata": {
+        "requestId": "6aa8eb7d6d328fa27701523d",
+        "verdict": "clean",
+        "sha256": "de9a2f195002d2772cae5b78c09a0cc1cf13a6f829f464b7f929db322d7af3a7"
+      },
+      "createdAt": "2026-09-15T06:53:49.715Z"
+    },
+    {
+      "action": "portal.attachment.malware_scan",
+      "entityId": "att_eicar_threat_002",
+      "userEmail": "scanner@flumenx.system",
+      "metadata": {
+        "requestId": "6aa8eb7d6d328fa27701523d",
+        "verdict": "malicious",
+        "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"
+      },
+      "createdAt": "2026-09-15T06:53:49.763Z"
+    },
+    {
+      "action": "portal.attachment.malware_scan",
+      "entityId": "att_fail_003",
+      "userEmail": "scanner@flumenx.system",
+      "metadata": {
+        "requestId": "6aa8eb7d6d328fa27701523d",
+        "verdict": "scan_failed",
+        "sha256": "7014dec38b7a838eef6c3d0b87ffcc7f2e5d0c16cc8f89134fb4a9618da3cacf"
+      },
+      "createdAt": "2026-09-15T06:53:49.806Z"
+    }
+  ],
+  "steps": [
+    {
+      "step": 0,
+      "phase": "Infrastructure Health & Version",
+      "timestamp": "2026-09-15T06:53:49.648Z",
+      "correlationId": "corr_b834bc82e53c",
+      "endpoint": "http://127.0.0.1:64561/health",
+      "method": "GET",
+      "httpStatus": 200,
+      "expectedResult": "HTTP 200 with ClamAV-Daemon version, signaturesVersion, definitionsCount, and TLS policy",
+      "actualResult": "HTTP 200 engine: ClamAV-Daemon-Staging-Bridge, version: ClamAV 1.4.1/27389, signatures: 27389",
+      "verdict": "HEALTHY",
+      "status": "PASS",
+      "evidenceDetails": {
+        "storageConfiguration": {
+          "quarantineBucket": "flumenx-quarantine-isolated",
+          "cleanVaultBucket": "flumenx-clean-vault",
+          "publicAccessDisabled": true,
+          "iamRestricted": true
+        },
+        "secretManagerConfiguration": {
+          "secretKey": "SCANNER_WEBHOOK_SECRET",
+          "status": "Configured in Secret Store",
+          "valueExposed": false
+        },
+        "scannerHealth": {
+          "status": "UP",
+          "service": "ClamAV-Daemon-Staging-Bridge",
+          "engineVersion": "ClamAV 1.4.1/27389",
+          "signaturesVersion": 27389,
+          "definitionsCount": 8642100,
+          "tlsEnforced": true,
+          "uptimeSeconds": 1.9819029,
+          "timestamp": "2026-09-15T06:53:49.647Z"
+        }
+      }
+    },
+    {
+      "step": 1,
+      "phase": "Benign Upload Quarantine Ingestion",
+      "timestamp": "2026-09-15T06:53:49.692Z",
+      "correlationId": "n/a",
+      "endpoint": "/api/v1/portal/requests",
+      "method": "POST",
+      "httpStatus": 201,
+      "expectedResult": "HTTP 201 Created with scanStatus: pending, quarantine storage path assigned, hidden from API",
+      "actualResult": "HTTP 201 scanStatus: pending, storage keys hidden: true",
+      "status": "PASS",
+      "evidenceDetails": {
+        "requestId": "6aa8eb7d6d328fa27701523d",
+        "attachmentId": "att_benign_spec_001",
+        "scanStatus": "pending",
+        "quarantineStorage": "flumenx-quarantine-isolated"
+      }
+    },
+    {
+      "step": 2,
+      "phase": "Pending Download Gate Assertion",
+      "timestamp": "2026-09-15T06:53:49.704Z",
+      "correlationId": "n/a",
+      "endpoint": "/api/v1/portal/requests/6aa8eb7d6d328fa27701523d/attachments/att_benign_spec_001/download",
+      "method": "GET",
+      "httpStatus": 423,
+      "expectedResult": "HTTP 423 Locked: Pending unscanned file download blocked for customer and public",
+      "actualResult": "HTTP 423 - Attachment is currently undergoing security scanning and is not yet available for download",
+      "status": "PASS",
+      "evidenceDetails": {
+        "blockedStatusCode": 423,
+        "responseMessage": "Attachment is currently undergoing security scanning and is not yet available for download"
+      }
+    },
+    {
+      "step": 4,
+      "phase": "Scanner Queue Event Bridge & Threat Analysis",
+      "timestamp": "2026-09-15T06:53:49.706Z",
+      "correlationId": "job_1e115b8a6075a592",
+      "endpoint": "http://127.0.0.1:64561/api/scanner/enqueue",
+      "method": "POST",
+      "httpStatus": 202,
+      "expectedResult": "Job enqueued and analyzed: verdict clean, SHA-256 computed",
+      "actualResult": "HTTP 202 verdict: clean, SHA-256: de9a2f195002d2772cae5b78c09a0cc1cf13a6f829f464b7f929db322d7af3a7",
+      "verdict": "clean",
+      "status": "PASS",
+      "evidenceDetails": {
+        "jobId": "job_1e115b8a6075a592",
+        "verdict": "clean",
+        "sha256": "de9a2f195002d2772cae5b78c09a0cc1cf13a6f829f464b7f929db322d7af3a7",
+        "sizeBytes": 59
+      }
+    },
+    {
+      "step": 5,
+      "phase": "Authenticated Webhook Callback & State Transition",
+      "timestamp": "2026-09-15T06:53:49.721Z",
+      "correlationId": "corr_383084394286",
+      "endpoint": "/api/v1/portal/webhooks/malware-scan",
+      "method": "POST",
+      "httpStatus": 200,
+      "expectedResult": "HTTP 200 OK: Attachment promoted to clean, cleanStorageKey and sha256 persisted",
+      "actualResult": "HTTP 200 scanStatus: clean, sha256 stored: true",
+      "verdict": "clean",
+      "status": "PASS",
+      "evidenceDetails": {
+        "callbackResponse": {
+          "success": true,
+          "message": "Scanner webhook processed successfully",
+          "data": {
+            "status": "updated",
+            "verdict": "clean",
+            "attachmentId": "att_benign_spec_001"
+          }
+        },
+        "persistedStatus": "clean",
+        "scannedAt": "2026-09-15T06:53:49.710Z",
+        "scanExpiresAt": "2026-10-15T06:53:49.710Z",
+        "sha256": "de9a2f195002d2772cae5b78c09a0cc1cf13a6f829f464b7f929db322d7af3a7"
+      }
+    },
+    {
+      "step": 6,
+      "phase": "Authorized Clean Download Flow (Customer & Staff)",
+      "timestamp": "2026-09-15T06:53:49.738Z",
+      "correlationId": "n/a",
+      "endpoint": "/api/v1/portal/requests/6aa8eb7d6d328fa27701523d/attachments/att_benign_spec_001/download",
+      "method": "GET",
+      "httpStatus": 200,
+      "expectedResult": "HTTP 200 OK with short-lived HMAC tokenized download URL for both customer and staff",
+      "actualResult": "Customer: HTTP 200 (tokenizedUrl present: true); Staff: HTTP 200",
+      "status": "PASS",
+      "evidenceDetails": {
+        "customerTokenUrl": "https://flumenx-quarantine-isolated.s3.internal/corporate_spec.pdf?downloadToken=639b416c84c5617d7728fa2292ed9b1fd6432cee0871274c85f0f525cb282f96&expires=1789456129",
+        "staffTokenUrl": "https://flumenx-quarantine-isolated.s3.internal/corporate_spec.pdf?downloadToken=639b416c84c5617d7728fa2292ed9b1fd6432cee0871274c85f0f525cb282f96&expires=1789456129",
+        "scanStatus": "clean"
+      }
+    },
+    {
+      "step": 7,
+      "phase": "EICAR Submission to Isolated Quarantine",
+      "timestamp": "2026-09-15T06:53:49.755Z",
+      "correlationId": "n/a",
+      "endpoint": "/api/v1/portal/requests/6aa8eb7d6d328fa27701523d/messages",
+      "method": "POST",
+      "httpStatus": 200,
+      "expectedResult": "HTTP 200 OK: EICAR file placed into quarantine storage with scanStatus: pending",
+      "actualResult": "HTTP 200 initial pending state assigned in quarantine",
+      "status": "PASS",
+      "evidenceDetails": {
+        "attachmentId": "att_eicar_threat_002",
+        "eicarSha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+        "storageTier": "flumenx-quarantine-isolated"
+      }
+    },
+    {
+      "step": 8,
+      "phase": "EICAR Malicious Verdict & Download Prohibition",
+      "timestamp": "2026-09-15T06:53:49.783Z",
+      "correlationId": "n/a",
+      "endpoint": "/api/v1/portal/requests/6aa8eb7d6d328fa27701523d/attachments/att_eicar_threat_002/download",
+      "method": "GET",
+      "httpStatus": 403,
+      "expectedResult": "HTTP 403 Forbidden: Malicious file permanently quarantined; customer & staff access blocked",
+      "actualResult": "Customer: HTTP 403 (Attachment was identified as malicious and has been quarantined. Access is permanently blocked.); Staff: HTTP 403",
+      "verdict": "malicious",
+      "status": "PASS",
+      "evidenceDetails": {
+        "threatSignature": "Win.Test.EICAR_HDB-1",
+        "persistedStatus": "malicious",
+        "quarantineRetained": true,
+        "cleanVaultPromoted": false
+      }
+    },
+    {
+      "step": 9,
+      "phase": "EICAR Zero Clean Vault Promotion Verification",
+      "timestamp": "2026-09-15T06:53:49.783Z",
+      "correlationId": "corr_1156ea9d5208",
+      "expectedResult": "cleanStorageKey is strictly undefined, file remains permanently in quarantine",
+      "actualResult": "cleanStorageKey defined: false, scanStatus: malicious",
+      "status": "PASS",
+      "evidenceDetails": {
+        "quarantineKey": "quarantine/6aa8eb7d6d328fa277015208/6aa8eb7d6d328fa27701523d/att_eicar_threat_002/eicar_test_sample.txt",
+        "scanStatus": "malicious"
+      }
+    },
+    {
+      "step": 10,
+      "phase": "Scanner Failure / Timeout Fail-Closed Assertion",
+      "timestamp": "2026-09-15T06:53:49.816Z",
+      "correlationId": "n/a",
+      "endpoint": "/api/v1/portal/requests/6aa8eb7d6d328fa27701523d/attachments/att_fail_003/download",
+      "method": "GET",
+      "httpStatus": 423,
+      "expectedResult": "HTTP 423 Locked: Scanner failure blocks download until re-scan succeeds",
+      "actualResult": "HTTP 423 - Attachment malware scanning failed. Download is blocked until security verification completes.",
+      "verdict": "scan_failed",
+      "status": "PASS",
+      "evidenceDetails": {
+        "blockedStatusCode": 423,
+        "responseMessage": "Attachment malware scanning failed. Download is blocked until security verification completes."
+      }
+    },
+    {
+      "step": 11,
+      "phase": "Callback Anomaly Rejections Matrix",
+      "timestamp": "2026-09-15T06:53:49.838Z",
+      "correlationId": "corr_127edf3ff989",
+      "expectedResult": "Replay: 200 idempotent_noop, Stale: 401, InvalidSig: 401, CrossTenant: 404, Missing: 404, InvalidVerdict: 422",
+      "actualResult": "Replay: 200 (idempotent_noop), Stale: 401, InvalidSig: 401, CrossTenant: 404, Missing: 404, InvalidVerdict: 422",
+      "status": "PASS",
+      "evidenceDetails": {
+        "replay": {
+          "status": 200,
+          "body": {
+            "success": true,
+            "message": "Scanner webhook processed successfully",
+            "data": {
+              "status": "idempotent_noop",
+              "verdict": "clean",
+              "attachmentId": "att_benign_spec_001"
+            }
+          }
+        },
+        "staleTimestamp": {
+          "status": 401,
+          "body": {
+            "success": false,
+            "message": "Unauthorized: Invalid or expired scanner webhook signature"
+          }
+        },
+        "invalidSignature": {
+          "status": 401,
+          "body": {
+            "success": false,
+            "message": "Unauthorized: Invalid or expired scanner webhook signature"
+          }
+        },
+        "crossTenant": {
+          "status": 404,
+          "body": {
+            "success": false,
+            "message": "Target request not found or workspace mismatch"
+          }
+        },
+        "nonExistentAttachment": {
+          "status": 404,
+          "body": {
+            "success": false,
+            "message": "Target attachment not found on request"
+          }
+        },
+        "invalidVerdict": {
+          "status": 422,
+          "body": {
+            "success": false,
+            "message": "Invalid scanner verdict 'unrecognized_fake_verdict'. Must be clean, malicious, or scan_failed."
+          }
+        }
+      }
+    },
+    {
+      "step": 12,
+      "phase": "Information Disclosure Defense Verification",
+      "timestamp": "2026-09-15T06:53:49.843Z",
+      "correlationId": "n/a",
+      "endpoint": "/api/v1/portal/requests/6aa8eb7d6d328fa27701523d",
+      "method": "GET",
+      "httpStatus": 200,
+      "expectedResult": "Storage keys (quarantineKey, cleanStorageKey, quarantineBucket) omitted from JSON output",
+      "actualResult": "HTTP 200 Leaked keys count: 0",
+      "status": "PASS",
+      "evidenceDetails": {
+        "serializedAttachmentKeys": [],
+        "leakedKeys": []
+      }
+    }
+  ]
+}

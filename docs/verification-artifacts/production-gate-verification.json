@@ -1,0 +1,151 @@
+{
+  "gateName": "Release 11 Production Malware-Scanning Gate & Quarantine Storage Isolation",
+  "generatedAt": "2026-09-15T06:22:00.000Z",
+  "environment": {
+    "nodeVersion": "v22.22.2",
+    "os": "win32 x64",
+    "gitCommit": "v1.0.0 (branch master)"
+  },
+  "governanceStatus": {
+    "codeComplete": true,
+    "developmentVerified": true,
+    "applicationSecurityApproved": true,
+    "productionInfrastructureProvisioned": false,
+    "productionEnvironmentVerified": false,
+    "finalProductionStatus": "NOT APPROVED (PENDING DEVOPS CLOUD SCANNER INFRASTRUCTURE PROVISIONING)"
+  },
+  "storageConfiguration": {
+    "quarantineBucket": "flumenx-quarantine-isolated",
+    "cleanVaultBucket": "flumenx-clean-vault",
+    "quarantineAccess": "Zero public access, zero customer direct access, zero pre-signed URLs without scan certification",
+    "keyNamingScheme": {
+      "quarantineKey": "quarantine/${clientId}/${requestId}/${attachmentId}/${filename}",
+      "cleanStorageKey": "clean/${clientId}/${requestId}/${attachmentId}/${filename}"
+    },
+    "informationDisclosureDefense": "quarantineKey, quarantineBucket, and cleanStorageKey are strictly omitted from Mongoose toJSON transforms and API responses"
+  },
+  "scannerIntegrationConfiguration": {
+    "adapterBoundary": "MalwareScannerService / LocalQuarantineStorageAdapter / Production Cloud Scanner Adapter",
+    "webhookEndpoint": "POST /api/v1/portal/webhooks/malware-scan",
+    "authentication": "HMAC-SHA256 signature via x-scanner-signature header with 5-minute replay freshness window via x-scanner-timestamp header",
+    "supportedVerdicts": ["clean", "malicious", "scan_failed"],
+    "signaturePayloadFormat": "${timestamp}.${JSON.stringify(payload)}"
+  },
+  "scanStateTransitions": {
+    "states": ["pending", "clean", "malicious", "scan_failed"],
+    "lifecycle": [
+      {
+        "event": "Customer Upload (createRequest / addRequestMessage)",
+        "from": "none",
+        "to": "pending",
+        "action": "File stored in quarantineBucket, download blocked (HTTP 423)"
+      },
+      {
+        "event": "Scanner Callback with verdict: 'clean'",
+        "from": "pending",
+        "to": "clean",
+        "action": "Promoted to cleanVaultBucket, sha256 recorded, scanExpiresAt set (30 days), short-lived tokenized downloads enabled"
+      },
+      {
+        "event": "Scanner Callback with verdict: 'malicious'",
+        "from": "pending",
+        "to": "malicious",
+        "action": "Permanently blocked (HTTP 403), malware signature logged, quarantine retention cleanup scheduled"
+      },
+      {
+        "event": "Scanner Callback with verdict: 'scan_failed'",
+        "from": "pending",
+        "to": "scan_failed",
+        "action": "Download blocked (HTTP 423), retry queue event dispatched"
+      },
+      {
+        "event": "Scan Expiry (scanExpiresAt < now)",
+        "from": "clean",
+        "to": "expired (effective scan_failed)",
+        "action": "Download blocked (HTTP 423) until re-scan completes"
+      }
+    ]
+  },
+  "downloadGateBehavior": {
+    "endpoints": [
+      "GET /api/v1/portal/requests/:id/attachments/:attachmentId/download",
+      "GET /api/v1/client/portal/requests/:id/attachments/:attachmentId/download"
+    ],
+    "statusGatingMatrix": {
+      "pending": { "statusCode": 423, "message": "Attachment is currently undergoing security scanning and is not yet available for download" },
+      "clean": { "statusCode": 200, "message": "Attachment authorized for download with short-lived HMAC tokenized URL (15 min expiry)" },
+      "malicious": { "statusCode": 403, "message": "Attachment was identified as malicious and has been quarantined. Access is permanently blocked." },
+      "scan_failed": { "statusCode": 423, "message": "Attachment malware scanning failed. Download is blocked until security verification completes." },
+      "expired": { "statusCode": 423, "message": "Attachment security scan verdict has expired. Re-scanning is required before download." }
+    },
+    "accessControlChecksPreserved": [
+      "Customer Session Authentication (portal_token)",
+      "Tenant Isolation (CustomerRequest.clientId == portalUser.clientId)",
+      "Contact Isolation (CustomerRequest.contactId == portalUser.contactId)",
+      "Message Visibility (isCustomerVisible == true && !isInternal)",
+      "MIME Type & Extension Allowlist Validation",
+      "Staff Role & Permission Check (portal.view)"
+    ]
+  },
+  "callbackAuthenticationAndIdempotency": {
+    "authenticationEnforced": true,
+    "tamperDefense": "Constant-time timingSafeEqual HMAC comparison",
+    "idempotencyMechanism": "Atomic database query checking existing verdict and sha256. Replayed callbacks return HTTP 200 with status: 'idempotent_noop' without duplicating audit events or state",
+    "tenantSafety": "CustomerRequest.findOne({ _id: requestId, clientId }) ensures scanner event cannot modify attachments in another tenant"
+  },
+  "cleanupAndFailureBehavior": {
+    "quarantineRetention": "Quarantine objects purged automatically after 7 days if unverified or malicious",
+    "cleanRetention": "Clean files retained per client data policy; scan verdicts re-evaluated every 30 days",
+    "timeoutPolicy": "Scanner webhook timeout set to 30 seconds; if no verdict within 5 minutes, attachment remains locked in pending with auto-retry",
+    "scannerUnavailable": "Fail-closed default: if scanner service is down, downloads remain HTTP 423 locked"
+  },
+  "testExecutionResults": {
+    "portalSuite": {
+      "totalAssertions": 156,
+      "passed": 156,
+      "failed": 0,
+      "exitCode": 0,
+      "rawArtifact": "docs/verification-artifacts/test-portal.raw.txt"
+    },
+    "regressionSuite": {
+      "totalSuites": 10,
+      "passedSuites": 10,
+      "failedSuites": 0,
+      "exitCode": 0,
+      "rawArtifact": "docs/verification-artifacts/test-regression.raw.txt"
+    },
+    "smokeSuite": {
+      "totalSteps": 10,
+      "passedSteps": 10,
+      "failedSteps": 0,
+      "rawArtifact": "docs/verification-artifacts/manual-smoke-execution.json"
+    }
+  },
+  "externalInfrastructurePrerequisites": [
+    {
+      "step": 1,
+      "category": "Cloud Storage Provisioning",
+      "description": "Create isolated S3/GCS bucket `flumenx-quarantine-isolated` with zero public access, bucket policy disallowing GetObject except to the scanning worker, and 7-day lifecycle purge rule."
+    },
+    {
+      "step": 2,
+      "category": "Clean Storage Provisioning",
+      "description": "Create S3/GCS bucket `flumenx-clean-vault` with SSE-KMS encryption and IAM restricted access."
+    },
+    {
+      "step": 3,
+      "category": "Malware Scanning Daemon / Container",
+      "description": "Deploy ClamAV / AWS GuardDuty / GCP Cloud Storage Scanner container configured with SQS/PubSub notification on quarantine bucket uploads."
+    },
+    {
+      "step": 4,
+      "category": "Secret Management",
+      "description": "Configure `SCANNER_WEBHOOK_SECRET` in production secret store (AWS Secrets Manager / GCP Secret Manager) and inject into backend environment."
+    },
+    {
+      "step": 5,
+      "category": "Production E2E Verification",
+      "description": "Run EICAR test string upload in production staging environment to verify active quarantine, malicious verdict callback, and HTTP 403 gating."
+    }
+  ]
+}

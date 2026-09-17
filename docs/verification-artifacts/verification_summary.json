@@ -1,0 +1,74 @@
+[
+  {
+    "name": "typecheck",
+    "command": "npm --prefix backend run typecheck",
+    "gitCommit": "v1.0.0 (branch master, uncommitted repository state)",
+    "startTime": "2026-09-15T06:55:36.543Z",
+    "endTime": "2026-09-15T06:55:43.710Z",
+    "durationMs": 7167,
+    "exitCode": 0,
+    "targetFile": "D:\\flumenx\\flumenxConectOS\\docs\\verification-artifacts\\typecheck.raw.txt",
+    "stdoutLength": 61,
+    "stderrLength": 0
+  },
+  {
+    "name": "build-backend",
+    "command": "npm --prefix backend run build",
+    "gitCommit": "v1.0.0 (branch master, uncommitted repository state)",
+    "startTime": "2026-09-15T06:55:43.711Z",
+    "endTime": "2026-09-15T06:55:51.466Z",
+    "durationMs": 7755,
+    "exitCode": 0,
+    "targetFile": "D:\\flumenx\\flumenxConectOS\\docs\\verification-artifacts\\build-backend.raw.txt",
+    "stdoutLength": 63,
+    "stderrLength": 0
+  },
+  {
+    "name": "test-portal",
+    "command": "npm --prefix backend run test:portal",
+    "gitCommit": "v1.0.0 (branch master, uncommitted repository state)",
+    "startTime": "2026-09-15T06:55:51.467Z",
+    "endTime": "2026-09-15T06:55:56.420Z",
+    "durationMs": 4953,
+    "exitCode": 0,
+    "targetFile": "D:\\flumenx\\flumenxConectOS\\docs\\verification-artifacts\\test-portal.raw.txt",
+    "stdoutLength": 62428,
+    "stderrLength": 0
+  },
+  {
+    "name": "test-regression",
+    "command": "npm --prefix backend test",
+    "gitCommit": "v1.0.0 (branch master, uncommitted repository state)",
+    "startTime": "2026-09-15T06:55:56.421Z",
+    "endTime": "2026-09-15T06:56:23.287Z",
+    "durationMs": 26866,
+    "exitCode": 0,
+    "targetFile": "D:\\flumenx\\flumenxConectOS\\docs\\verification-artifacts\\test-regression.raw.txt",
+    "stdoutLength": 178180,
+    "stderrLength": 0
+  },
+  {
+    "name": "build-frontend",
+    "command": "npm --prefix frontend run build",
+    "gitCommit": "v1.0.0 (branch master, uncommitted repository state)",
+    "startTime": "2026-09-15T06:56:26.006Z",
+    "endTime": "2026-09-15T06:56:45.099Z",
+    "durationMs": 19093,
+    "exitCode": 0,
+    "targetFile": "D:\\flumenx\\flumenxConectOS\\docs\\verification-artifacts\\build-frontend.raw.txt",
+    "stdoutLength": 4707,
+    "stderrLength": 0
+  },
+  {
+    "name": "smoke-manual",
+    "command": "npm --prefix backend run smoke:manual",
+    "gitCommit": "v1.0.0 (branch master, uncommitted repository state)",
+    "startTime": "2026-09-15T06:56:23.289Z",
+    "endTime": "2026-09-15T06:56:26.005Z",
+    "durationMs": 2716,
+    "exitCode": 0,
+    "targetFile": "D:\\flumenx\\flumenxConectOS\\docs\\verification-artifacts\\smoke-manual.raw.txt",
+    "stdoutLength": 10552,
+    "stderrLength": 0
+  }
+]

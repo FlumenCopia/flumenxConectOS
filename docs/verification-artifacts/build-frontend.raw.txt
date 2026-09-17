@@ -1,0 +1,164 @@
+================================================================================
+COMMAND: npm --prefix frontend run build
+DIRECTORY: D:\flumenx\flumenxConectOS
+GIT COMMIT: v1.0.0 (branch master, uncommitted repository state)
+START TIMESTAMP: 2026-09-15T06:56:26.006Z
+END TIMESTAMP: 2026-09-15T06:56:45.099Z
+DURATION: 19093ms (19.09s)
+EXIT CODE: 0
+================================================================================
+
+--- STDOUT ---
+
+
+> flumenx-conect-os-frontend@1.0.0 build
+> next build
+
+  [1m[38;2;173;127;168m▲ Next.js 14.2.35[39m[22m
+  - Environments: .env.local
+
+ [37m[1m [22m[39m Creating an optimized production build ...
+ [32m[1m✓[22m[39m Compiled successfully
+ [37m[1m [22m[39m Linting and checking validity of types ...
+ [37m[1m [22m[39m Collecting page data ...
+ [37m[1m [22m[39m Generating static pages (0/41) ...
+ [37m[1m [22m[39m Generating static pages (10/41) 
+ [37m[1m [22m[39m Generating static pages (20/41) 
+ [37m[1m [22m[39m Generating static pages (30/41) 
+ [32m[1m✓[22m[39m Generating static pages (41/41)
+ [37m[1m [22m[39m Finalizing page optimization ...
+ [37m[1m [22m[39m Collecting build traces ...
+
+[4mRoute (app)[24m                              [4mSize[24m     [4mFirst Load JS[24m
+┌ ○ /                                    185 B          [37m[1m96.2 kB[22m[39m
+├ ○ /_not-found                          876 B          [37m[1m88.2 kB[22m[39m
+├ ○ /accept-invite                       3.69 kB         [37m[1m126 kB[22m[39m
+├ ○ /admin/audit-logs                    4.8 kB          [37m[1m119 kB[22m[39m
+├ ○ /admin/clients                       6.91 kB         [37m[1m129 kB[22m[39m
+├ ƒ /admin/clients/[clientId]            11.1 kB         [37m[1m134 kB[22m[39m
+├ ○ /admin/dashboard                     185 B          [37m[1m96.2 kB[22m[39m
+├ ○ /admin/integrations                  2.74 kB         [37m[1m106 kB[22m[39m
+├ ○ /admin/roles                         2.73 kB         [37m[1m106 kB[22m[39m
+├ ○ /admin/settings                      2.81 kB         [37m[1m106 kB[22m[39m
+├ ○ /admin/users                         2.7 kB          [37m[1m106 kB[22m[39m
+├ ○ /client/ads                          226 B           [37m[1m124 kB[22m[39m
+├ ○ /client/approvals                    2.58 kB         [37m[1m106 kB[22m[39m
+├ ○ /client/automations                  1.12 kB        [37m[1m88.5 kB[22m[39m
+├ ○ /client/campaigns                    182 B           [37m[1m124 kB[22m[39m
+├ ○ /client/dashboard                    185 B          [37m[1m96.2 kB[22m[39m
+├ ○ /client/forms                        11.2 kB         [37m[1m126 kB[22m[39m
+├ ○ /client/inbox                        8.82 kB         [37m[1m131 kB[22m[39m
+├ ○ /client/integrations                 2.67 kB         [37m[1m106 kB[22m[39m
+├ ○ /client/leads                        6.57 kB         [37m[1m132 kB[22m[39m
+├ ƒ /client/leads/[leadId]               8.56 kB         [37m[1m131 kB[22m[39m
+├ ○ /client/leads/pipeline               4.27 kB         [37m[1m130 kB[22m[39m
+├ ○ /client/profile                      3.44 kB         [37m[1m117 kB[22m[39m
+├ ○ /client/reports                      11.5 kB         [37m[1m134 kB[22m[39m
+├ ○ /client/settings                     3.8 kB          [37m[1m118 kB[22m[39m
+├ ○ /client/tasks                        12.8 kB         [37m[1m135 kB[22m[39m
+├ ○ /client/team                         2.98 kB         [37m[1m117 kB[22m[39m
+├ ○ /client/workflows                    11.3 kB         [37m[1m118 kB[22m[39m
+├ ○ /forgot-password                     2.61 kB         [37m[1m125 kB[22m[39m
+├ ○ /login                               3.67 kB         [37m[1m126 kB[22m[39m
+├ ○ /portal                              5.37 kB         [37m[1m121 kB[22m[39m
+├ ○ /portal/accept-invitation            4.51 kB         [37m[1m120 kB[22m[39m
+├ ○ /portal/conversations                4.06 kB         [37m[1m111 kB[22m[39m
+├ ○ /portal/forgot-password              3.27 kB         [37m[1m118 kB[22m[39m
+├ ○ /portal/login                        3.91 kB         [37m[1m119 kB[22m[39m
+├ ○ /portal/notifications                3.55 kB         [37m[1m110 kB[22m[39m
+├ ○ /portal/profile                      6.29 kB         [37m[1m113 kB[22m[39m
+├ ○ /portal/requests                     6.03 kB         [37m[1m121 kB[22m[39m
+├ ƒ /portal/requests/[id]                5.18 kB         [37m[1m120 kB[22m[39m
+├ ○ /portal/reset-password               3.79 kB         [37m[1m119 kB[22m[39m
+├ ○ /portal/tasks                        4.64 kB         [37m[1m111 kB[22m[39m
+├ ƒ /public/forms/[publicKey]            4.13 kB         [37m[1m111 kB[22m[39m
+└ ○ /reset-password                      2.8 kB          [37m[1m125 kB[22m[39m
++ First Load JS shared by all            [37m[1m87.4 kB[22m[39m
+  ├ chunks/2117-705360bfe251b792.js      31.7 kB
+  ├ chunks/fd9d1056-f26544eec344fcaa.js  53.6 kB
+  └ other shared chunks (total)          1.99 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+
+--- STDERR ---
+
+
+
+--- COMBINED RAW STREAM ---
+
+
+> flumenx-conect-os-frontend@1.0.0 build
+> next build
+
+  [1m[38;2;173;127;168m▲ Next.js 14.2.35[39m[22m
+  - Environments: .env.local
+
+ [37m[1m [22m[39m Creating an optimized production build ...
+ [32m[1m✓[22m[39m Compiled successfully
+ [37m[1m [22m[39m Linting and checking validity of types ...
+ [37m[1m [22m[39m Collecting page data ...
+ [37m[1m [22m[39m Generating static pages (0/41) ...
+ [37m[1m [22m[39m Generating static pages (10/41) 
+ [37m[1m [22m[39m Generating static pages (20/41) 
+ [37m[1m [22m[39m Generating static pages (30/41) 
+ [32m[1m✓[22m[39m Generating static pages (41/41)
+ [37m[1m [22m[39m Finalizing page optimization ...
+ [37m[1m [22m[39m Collecting build traces ...
+
+[4mRoute (app)[24m                              [4mSize[24m     [4mFirst Load JS[24m
+┌ ○ /                                    185 B          [37m[1m96.2 kB[22m[39m
+├ ○ /_not-found                          876 B          [37m[1m88.2 kB[22m[39m
+├ ○ /accept-invite                       3.69 kB         [37m[1m126 kB[22m[39m
+├ ○ /admin/audit-logs                    4.8 kB          [37m[1m119 kB[22m[39m
+├ ○ /admin/clients                       6.91 kB         [37m[1m129 kB[22m[39m
+├ ƒ /admin/clients/[clientId]            11.1 kB         [37m[1m134 kB[22m[39m
+├ ○ /admin/dashboard                     185 B          [37m[1m96.2 kB[22m[39m
+├ ○ /admin/integrations                  2.74 kB         [37m[1m106 kB[22m[39m
+├ ○ /admin/roles                         2.73 kB         [37m[1m106 kB[22m[39m
+├ ○ /admin/settings                      2.81 kB         [37m[1m106 kB[22m[39m
+├ ○ /admin/users                         2.7 kB          [37m[1m106 kB[22m[39m
+├ ○ /client/ads                          226 B           [37m[1m124 kB[22m[39m
+├ ○ /client/approvals                    2.58 kB         [37m[1m106 kB[22m[39m
+├ ○ /client/automations                  1.12 kB        [37m[1m88.5 kB[22m[39m
+├ ○ /client/campaigns                    182 B           [37m[1m124 kB[22m[39m
+├ ○ /client/dashboard                    185 B          [37m[1m96.2 kB[22m[39m
+├ ○ /client/forms                        11.2 kB         [37m[1m126 kB[22m[39m
+├ ○ /client/inbox                        8.82 kB         [37m[1m131 kB[22m[39m
+├ ○ /client/integrations                 2.67 kB         [37m[1m106 kB[22m[39m
+├ ○ /client/leads                        6.57 kB         [37m[1m132 kB[22m[39m
+├ ƒ /client/leads/[leadId]               8.56 kB         [37m[1m131 kB[22m[39m
+├ ○ /client/leads/pipeline               4.27 kB         [37m[1m130 kB[22m[39m
+├ ○ /client/profile                      3.44 kB         [37m[1m117 kB[22m[39m
+├ ○ /client/reports                      11.5 kB         [37m[1m134 kB[22m[39m
+├ ○ /client/settings                     3.8 kB          [37m[1m118 kB[22m[39m
+├ ○ /client/tasks                        12.8 kB         [37m[1m135 kB[22m[39m
+├ ○ /client/team                         2.98 kB         [37m[1m117 kB[22m[39m
+├ ○ /client/workflows                    11.3 kB         [37m[1m118 kB[22m[39m
+├ ○ /forgot-password                     2.61 kB         [37m[1m125 kB[22m[39m
+├ ○ /login                               3.67 kB         [37m[1m126 kB[22m[39m
+├ ○ /portal                              5.37 kB         [37m[1m121 kB[22m[39m
+├ ○ /portal/accept-invitation            4.51 kB         [37m[1m120 kB[22m[39m
+├ ○ /portal/conversations                4.06 kB         [37m[1m111 kB[22m[39m
+├ ○ /portal/forgot-password              3.27 kB         [37m[1m118 kB[22m[39m
+├ ○ /portal/login                        3.91 kB         [37m[1m119 kB[22m[39m
+├ ○ /portal/notifications                3.55 kB         [37m[1m110 kB[22m[39m
+├ ○ /portal/profile                      6.29 kB         [37m[1m113 kB[22m[39m
+├ ○ /portal/requests                     6.03 kB         [37m[1m121 kB[22m[39m
+├ ƒ /portal/requests/[id]                5.18 kB         [37m[1m120 kB[22m[39m
+├ ○ /portal/reset-password               3.79 kB         [37m[1m119 kB[22m[39m
+├ ○ /portal/tasks                        4.64 kB         [37m[1m111 kB[22m[39m
+├ ƒ /public/forms/[publicKey]            4.13 kB         [37m[1m111 kB[22m[39m
+└ ○ /reset-password                      2.8 kB          [37m[1m125 kB[22m[39m
++ First Load JS shared by all            [37m[1m87.4 kB[22m[39m
+  ├ chunks/2117-705360bfe251b792.js      31.7 kB
+  ├ chunks/fd9d1056-f26544eec344fcaa.js  53.6 kB
+  └ other shared chunks (total)          1.99 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

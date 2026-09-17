@@ -1,0 +1,122 @@
+[
+  {
+    "step": 1,
+    "name": "Staff Invites Customer Contact",
+    "timestamp": "2026-09-16T04:47:03.148Z",
+    "method": "POST",
+    "route": "/api/v1/client/portal/invitations",
+    "expectedResult": "HTTP 201 Created with single-use rawToken (>=32 chars) and no tokenHash exposure",
+    "actualResult": "HTTP 201, rawToken length 64, tokenHash exposed: false",
+    "statusCode": 201,
+    "status": "PASS",
+    "evidence": "Invitation ID: 6aaa1f47023071fe75efe4cb, Contact: Smoke Customer Alice, Email: smoke.alice.43181066@customer.local"
+  },
+  {
+    "step": 2,
+    "name": "Customer Retrieves Invitation Metadata",
+    "timestamp": "2026-09-16T04:47:03.180Z",
+    "method": "GET",
+    "route": "/api/v1/portal/auth/invitation/:token",
+    "expectedResult": "HTTP 200 OK returning email, contactName, clientName with zero tokenHash exposure",
+    "actualResult": "HTTP 200 returning email smoke.alice.43181066@customer.local",
+    "statusCode": 200,
+    "status": "PASS",
+    "evidence": "Contact Name: Smoke Customer Alice, Client Name: Smoke Workspace 43181066"
+  },
+  {
+    "step": 3,
+    "name": "Customer Accepts Invitation & Sets Password",
+    "timestamp": "2026-09-16T04:47:03.189Z",
+    "method": "POST",
+    "route": "/api/v1/portal/auth/accept-invitation",
+    "expectedResult": "HTTP 201 Created setting portal_token (HTTP-only) and portal_csrf cookies + returning csrfToken",
+    "actualResult": "HTTP 201, portal_token cookie: true, portal_csrf cookie: true",
+    "statusCode": 201,
+    "status": "PASS",
+    "evidence": "PortalUser ID: 6aaa1f47023071fe75efe4e3, CSRF token length: 64"
+  },
+  {
+    "step": 4,
+    "name": "Customer Profile Retrieval & Safe Preference Update",
+    "timestamp": "2026-09-16T04:47:03.285Z",
+    "method": "PATCH",
+    "route": "/api/v1/portal/profile",
+    "expectedResult": "HTTP 200 OK updating permitted phone and communication preferences with CSRF validation",
+    "actualResult": "HTTP 200 updated phone to +15559876543",
+    "statusCode": 200,
+    "status": "PASS",
+    "evidence": "Updated phone: +15559876543, consentGiven: true"
+  },
+  {
+    "step": 5,
+    "name": "Service Request Creation & Idempotent Submission",
+    "timestamp": "2026-09-16T04:47:03.312Z",
+    "method": "POST",
+    "route": "/api/v1/portal/requests",
+    "expectedResult": "HTTP 201 Created initially; HTTP 200 idempotent replay returning existing ticket without duplicates",
+    "actualResult": "Initial HTTP 201 (REQ: REQ-0001); Replay HTTP 200",
+    "statusCode": 201,
+    "status": "PASS",
+    "evidence": "Ticket Number: REQ-0001, Request ID: 6aaa1f47023071fe75efe505"
+  },
+  {
+    "step": 6,
+    "name": "Direct Attachment Download Authorization, Malware Scanning & Threat Checks",
+    "timestamp": "2026-09-16T04:47:03.367Z",
+    "method": "GET",
+    "route": "/api/v1/portal/requests/:id/attachments/:attachmentId/download",
+    "expectedResult": "HTTP 423 pending rejected; HTTP 200 webhook clean; HTTP 200 clean authorized download; HTTP 401 unauth; HTTP 404 tampered",
+    "actualResult": "Pending HTTP 423; Webhook HTTP 200; Authorized HTTP 200; Unauthenticated HTTP 401; Tampered HTTP 404",
+    "statusCode": 200,
+    "status": "PASS",
+    "evidence": "Attachment: smoke_onboarding_guide.pdf, ScanStatus: clean, TokenizedURL: https://storage.local/smoke_onboarding_guide.pdf?d..."
+  },
+  {
+    "step": 7,
+    "name": "Safe Message Visibility Filtering & Customer Reply",
+    "timestamp": "2026-09-16T04:47:03.405Z",
+    "method": "GET / POST",
+    "route": "/api/v1/portal/requests/:id/messages",
+    "expectedResult": "HTTP 200 with internal staff notes strictly stripped; HTTP 200 customer message reply succeeds",
+    "actualResult": "HTTP 200 (internal note leaked: false, public message visible: true); Reply HTTP 200",
+    "statusCode": 200,
+    "status": "PASS",
+    "evidence": "Visible messages to customer: 2, Internal notes strictly omitted"
+  },
+  {
+    "step": 8,
+    "name": "Customer Task Action Completion & Comment Append",
+    "timestamp": "2026-09-16T04:47:03.473Z",
+    "method": "POST",
+    "route": "/api/v1/portal/tasks/:id/complete",
+    "expectedResult": "HTTP 200 setting customerActionRequired: false and recording customerCompletedAt timestamp",
+    "actualResult": "HTTP 200 with customerActionRequired=false; Comment HTTP 200",
+    "statusCode": 200,
+    "status": "PASS",
+    "evidence": "Task ID: 6aaa1f47023071fe75efe53b, customerCompletedAt: 2026-09-16T04:47:03.480Z"
+  },
+  {
+    "step": 9,
+    "name": "Password Reset Zero-Enumeration & Instant Session Invalidation",
+    "timestamp": "2026-09-16T04:47:03.507Z",
+    "method": "POST",
+    "route": "/api/v1/portal/auth/reset-password",
+    "expectedResult": "HTTP 200 generic message on forgot; HTTP 200 on reset; immediate HTTP 401 on prior session cookies",
+    "actualResult": "Forgot HTTP 200; Reset HTTP 200; Prior Session HTTP 401",
+    "statusCode": 200,
+    "status": "PASS",
+    "evidence": "Prior active session strictly rejected with 401 Unauthorized via tokenVersion increment"
+  },
+  {
+    "step": 10,
+    "name": "Customer Logout with CSRF Verification & Cookie Clearance",
+    "timestamp": "2026-09-16T04:47:03.610Z",
+    "method": "POST",
+    "route": "/api/v1/portal/auth/logout",
+    "expectedResult": "HTTP 403 when CSRF missing; HTTP 200 with valid CSRF header and cleared session cookies",
+    "actualResult": "Missing CSRF HTTP 403; Valid CSRF HTTP 200 with clearing cookies",
+    "statusCode": 200,
+    "status": "PASS",
+    "evidence": "Cleared cookies: portal_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+  }
+]

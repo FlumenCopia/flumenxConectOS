@@ -1,0 +1,172 @@
+================================================================================
+COMMAND: npm --prefix backend run smoke:manual
+DIRECTORY: D:\flumenx\flumenxConectOS
+GIT COMMIT: v1.0.0 (branch master, uncommitted repository state)
+START TIMESTAMP: 2026-09-15T06:56:23.289Z
+END TIMESTAMP: 2026-09-15T06:56:26.005Z
+DURATION: 2716ms (2.72s)
+EXIT CODE: 0
+================================================================================
+
+--- STDOUT ---
+
+
+> flumenx-conect-os-backend@1.0.0 smoke:manual
+> tsx src/scripts/executeManualSmoke.ts
+
+=== STARTING RELEASE 11 MANUAL SMOKE CHECKLIST EXECUTION ===
+2026-09-15 12:26:24 [[32minfo[39m]: [32mMongoDB connected successfully[39m
+2026-09-15 12:26:24 [[32minfo[39m]: [32mStarting flumenxConectOS bootstrap and permission seeder...[39m
+2026-09-15 12:26:24 [[32minfo[39m]: [32m[✓] Seeded 72 standard system permissions[39m
+2026-09-15 12:26:24 [[32minfo[39m]: [32m[✓] Seeded system roles: super_admin, client_admin, client_staff[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m[i] Super Admin verified & credentials synchronized: admin@flumenx.com[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m[i] Sample Client Admin credentials synchronized: manager@acmedigital.com[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m[✓] Assigned manager@acmedigital.com as client_admin for Acme Digital Media[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m==================================================[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mflumenxConectOS bootstrap completed successfully![39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mSuper Admin account active: admin@flumenx.com (Credentials configured in environment)[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mSample Client Admin account active: manager@acmedigital.com[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m==================================================[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/auth/login 200 - 94ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 25ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mGET /api/v1/portal/auth/invitation/fdedd6e2ee812b678929a12cf7b611fe40028854331de0f88eb88ac1c1866fd0 200 - 8ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/accept-invitation 201 - 96ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mGET /api/v1/portal/profile 200 - 6ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPATCH /api/v1/portal/profile 200 - 23ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 44ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 200 - 5ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/smoke_att_1/download: Attachment is currently undergoing security scanning and is not yet available for download[39m {"statusCode":423}
+Error: Attachment is currently undergoing security scanning and is not yet available for download
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:122:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/smoke_att_1/download 423 - 9ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 13ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/smoke_att_1/download 200 - 4ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/smoke_att_1/download 401 - 0ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/tampered_att_id/download: Attachment not found or access denied[39m {"statusCode":404}
+Error: Attachment not found or access denied
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:513:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/tampered_att_id/download 404 - 4ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ec19f60b4204c86dbb57/messages 201 - 20ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ec19f60b4204c86dbb57/messages 201 - 16ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57 200 - 5ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/messages 200 - 15ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ec19f60b4204c86dbb8d/complete 200 - 13ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ec19f60b4204c86dbb8d/comments 200 - 9ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/forgot-password 200 - 8ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/reset-password 200 - 79ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mGET /api/v1/portal/profile 401 - 2ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 76ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/logout 403 - 2ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/logout 200 - 9ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mMongoDB disconnected. Attempting reconnection...[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mMongoDB connection closed gracefully[39m
+
+======================================================
+MANUAL SMOKE CHECKLIST EXECUTION COMPLETED
+All 10 steps PASSED (100% success rate)
+Artifact saved: D:\flumenx\flumenxConectOS\docs\verification-artifacts\manual-smoke-execution.json
+======================================================
+
+--- SMOKE EXECUTION SUMMARY TABLE ---
+| Step | Action | Route | Status | Expected | Actual | Evidence |
+|:---:|:---|:---|:---:|:---|:---|:---|
+| 1 | Staff Invites Customer Contact | `POST /api/v1/client/portal/invitations` | **PASS** | HTTP 201 Created with single-use rawToken (>=32 chars) and no tokenHash exposure | HTTP 201, rawToken length 64, tokenHash exposed: false | Invitation ID: 6aa8ec19f60b4204c86dbb1d, Contact: Smoke Customer Alice, Email: smoke.alice.2b197dfe@customer.local |
+| 2 | Customer Retrieves Invitation Metadata | `GET /api/v1/portal/auth/invitation/:token` | **PASS** | HTTP 200 OK returning email, contactName, clientName with zero tokenHash exposure | HTTP 200 returning email smoke.alice.2b197dfe@customer.local | Contact Name: Smoke Customer Alice, Client Name: Smoke Workspace 2b197dfe |
+| 3 | Customer Accepts Invitation & Sets Password | `POST /api/v1/portal/auth/accept-invitation` | **PASS** | HTTP 201 Created setting portal_token (HTTP-only) and portal_csrf cookies + returning csrfToken | HTTP 201, portal_token cookie: true, portal_csrf cookie: true | PortalUser ID: 6aa8ec19f60b4204c86dbb35, CSRF token length: 64 |
+| 4 | Customer Profile Retrieval & Safe Preference Update | `PATCH /api/v1/portal/profile` | **PASS** | HTTP 200 OK updating permitted phone and communication preferences with CSRF validation | HTTP 200 updated phone to +15559876543 | Updated phone: +15559876543, consentGiven: true |
+| 5 | Service Request Creation & Idempotent Submission | `POST /api/v1/portal/requests` | **PASS** | HTTP 201 Created initially; HTTP 200 idempotent replay returning existing ticket without duplicates | Initial HTTP 201 (REQ: REQ-0001); Replay HTTP 200 | Ticket Number: REQ-0001, Request ID: 6aa8ec19f60b4204c86dbb57 |
+| 6 | Direct Attachment Download Authorization, Malware Scanning & Threat Checks | `GET /api/v1/portal/requests/:id/attachments/:attachmentId/download` | **PASS** | HTTP 423 pending rejected; HTTP 200 webhook clean; HTTP 200 clean authorized download; HTTP 401 unauth; HTTP 404 tampered | Pending HTTP 423; Webhook HTTP 200; Authorized HTTP 200; Unauthenticated HTTP 401; Tampered HTTP 404 | Attachment: smoke_onboarding_guide.pdf, ScanStatus: clean, TokenizedURL: https://storage.local/smoke_onboarding_guide.pdf?d... |
+| 7 | Safe Message Visibility Filtering & Customer Reply | `GET / POST /api/v1/portal/requests/:id/messages` | **PASS** | HTTP 200 with internal staff notes strictly stripped; HTTP 200 customer message reply succeeds | HTTP 200 (internal note leaked: false, public message visible: true); Reply HTTP 200 | Visible messages to customer: 2, Internal notes strictly omitted |
+| 8 | Customer Task Action Completion & Comment Append | `POST /api/v1/portal/tasks/:id/complete` | **PASS** | HTTP 200 setting customerActionRequired: false and recording customerCompletedAt timestamp | HTTP 200 with customerActionRequired=false; Comment HTTP 200 | Task ID: 6aa8ec19f60b4204c86dbb8d, customerCompletedAt: 2026-09-15T06:56:25.733Z |
+| 9 | Password Reset Zero-Enumeration & Instant Session Invalidation | `POST /api/v1/portal/auth/reset-password` | **PASS** | HTTP 200 generic message on forgot; HTTP 200 on reset; immediate HTTP 401 on prior session cookies | Forgot HTTP 200; Reset HTTP 200; Prior Session HTTP 401 | Prior active session strictly rejected with 401 Unauthorized via tokenVersion increment |
+| 10 | Customer Logout with CSRF Verification & Cookie Clearance | `POST /api/v1/portal/auth/logout` | **PASS** | HTTP 403 when CSRF missing; HTTP 200 with valid CSRF header and cleared session cookies | Missing CSRF HTTP 403; Valid CSRF HTTP 200 with clearing cookies | Cleared cookies: portal_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT |
+
+
+--- STDERR ---
+
+
+
+--- COMBINED RAW STREAM ---
+
+
+> flumenx-conect-os-backend@1.0.0 smoke:manual
+> tsx src/scripts/executeManualSmoke.ts
+
+=== STARTING RELEASE 11 MANUAL SMOKE CHECKLIST EXECUTION ===
+2026-09-15 12:26:24 [[32minfo[39m]: [32mMongoDB connected successfully[39m
+2026-09-15 12:26:24 [[32minfo[39m]: [32mStarting flumenxConectOS bootstrap and permission seeder...[39m
+2026-09-15 12:26:24 [[32minfo[39m]: [32m[✓] Seeded 72 standard system permissions[39m
+2026-09-15 12:26:24 [[32minfo[39m]: [32m[✓] Seeded system roles: super_admin, client_admin, client_staff[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m[i] Super Admin verified & credentials synchronized: admin@flumenx.com[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m[i] Sample Client Admin credentials synchronized: manager@acmedigital.com[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m[✓] Assigned manager@acmedigital.com as client_admin for Acme Digital Media[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m==================================================[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mflumenxConectOS bootstrap completed successfully![39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mSuper Admin account active: admin@flumenx.com (Credentials configured in environment)[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mSample Client Admin account active: manager@acmedigital.com[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32m==================================================[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/auth/login 200 - 94ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 25ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mGET /api/v1/portal/auth/invitation/fdedd6e2ee812b678929a12cf7b611fe40028854331de0f88eb88ac1c1866fd0 200 - 8ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/accept-invitation 201 - 96ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mGET /api/v1/portal/profile 200 - 6ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPATCH /api/v1/portal/profile 200 - 23ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 44ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 200 - 5ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/smoke_att_1/download: Attachment is currently undergoing security scanning and is not yet available for download[39m {"statusCode":423}
+Error: Attachment is currently undergoing security scanning and is not yet available for download
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:122:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/smoke_att_1/download 423 - 9ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 13ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/smoke_att_1/download 200 - 4ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/smoke_att_1/download 401 - 0ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/tampered_att_id/download: Attachment not found or access denied[39m {"statusCode":404}
+Error: Attachment not found or access denied
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:513:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/attachments/tampered_att_id/download 404 - 4ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ec19f60b4204c86dbb57/messages 201 - 20ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ec19f60b4204c86dbb57/messages 201 - 16ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57 200 - 5ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ec19f60b4204c86dbb57/messages 200 - 15ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ec19f60b4204c86dbb8d/complete 200 - 13ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ec19f60b4204c86dbb8d/comments 200 - 9ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/forgot-password 200 - 8ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/reset-password 200 - 79ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mGET /api/v1/portal/profile 401 - 2ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 76ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/logout 403 - 2ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/logout 200 - 9ms [IP: ::ffff:127.0.0.1][39m
+2026-09-15 12:26:25 [[33mwarn[39m]: [33mMongoDB disconnected. Attempting reconnection...[39m
+2026-09-15 12:26:25 [[32minfo[39m]: [32mMongoDB connection closed gracefully[39m
+
+======================================================
+MANUAL SMOKE CHECKLIST EXECUTION COMPLETED
+All 10 steps PASSED (100% success rate)
+Artifact saved: D:\flumenx\flumenxConectOS\docs\verification-artifacts\manual-smoke-execution.json
+======================================================
+
+--- SMOKE EXECUTION SUMMARY TABLE ---
+| Step | Action | Route | Status | Expected | Actual | Evidence |
+|:---:|:---|:---|:---:|:---|:---|:---|
+| 1 | Staff Invites Customer Contact | `POST /api/v1/client/portal/invitations` | **PASS** | HTTP 201 Created with single-use rawToken (>=32 chars) and no tokenHash exposure | HTTP 201, rawToken length 64, tokenHash exposed: false | Invitation ID: 6aa8ec19f60b4204c86dbb1d, Contact: Smoke Customer Alice, Email: smoke.alice.2b197dfe@customer.local |
+| 2 | Customer Retrieves Invitation Metadata | `GET /api/v1/portal/auth/invitation/:token` | **PASS** | HTTP 200 OK returning email, contactName, clientName with zero tokenHash exposure | HTTP 200 returning email smoke.alice.2b197dfe@customer.local | Contact Name: Smoke Customer Alice, Client Name: Smoke Workspace 2b197dfe |
+| 3 | Customer Accepts Invitation & Sets Password | `POST /api/v1/portal/auth/accept-invitation` | **PASS** | HTTP 201 Created setting portal_token (HTTP-only) and portal_csrf cookies + returning csrfToken | HTTP 201, portal_token cookie: true, portal_csrf cookie: true | PortalUser ID: 6aa8ec19f60b4204c86dbb35, CSRF token length: 64 |
+| 4 | Customer Profile Retrieval & Safe Preference Update | `PATCH /api/v1/portal/profile` | **PASS** | HTTP 200 OK updating permitted phone and communication preferences with CSRF validation | HTTP 200 updated phone to +15559876543 | Updated phone: +15559876543, consentGiven: true |
+| 5 | Service Request Creation & Idempotent Submission | `POST /api/v1/portal/requests` | **PASS** | HTTP 201 Created initially; HTTP 200 idempotent replay returning existing ticket without duplicates | Initial HTTP 201 (REQ: REQ-0001); Replay HTTP 200 | Ticket Number: REQ-0001, Request ID: 6aa8ec19f60b4204c86dbb57 |
+| 6 | Direct Attachment Download Authorization, Malware Scanning & Threat Checks | `GET /api/v1/portal/requests/:id/attachments/:attachmentId/download` | **PASS** | HTTP 423 pending rejected; HTTP 200 webhook clean; HTTP 200 clean authorized download; HTTP 401 unauth; HTTP 404 tampered | Pending HTTP 423; Webhook HTTP 200; Authorized HTTP 200; Unauthenticated HTTP 401; Tampered HTTP 404 | Attachment: smoke_onboarding_guide.pdf, ScanStatus: clean, TokenizedURL: https://storage.local/smoke_onboarding_guide.pdf?d... |
+| 7 | Safe Message Visibility Filtering & Customer Reply | `GET / POST /api/v1/portal/requests/:id/messages` | **PASS** | HTTP 200 with internal staff notes strictly stripped; HTTP 200 customer message reply succeeds | HTTP 200 (internal note leaked: false, public message visible: true); Reply HTTP 200 | Visible messages to customer: 2, Internal notes strictly omitted |
+| 8 | Customer Task Action Completion & Comment Append | `POST /api/v1/portal/tasks/:id/complete` | **PASS** | HTTP 200 setting customerActionRequired: false and recording customerCompletedAt timestamp | HTTP 200 with customerActionRequired=false; Comment HTTP 200 | Task ID: 6aa8ec19f60b4204c86dbb8d, customerCompletedAt: 2026-09-15T06:56:25.733Z |
+| 9 | Password Reset Zero-Enumeration & Instant Session Invalidation | `POST /api/v1/portal/auth/reset-password` | **PASS** | HTTP 200 generic message on forgot; HTTP 200 on reset; immediate HTTP 401 on prior session cookies | Forgot HTTP 200; Reset HTTP 200; Prior Session HTTP 401 | Prior active session strictly rejected with 401 Unauthorized via tokenVersion increment |
+| 10 | Customer Logout with CSRF Verification & Cookie Clearance | `POST /api/v1/portal/auth/logout` | **PASS** | HTTP 403 when CSRF missing; HTTP 200 with valid CSRF header and cleared session cookies | Missing CSRF HTTP 403; Valid CSRF HTTP 200 with clearing cookies | Cleared cookies: portal_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT |

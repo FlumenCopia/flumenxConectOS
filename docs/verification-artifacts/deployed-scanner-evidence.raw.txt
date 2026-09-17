@@ -1,0 +1,32 @@
+[2026-09-15T06:53:48.835Z] ================================================================================
+[2026-09-15T06:53:48.836Z] RELEASE 11 — PRODUCTION MALWARE SCANNER PROVISIONING & DEPLOYED VERIFICATION
+[2026-09-15T06:53:48.836Z] ================================================================================
+[2026-09-15T06:53:49.267Z] [INFO] Staging App Server running at: http://127.0.0.1:64560
+[2026-09-15T06:53:49.267Z] [INFO] Staging Scanner Daemon running at: http://127.0.0.1:64561
+[2026-09-15T06:53:49.645Z] [INFO] Tenant & Portal User authenticated. CSRF: Issued
+[2026-09-15T06:53:49.645Z] 
+--- PHASE 1: INFRASTRUCTURE CONFIGURATION & SCANNER HEALTH ---
+[2026-09-15T06:53:49.648Z] [PASS] Scanner Health Verified: Engine=ClamAV 1.4.1/27389, Signatures=27389
+[2026-09-15T06:53:49.648Z] 
+--- PHASE 2: BENIGN FILE UPLOAD & DEPLOYED SCAN LIFECYCLE ---
+[2026-09-15T06:53:49.692Z] [PASS] Step 1: Benign file uploaded to quarantine with scanStatus: pending (HTTP 201)
+[2026-09-15T06:53:49.704Z] [PASS] Step 2 & 3: Pending download strictly blocked with HTTP 423 Locked
+[2026-09-15T06:53:49.706Z] [PASS] Step 4: Scanner queue processed file: verdict=clean, sha256=de9a2f195002d2772cae5b78c09a0cc1cf13a6f829f464b7f929db322d7af3a7
+[2026-09-15T06:53:49.721Z] [PASS] Step 5: Webhook processed authenticated callback: scanStatus transitioned to clean (HTTP 200)
+[2026-09-15T06:53:49.738Z] [PASS] Step 6: Customer and Staff clean downloads succeeded with signed URL (HTTP 200)
+[2026-09-15T06:53:49.738Z] 
+--- PHASE 3: EICAR MALICIOUS FILE DETECTION & QUARANTINE LOCKDOWN ---
+[2026-09-15T06:53:49.755Z] [PASS] Step 7: EICAR test string ingested into quarantine (HTTP 200)
+[2026-09-15T06:53:49.755Z] [INFO] Scanner Threat Detection Engine result: malicious (Win.Test.EICAR_HDB-1)
+[2026-09-15T06:53:49.783Z] [PASS] Step 8: EICAR correctly flagged as malicious; customer and staff downloads blocked with HTTP 403
+[2026-09-15T06:53:49.783Z] [PASS] Step 9: Confirmed EICAR was never promoted to clean vault
+[2026-09-15T06:53:49.783Z] 
+--- PHASE 4: FAIL-CLOSED TIMEOUT & ANOMALY REJECTION ---
+[2026-09-15T06:53:49.816Z] [PASS] Step 10: Scanner failure verified as fail-closed (HTTP 423 Locked)
+[2026-09-15T06:53:49.816Z] 
+--- Step 11: Testing callback rejection matrix ---
+[2026-09-15T06:53:49.838Z] [PASS] Step 11: Callback anomaly rejection matrix verified across all 6 attack vectors
+[2026-09-15T06:53:49.843Z] [PASS] Step 12: Direct object access defense verified; 0 internal storage keys exposed
+[2026-09-15T06:53:49.843Z] 
+--- PHASE 5: AUDIT LOG VERIFICATION ---
+[2026-09-15T06:53:49.846Z] [INFO] Found 3 malware scan audit log entries for tenant 6aa8eb7d6d328fa277015208

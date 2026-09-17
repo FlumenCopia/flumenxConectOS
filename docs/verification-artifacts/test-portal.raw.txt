@@ -1,0 +1,1258 @@
+================================================================================
+COMMAND: npm --prefix backend run test:portal
+DIRECTORY: D:\flumenx\flumenxConectOS
+GIT COMMIT: v1.0.0 (branch master, uncommitted repository state)
+START TIMESTAMP: 2026-09-15T06:55:51.467Z
+END TIMESTAMP: 2026-09-15T06:55:56.420Z
+DURATION: 4953ms (4.95s)
+EXIT CODE: 0
+================================================================================
+
+--- STDOUT ---
+
+
+> flumenx-conect-os-backend@1.0.0 test:portal
+> tsx src/tests/portal.test.ts
+
+
+==================================================
+Running flumenxConectOS Release 11 Test Suite
+Customer Portal & Self-Service Isolation Engine
+==================================================
+
+2026-09-15 12:25:53 [[32minfo[39m]: [32mMongoDB connected successfully[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mStarting flumenxConectOS bootstrap and permission seeder...[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[✓] Seeded 72 standard system permissions[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[✓] Seeded system roles: super_admin, client_admin, client_staff[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[i] Super Admin verified & credentials synchronized: admin@flumenx.com[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[i] Sample Client Admin credentials synchronized: manager@acmedigital.com[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[✓] Assigned manager@acmedigital.com as client_admin for Acme Digital Media[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m==================================================[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mflumenxConectOS bootstrap completed successfully![39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mSuper Admin account active: admin@flumenx.com (Credentials configured in environment)[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mSample Client Admin account active: manager@acmedigital.com[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m==================================================[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 86ms [IP: ::1][39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 75ms [IP: ::1][39m
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/auth/login 200 - 88ms [IP: ::1][39m
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/auth/login 200 - 80ms [IP: ::1][39m
+--- Section 1: Customer Portal Invitation Lifecycle ---
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 25ms [IP: ::1][39m
+  [PASS] 1. Contact invitation created successfully
+  [PASS] 1b. Non-production rawToken provided for invitation setup
+  [PASS] 1c. Invitation stored in database with SHA-256 tokenHash
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 23ms [IP: ::1][39m
+  [PASS] 2. Re-inviting contact succeeds and creates new active invitation
+  [PASS] 2b. Prior pending invitation automatically revoked upon re-invitation
+--- Section 2: Atomic Invitation Acceptance & Password Validation ---
+2026-09-15 12:25:54 [[31merror[39m]: [31mError processing POST /api/v1/portal/auth/accept-invitation: [[39m
+[31m  {[39m
+[31m    "validation": "regex",[39m
+[31m    "code": "invalid_string",[39m
+[31m    "message": "Password must contain at least one uppercase letter",[39m
+[31m    "path": [[39m
+[31m      "password"[39m
+[31m    ][39m
+[31m  },[39m
+[31m  {[39m
+[31m    "validation": "regex",[39m
+[31m    "code": "invalid_string",[39m
+[31m    "message": "Password must contain at least one number",[39m
+[31m    "path": [[39m
+[31m      "password"[39m
+[31m    ][39m
+[31m  }[39m
+[31m][39m {"issues":[{"validation":"regex","code":"invalid_string","message":"Password must contain at least one uppercase letter","path":["password"]},{"validation":"regex","code":"invalid_string","message":"Password must contain at least one number","path":["password"]}],"name":"ZodError"}
+ZodError: [
+  {
+    "validation": "regex",
+    "code": "invalid_string",
+    "message": "Password must contain at least one uppercase letter",
+    "path": [
+      "password"
+    ]
+  },
+  {
+    "validation": "regex",
+    "code": "invalid_string",
+    "message": "Password must contain at least one number",
+    "path": [
+      "password"
+    ]
+  }
+]
+    at get error (D:\flumenx\flumenxConectOS\backend\node_modules\zod\v3\types.cjs:45:31)
+    at ZodObject.parseAsync (D:\flumenx\flumenxConectOS\backend\node_modules\zod\v3\types.cjs:183:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (D:\flumenx\flumenxConectOS\backend\src\middleware\validate.ts:7:22)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/accept-invitation 422 - 3ms [IP: ::1][39m
+  [PASS] 3. Password complexity enforced (rejects weak password with 422 Unprocessable Entity)
+2026-09-15 12:25:54 [[31merror[39m]: [31mError processing POST /api/v1/portal/auth/accept-invitation: Invalid, expired, or already accepted invitation token.[39m {"statusCode":400}
+Error: Invalid, expired, or already accepted invitation token.
+    at Function.acceptInvitation (D:\flumenx\flumenxConectOS\backend\src\services\portalAuth.service.ts:220:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async acceptInvitation (D:\flumenx\flumenxConectOS\backend\src\controllers\portalAuthController.ts:64:22)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/accept-invitation 400 - 6ms [IP: ::1][39m
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/accept-invitation 201 - 87ms [IP: ::1][39m
+  [PASS] 4. Invitation acceptance is strictly atomic (one succeeds with 201, concurrent claim rejected with 400)
+  [PASS] 4b. Security: No session cookie issued on failed concurrent invitation acceptance
+  [PASS] 4c. Database Uniqueness: Exactly one PortalUser created under concurrent invitation claim
+2026-09-15 12:25:54 [[31merror[39m]: [31mError processing POST /api/v1/client/portal/invitations: A customer portal user already exists for this contact or email.[39m {"statusCode":409}
+Error: A customer portal user already exists for this contact or email.
+    at Function.inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:47:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:65:22)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 409 - 12ms [IP: ::1][39m
+  [PASS] 5. Conflict (409) returned when attempting to invite an already active portal user
+--- Section 3: Customer Portal Authentication & Cross-Role Defense ---
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 81ms [IP: ::1][39m
+  [PASS] 6. Customer portal login successful and issued CSRF token
+2026-09-15 12:25:54 [[32minfo[39m]: [32mGET /api/v1/portal/auth/me 200 - 3ms [IP: ::1][39m
+  [PASS] 7. GET /portal/auth/me succeeds with valid customer portal session
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/auth/me 401 - 1ms [IP: ::1][39m
+  [PASS] 8a. Cross-Role Defense: Portal user token strictly rejected on internal staff /auth/me
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/auth/me 401 - 0ms [IP: ::1][39m
+  [PASS] 8b. Cross-Role Defense: Staff token rejected on customer portal route /api/v1/portal/auth/me (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/profile 401 - 1ms [IP: ::1][39m
+  [PASS] 8b. Cross-Role Defense: Staff token rejected on customer portal route /api/v1/portal/profile (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/requests 401 - 0ms [IP: ::1][39m
+  [PASS] 8b. Cross-Role Defense: Staff token rejected on customer portal route /api/v1/portal/requests (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/tasks 401 - 1ms [IP: ::1][39m
+  [PASS] 8b. Cross-Role Defense: Staff token rejected on customer portal route /api/v1/portal/tasks (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/workflows 401 - 1ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/workflows (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/reports 401 - 0ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/reports (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/ads 401 - 1ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/ads (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/admin/clients 401 - 1ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/admin/clients (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/admin/audit-logs 401 - 0ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/admin/audit-logs (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/client/workspace 401 - 0ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/client/workspace (401)
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/logout 200 - 11ms [IP: ::1][39m
+  [PASS] 9. Portal user logout succeeds
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/auth/me 401 - 3ms [IP: ::1][39m
+  [PASS] 9b. Session Revocation: Pre-logout token immediately invalidated by tokenVersion increment
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 77ms [IP: ::1][39m
+--- Section 4: Zero-Enumeration Password Reset & Session Invalidation ---
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/forgot-password 200 - 10ms [IP: ::1][39m
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/forgot-password 200 - 2ms [IP: ::1][39m
+  [PASS] 10. Zero-Enumeration: forgot-password returns identical non-sensitive response without exposing token or user existence
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/reset-password 200 - 98ms [IP: ::1][39m
+  [PASS] 10b. Password Reset: Succeeded using single-use hashed token
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/auth/me 401 - 4ms [IP: ::1][39m
+  [PASS] 10c. Session Invalidation: Pre-reset session immediately revoked upon password reset (tokenVersion incremented)
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 102ms [IP: ::1][39m
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 403 - 2ms [IP: ::1][39m
+  [PASS] 10d. CSRF Defense: Cookie-authenticated state mutation strictly rejected (403) when x-portal-csrf header is missing
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/change-password 403 - 2ms [IP: ::1][39m
+  [PASS] 10e. CSRF Defense: Authenticated password change rejected (403) when x-portal-csrf is missing
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/change-password 200 - 142ms [IP: ::1][39m
+  [PASS] 10f. Password Change: Authenticated password change succeeds with valid CSRF header
+--- Section 5: Allowlisted Profile Updates & Change Requests ---
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPATCH /api/v1/portal/profile 200 - 17ms [IP: ::1][39m
+  [PASS] 11. Allowlisted profile and preferences updated successfully
+2026-09-15 12:25:54 [[31merror[39m]: [31mError processing PATCH /api/v1/portal/profile: [[39m
+[31m  {[39m
+[31m    "code": "unrecognized_keys",[39m
+[31m    "keys": [[39m
+[31m      "clientId",[39m
+[31m      "status",[39m
+[31m      "tokenVersion"[39m
+[31m    ],[39m
+[31m    "path": [],[39m
+[31m    "message": "Disallowed fields detected. Mass assignment is prohibited."[39m
+[31m  }[39m
+[31m][39m {"issues":[{"code":"unrecognized_keys","keys":["clientId","status","tokenVersion"],"path":[],"message":"Disallowed fields detected. Mass assignment is prohibited."}],"name":"ZodError"}
+ZodError: [
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "clientId",
+      "status",
+      "tokenVersion"
+    ],
+    "path": [],
+    "message": "Disallowed fields detected. Mass assignment is prohibited."
+  }
+]
+    at get error (D:\flumenx\flumenxConectOS\backend\node_modules\zod\v3\types.cjs:45:31)
+    at ZodObject.parseAsync (D:\flumenx\flumenxConectOS\backend\node_modules\zod\v3\types.cjs:183:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (D:\flumenx\flumenxConectOS\backend\src\middleware\validate.ts:7:22)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 422 - 4ms [IP: ::1][39m
+  [PASS] 12. Mass Assignment Defense: Strict Zod validation rejects disallowed fields with 422
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/profile/change-request 201 - 33ms [IP: ::1][39m
+  [PASS] 13. Sensitive field change request creates profile_change customer request for staff review
+--- Section 6: Scoped Request Idempotency & Attachments ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 27ms [IP: ::1][39m
+  [PASS] 14. Customer request created with scoped idempotency key
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 200 - 5ms [IP: ::1][39m
+  [PASS] 14b. Scoped Idempotency: Duplicate request submission safely returns existing record without re-creation
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 200 - 16ms [IP: ::1][39m
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 34ms [IP: ::1][39m
+  [PASS] 14c. Concurrent Idempotency: Simultaneous duplicate submissions safely resolve to same request without error
+  [PASS] 14d. Concurrency Safety: Zero duplicate CustomerRequest, Task, or Audit records created under race conditions
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/requests: Idempotency conflict: A request with this key already exists with different parameters.[39m {"statusCode":409}
+Error: Idempotency conflict: A request with this key already exists with different parameters.
+    at Function.createCustomerRequest (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:193:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async createRequest (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:54:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 409 - 4ms [IP: ::1][39m
+  [PASS] 14e. Idempotency Conflict Defense: Conflicting payload with identical idempotencyKey rejected with 409 Conflict
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/requests: Forbidden file type detected: '.exe'. Executable or script files are strictly blocked.[39m {"statusCode":422}
+Error: Forbidden file type detected: '.exe'. Executable or script files are strictly blocked.
+    at Function.validateAttachments (D:\flumenx\flumenxConectOS\backend\src\services\portalAttachment.service.ts:93:15)
+    at Function.createCustomerRequest (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:199:58)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async createRequest (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:54:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 422 - 5ms [IP: ::1][39m
+  [PASS] 15. Attachment Validation: Rejects prohibited executable file extensions (.exe) with 422
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/requests: Invalid attachment URL scheme: 'javascript:'. Only secure HTTPS storage links are permitted.[39m {"statusCode":422}
+Error: Invalid attachment URL scheme: 'javascript:'. Only secure HTTPS storage links are permitted.
+    at Function.validateAttachments (D:\flumenx\flumenxConectOS\backend\src\services\portalAttachment.service.ts:79:17)
+    at Function.createCustomerRequest (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:199:58)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async createRequest (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:54:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 422 - 4ms [IP: ::1][39m
+  [PASS] 15b. Attachment Protocol Safety: Dangerous URL scheme (javascript:) strictly rejected with 422
+--- Section 7: Message Visibility & Internal Note Stripping ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ebfa37343196c596d665/messages 201 - 21ms [IP: ::1][39m
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ebfa37343196c596d665/messages 201 - 19ms [IP: ::1][39m
+  [PASS] 16. Staff adds public reply and internal note to customer request
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665 200 - 5ms [IP: ::1][39m
+  [PASS] 16b. Record Visibility: Customer sees public replies but internal notes are strictly stripped
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfb37343196c596d6ad: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerRequest (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:385:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async getRequest (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:91:23)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfb37343196c596d6ad 404 - 5ms [IP: ::1][39m
+  [PASS] 16c. IDOR Defense: Cross-tenant customer request access returns 404 without leaking existence
+--- Section 7b: Direct Attachment Download Authorization ---
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download: Attachment is currently undergoing security scanning and is not yet available for download[39m {"statusCode":423}
+Error: Attachment is currently undergoing security scanning and is not yet available for download
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:122:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 423 - 7ms [IP: ::1][39m
+  [PASS] 16c2. Malware Gate: Pending attachment download rejected with 423
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 10ms [IP: ::1][39m
+  [PASS] 16c3. Malware Gate Webhook: Authenticated webhook transitions att_1 to clean
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 200 - 5ms [IP: ::1][39m
+  [PASS] 16d. Attachment Download Auth: Authorized customer downloads request attachment (200)
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_public_doc/download 200 - 4ms [IP: ::1][39m
+  [PASS] 16e. Attachment Download Auth: Customer downloads attachment from customer-visible message (200)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_internal_audit_doc/download: Attachment not found or access denied[39m {"statusCode":404}
+Error: Attachment not found or access denied
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:513:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_internal_audit_doc/download 404 - 5ms [IP: ::1][39m
+  [PASS] 16f. Attachment Download Isolation: Customer cannot download attachment from internal staff note (404)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:492:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 404 - 4ms [IP: ::1][39m
+  [PASS] 16g. Attachment Download Contact Isolation: Same-tenant customer from different contact rejected (404 without leaking metadata)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:492:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 404 - 4ms [IP: ::1][39m
+  [PASS] 16h. Attachment Download Tenant Isolation: Cross-tenant portal user rejected (404)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 401 - 0ms [IP: ::1][39m
+  [PASS] 16i. Attachment Download Auth: Unauthenticated download request rejected with 401
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/fake_attachment_id/download: Attachment not found or access denied[39m {"statusCode":404}
+Error: Attachment not found or access denied
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:513:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/fake_attachment_id/download 404 - 5ms [IP: ::1][39m
+  [PASS] 16j. Attachment Download Defense: Tampered or non-existent attachmentId returns 404
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 200 - 13ms [IP: ::1][39m
+  [PASS] 17. Customer adds follow-up message to ticket thread
+--- Section 8: Conversation Thread Isolation & Inbound Messaging ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/conversations 200 - 5ms [IP: ::1][39m
+  [PASS] 18. Conversation Isolation: Customer only sees conversations for their own contactId (cross-tenant leakage prevented)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/conversations/6aa8ebfb37343196c596d6ca/messages: Conversation not found[39m {"statusCode":404}
+Error: Conversation not found
+    at Function.getCustomerConversationMessages (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:556:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async getConversationMessages (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:169:49)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/conversations/6aa8ebfb37343196c596d6ca/messages 404 - 4ms [IP: ::1][39m
+  [PASS] 18b. IDOR Defense: Cross-tenant conversation access returns 404 without leaking existence
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 200 - 6ms [IP: ::1][39m
+  [PASS] 19. Message Channel Isolation: Internal channel & isInternal=true messages stripped from customer view
+  [PASS] 19b. Safe Default: Legacy message with missing isCustomerVisible field strictly excluded from customer view
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 201 - 17ms [IP: ::1][39m
+  [PASS] 20. Inbound Conversation Message: Customer message recorded with direction=inbound
+--- Section 9: Customer Visible Tasks & Action Completion ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/tasks 200 - 8ms [IP: ::1][39m
+  [PASS] 21. Task Visibility Boundary: Customer only sees tasks where isCustomerVisible=true
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/complete 200 - 12ms [IP: ::1][39m
+  [PASS] 22. Atomic Task Completion: Customer marks action item complete with notes
+  [PASS] 22b. customerCompletedAt timestamp safely persisted in database
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e4/complete: Task not found, already completed, or does not allow customer completion.[39m {"statusCode":400}
+Error: Task not found, already completed, or does not allow customer completion.
+    at Function.completeCustomerTaskAction (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:765:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async completeTaskAction (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:220:20)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e4/complete 400 - 4ms [IP: ::1][39m
+  [PASS] 22c. Narrow Task Authorization: Customer cannot complete internal task (isCustomerVisible=false rejected with 400)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/tasks/6aa8ebfb37343196c596d6f1/complete: Task not found, already completed, or does not allow customer completion.[39m {"statusCode":400}
+Error: Task not found, already completed, or does not allow customer completion.
+    at Function.completeCustomerTaskAction (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:765:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async completeTaskAction (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:220:20)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6f1/complete 400 - 4ms [IP: ::1][39m
+  [PASS] 22d. Narrow Task Authorization: Customer cannot complete task where customerActionRequired=false (rejected with 400)
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 200 - 10ms [IP: ::1][39m
+  [PASS] 23. Customer Task Comment: Comment logged to task event history
+  [PASS] 23b. TaskEvent recorded for customer comment
+--- Section 10: In-Portal Notifications ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/notifications 200 - 6ms [IP: ::1][39m
+  [PASS] 24. Customer retrieves portal notifications
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d6fd/read 200 - 6ms [IP: ::1][39m
+  [PASS] 25. Customer marks notification as read
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/notifications/read-all 200 - 6ms [IP: ::1][39m
+  [PASS] 26. Customer marks all notifications as read
+--- Section 11: Staff Management & RBAC Permissions ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/client/portal/users 200 - 12ms [IP: ::1][39m
+  [PASS] 27. Staff with portal.view can list customer portal users
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/client/portal/requests 200 - 13ms [IP: ::1][39m
+  [PASS] 27b. Staff with portal.view can list customer requests
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 403 - 10ms [IP: ::1][39m
+  [PASS] 28. RBAC: Staff without portal.manage permission rejected (403) from inviting customers
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/client/portal/users/6aa8ebfa37343196c596d5dc/status 200 - 15ms [IP: ::1][39m
+  [PASS] 29. Staff with portal.manage suspends portal user
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/auth/me 401 - 2ms [IP: ::1][39m
+  [PASS] 29b. Suspended customer user session immediately blocked
+--- Section 11b: Comprehensive Invitation Lifecycle Coverage ---
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/client/portal/invitations: A customer portal user already exists for this contact or email.[39m {"statusCode":409}
+Error: A customer portal user already exists for this contact or email.
+    at Function.inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:47:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:65:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 409 - 7ms [IP: ::1][39m
+  [PASS] 30. Invitation Lifecycle: Re-invitation of suspended customer rejected (409 Conflict)
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/client/portal/users/6aa8ebfa37343196c596d5dc/status 200 - 13ms [IP: ::1][39m
+  [PASS] 31. Staff with portal.manage reactivates portal user
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/client/portal/invitations: A customer portal user already exists for this contact or email.[39m {"statusCode":409}
+Error: A customer portal user already exists for this contact or email.
+    at Function.inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:47:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:65:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 409 - 8ms [IP: ::1][39m
+  [PASS] 32. Invitation Lifecycle: Re-invitation of reactivated customer rejected (409 Conflict)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/client/portal/invitations: A customer portal user already exists for this contact or email.[39m {"statusCode":409}
+Error: A customer portal user already exists for this contact or email.
+    at Function.inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:47:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:65:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 409 - 8ms [IP: ::1][39m
+  [PASS] 33. Invitation Lifecycle: Invitation with duplicate active email rejected (409 Conflict)
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 20ms [IP: ::1][39m
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 19ms [IP: ::1][39m
+  [PASS] 34. Invitation Lifecycle: Older pending invitation automatically revoked upon re-invitation
+  [PASS] 35. Database Uniqueness: Direct creation with duplicate email rejected by Mongo unique index (code 11000)
+  [PASS] 35b. Database Uniqueness: Direct creation with duplicate contactId rejected by Mongo unique index (code 11000)
+  [PASS] 36. Invitation Security: Raw token and tokenHash are never leaked in response bodies or audit logs
+--- Section 12: Comprehensive CSRF Mutation Matrix ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 78ms [IP: ::1][39m
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/profile 200 - 5ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/profile with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/requests 200 - 6ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/requests with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/tasks 200 - 4ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/tasks with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/conversations 200 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/conversations with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/notifications 200 - 4ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/notifications with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/portal/profile 200 - 14ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Bearer Exemption]: Authorization Bearer mutation without cookie succeeds without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 30ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Bearer Exemption]: Bearer request creation succeeds without CSRF header
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M1. Profile Update]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M1. Profile Update]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M1. Profile Update]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/portal/profile 200 - 15ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M1. Profile Update]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/profile/change-request 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M2. Profile Change Request]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/profile/change-request 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M2. Profile Change Request]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/profile/change-request 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M2. Profile Change Request]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/profile/change-request 201 - 29ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M2. Profile Change Request]: Valid per-session CSRF token succeeds (201)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M3. Request Creation (with attachment)]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 403 - 1ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M3. Request Creation (with attachment)]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M3. Request Creation (with attachment)]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 28ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M3. Request Creation (with attachment)]: Valid per-session CSRF token succeeds (201)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M4. Request Message Reply (with attachment)]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M4. Request Message Reply (with attachment)]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M4. Request Message Reply (with attachment)]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 200 - 14ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M4. Request Message Reply (with attachment)]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M5. Conversation Message]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M5. Conversation Message]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M5. Conversation Message]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 201 - 16ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M5. Conversation Message]: Valid per-session CSRF token succeeds (201)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d773/complete 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M6. Task Action Completion]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d773/complete 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M6. Task Action Completion]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d773/complete 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M6. Task Action Completion]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d773/complete 200 - 13ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M6. Task Action Completion]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M7. Task Comment]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M7. Task Comment]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M7. Task Comment]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 200 - 9ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M7. Task Comment]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d775/read 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M8. Notification Mark Read]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d775/read 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M8. Notification Mark Read]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d775/read 403 - 1ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M8. Notification Mark Read]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d775/read 200 - 6ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M8. Notification Mark Read]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/notifications/read-all 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M9. Notifications Mark All Read]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/notifications/read-all 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M9. Notifications Mark All Read]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/notifications/read-all 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M9. Notifications Mark All Read]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/notifications/read-all 200 - 5ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M9. Notifications Mark All Read]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/change-password 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M10. Authenticated Password Change]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/change-password 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M10. Authenticated Password Change]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/change-password 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M10. Authenticated Password Change]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/change-password 200 - 149ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M10. Authenticated Password Change]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/logout 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M11. Logout]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/logout 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M11. Logout]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/logout 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M11. Logout]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/logout 200 - 12ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M11. Logout]: Valid per-session CSRF token succeeds (200)
+
+--- Section 13: Production Malware-Scanning Gate & Quarantine Verification ---
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 79ms [IP: ::1][39m
+  [PASS] Section 13 Re-Auth: Alice logs in with MatrixFinalPassword123!
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 27ms [IP: ::1][39m
+  [PASS] 26a. Malware Gate: Request created with quarantined attachment in pending status
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download: Attachment is currently undergoing security scanning and is not yet available for download[39m {"statusCode":423}
+Error: Attachment is currently undergoing security scanning and is not yet available for download
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:122:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 423 - 4ms [IP: ::1][39m
+  [PASS] 26b. Malware Gate: Pending attachment download strictly rejected with 423 Locked
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Unauthorized: Missing scanner webhook authentication signature or timestamp headers[39m {"statusCode":401}
+Error: Unauthorized: Missing scanner webhook authentication signature or timestamp headers
+    at handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:140:15)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:47:12)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 401 - 1ms [IP: ::1][39m
+  [PASS] 26c. Malware Gate Webhook: Missing signature headers rejected with 401
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Unauthorized: Invalid or expired scanner webhook signature[39m {"statusCode":401}
+Error: Unauthorized: Invalid or expired scanner webhook signature
+    at handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:145:15)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:47:12)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 401 - 1ms [IP: ::1][39m
+  [PASS] 26d. Malware Gate Webhook: Forged signature strictly rejected with 401
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Unauthorized: Invalid or expired scanner webhook signature[39m {"statusCode":401}
+Error: Unauthorized: Invalid or expired scanner webhook signature
+    at handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:145:15)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:47:12)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 401 - 1ms [IP: ::1][39m
+  [PASS] 26e. Malware Gate Webhook: Stale timestamp rejected with 401
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Invalid scanner verdict 'bypass_unapproved'. Must be clean, malicious, or scan_failed.[39m {"statusCode":422}
+Error: Invalid scanner verdict 'bypass_unapproved'. Must be clean, malicious, or scan_failed.
+    at Function.processScanCallback (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:172:13)
+    at handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:148:50)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:175:3)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 422 - 1ms [IP: ::1][39m
+  [PASS] 26f. Malware Gate Webhook: Invalid scanner verdict rejected with 422
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Target request not found or workspace mismatch[39m {"statusCode":404}
+Error: Target request not found or workspace mismatch
+    at Function.processScanCallback (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:186:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:148:22)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 404 - 2ms [IP: ::1][39m
+  [PASS] 26g. Malware Gate Webhook: Tenant mismatch callback rejected with 404
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 10ms [IP: ::1][39m
+  [PASS] 26h. Malware Gate Webhook: Authenticated callback marks attachment clean (200)
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 3ms [IP: ::1][39m
+  [PASS] 26i. Malware Gate Webhook: Replay of identical scan event is idempotent (status: idempotent_noop)
+2026-09-15 12:25:56 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 200 - 3ms [IP: ::1][39m
+  [PASS] 26j. Malware Gate: Clean attachment download succeeds with short-lived tokenized URL (200)
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ebfc37343196c596d826/messages 200 - 9ms [IP: ::1][39m
+  [PASS] 26k. Setup: Customer added message with att_gate_malicious
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 9ms [IP: ::1][39m
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_malicious/download: Attachment was identified as malicious and has been quarantined. Access is permanently blocked.[39m {"statusCode":403}
+Error: Attachment was identified as malicious and has been quarantined. Access is permanently blocked.
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:125:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_malicious/download 403 - 5ms [IP: ::1][39m
+  [PASS] 26l. Malware Gate: Malicious attachment download strictly rejected with 403 Forbidden
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ebfc37343196c596d826/messages 200 - 13ms [IP: ::1][39m
+  [PASS] 26m. Setup: Customer added message with att_gate_failed
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 10ms [IP: ::1][39m
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_failed/download: Attachment malware scanning failed. Download is blocked until security verification completes.[39m {"statusCode":423}
+Error: Attachment malware scanning failed. Download is blocked until security verification completes.
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:128:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_failed/download 423 - 5ms [IP: ::1][39m
+  [PASS] 26n. Malware Gate: Scan failed attachment download strictly rejected with 423 Locked
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download: Attachment security scan verdict has expired. Re-scanning is required before download.[39m {"statusCode":423}
+Error: Attachment security scan verdict has expired. Re-scanning is required before download.
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:131:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 423 - 4ms [IP: ::1][39m
+  [PASS] 26o. Malware Gate: Expired scan verdict download strictly rejected with 423 Locked
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:492:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 404 - 3ms [IP: ::1][39m
+  [PASS] 26p. Malware Gate Isolation: Same-tenant wrong-contact download rejected with 404
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:492:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 404 - 3ms [IP: ::1][39m
+  [PASS] 26q. Malware Gate Isolation: Cross-tenant download rejected with 404
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ebfc37343196c596d826/messages 201 - 14ms [IP: ::1][39m
+  [PASS] 26r. Setup: Staff added internal note with attachment
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_internal/download: Attachment not found or access denied[39m {"statusCode":404}
+Error: Attachment not found or access denied
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:513:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_internal/download 404 - 4ms [IP: ::1][39m
+  [PASS] 26s. Malware Gate Isolation: Customer downloading internal staff-note attachment rejected with 404
+2026-09-15 12:25:56 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826 200 - 4ms [IP: ::1][39m
+  [PASS] 26t. Information Disclosure Defense: Quarantine and clean storage keys are never exposed in API responses
+2026-09-15 12:25:56 [[32minfo[39m]: [32mGET /api/v1/client/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 200 - 7ms [IP: ::1][39m
+  [PASS] 26u. Staff Malware Gate: Staff download of clean attachment succeeds with signed URL
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/client/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_malicious/download: Attachment was identified as malicious and has been quarantined. Access is permanently blocked.[39m {"statusCode":403}
+Error: Attachment was identified as malicious and has been quarantined. Access is permanently blocked.
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:125:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getStaffAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:494:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:250:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/client/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_malicious/download 403 - 8ms [IP: ::1][39m
+  [PASS] 26v. Staff Malware Gate: Staff download of malicious attachment strictly rejected with 403
+
+==================================================
+Test Results: 156 passed, 0 failed of 156 assertions
+==================================================
+
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mMongoDB disconnected. Attempting reconnection...[39m
+2026-09-15 12:25:56 [[32minfo[39m]: [32mMongoDB connection closed gracefully[39m
+
+
+--- STDERR ---
+
+
+
+--- COMBINED RAW STREAM ---
+
+
+> flumenx-conect-os-backend@1.0.0 test:portal
+> tsx src/tests/portal.test.ts
+
+
+==================================================
+Running flumenxConectOS Release 11 Test Suite
+Customer Portal & Self-Service Isolation Engine
+==================================================
+
+2026-09-15 12:25:53 [[32minfo[39m]: [32mMongoDB connected successfully[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mStarting flumenxConectOS bootstrap and permission seeder...[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[✓] Seeded 72 standard system permissions[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[✓] Seeded system roles: super_admin, client_admin, client_staff[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[i] Super Admin verified & credentials synchronized: admin@flumenx.com[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[i] Sample Client Admin credentials synchronized: manager@acmedigital.com[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m[✓] Assigned manager@acmedigital.com as client_admin for Acme Digital Media[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m==================================================[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mflumenxConectOS bootstrap completed successfully![39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mSuper Admin account active: admin@flumenx.com (Credentials configured in environment)[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mSample Client Admin account active: manager@acmedigital.com[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32m==================================================[39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 86ms [IP: ::1][39m
+2026-09-15 12:25:53 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 75ms [IP: ::1][39m
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/auth/login 200 - 88ms [IP: ::1][39m
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/auth/login 200 - 80ms [IP: ::1][39m
+--- Section 1: Customer Portal Invitation Lifecycle ---
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 25ms [IP: ::1][39m
+  [PASS] 1. Contact invitation created successfully
+  [PASS] 1b. Non-production rawToken provided for invitation setup
+  [PASS] 1c. Invitation stored in database with SHA-256 tokenHash
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 23ms [IP: ::1][39m
+  [PASS] 2. Re-inviting contact succeeds and creates new active invitation
+  [PASS] 2b. Prior pending invitation automatically revoked upon re-invitation
+--- Section 2: Atomic Invitation Acceptance & Password Validation ---
+2026-09-15 12:25:54 [[31merror[39m]: [31mError processing POST /api/v1/portal/auth/accept-invitation: [[39m
+[31m  {[39m
+[31m    "validation": "regex",[39m
+[31m    "code": "invalid_string",[39m
+[31m    "message": "Password must contain at least one uppercase letter",[39m
+[31m    "path": [[39m
+[31m      "password"[39m
+[31m    ][39m
+[31m  },[39m
+[31m  {[39m
+[31m    "validation": "regex",[39m
+[31m    "code": "invalid_string",[39m
+[31m    "message": "Password must contain at least one number",[39m
+[31m    "path": [[39m
+[31m      "password"[39m
+[31m    ][39m
+[31m  }[39m
+[31m][39m {"issues":[{"validation":"regex","code":"invalid_string","message":"Password must contain at least one uppercase letter","path":["password"]},{"validation":"regex","code":"invalid_string","message":"Password must contain at least one number","path":["password"]}],"name":"ZodError"}
+ZodError: [
+  {
+    "validation": "regex",
+    "code": "invalid_string",
+    "message": "Password must contain at least one uppercase letter",
+    "path": [
+      "password"
+    ]
+  },
+  {
+    "validation": "regex",
+    "code": "invalid_string",
+    "message": "Password must contain at least one number",
+    "path": [
+      "password"
+    ]
+  }
+]
+    at get error (D:\flumenx\flumenxConectOS\backend\node_modules\zod\v3\types.cjs:45:31)
+    at ZodObject.parseAsync (D:\flumenx\flumenxConectOS\backend\node_modules\zod\v3\types.cjs:183:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (D:\flumenx\flumenxConectOS\backend\src\middleware\validate.ts:7:22)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/accept-invitation 422 - 3ms [IP: ::1][39m
+  [PASS] 3. Password complexity enforced (rejects weak password with 422 Unprocessable Entity)
+2026-09-15 12:25:54 [[31merror[39m]: [31mError processing POST /api/v1/portal/auth/accept-invitation: Invalid, expired, or already accepted invitation token.[39m {"statusCode":400}
+Error: Invalid, expired, or already accepted invitation token.
+    at Function.acceptInvitation (D:\flumenx\flumenxConectOS\backend\src\services\portalAuth.service.ts:220:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async acceptInvitation (D:\flumenx\flumenxConectOS\backend\src\controllers\portalAuthController.ts:64:22)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/accept-invitation 400 - 6ms [IP: ::1][39m
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/accept-invitation 201 - 87ms [IP: ::1][39m
+  [PASS] 4. Invitation acceptance is strictly atomic (one succeeds with 201, concurrent claim rejected with 400)
+  [PASS] 4b. Security: No session cookie issued on failed concurrent invitation acceptance
+  [PASS] 4c. Database Uniqueness: Exactly one PortalUser created under concurrent invitation claim
+2026-09-15 12:25:54 [[31merror[39m]: [31mError processing POST /api/v1/client/portal/invitations: A customer portal user already exists for this contact or email.[39m {"statusCode":409}
+Error: A customer portal user already exists for this contact or email.
+    at Function.inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:47:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:65:22)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 409 - 12ms [IP: ::1][39m
+  [PASS] 5. Conflict (409) returned when attempting to invite an already active portal user
+--- Section 3: Customer Portal Authentication & Cross-Role Defense ---
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 81ms [IP: ::1][39m
+  [PASS] 6. Customer portal login successful and issued CSRF token
+2026-09-15 12:25:54 [[32minfo[39m]: [32mGET /api/v1/portal/auth/me 200 - 3ms [IP: ::1][39m
+  [PASS] 7. GET /portal/auth/me succeeds with valid customer portal session
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/auth/me 401 - 1ms [IP: ::1][39m
+  [PASS] 8a. Cross-Role Defense: Portal user token strictly rejected on internal staff /auth/me
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/auth/me 401 - 0ms [IP: ::1][39m
+  [PASS] 8b. Cross-Role Defense: Staff token rejected on customer portal route /api/v1/portal/auth/me (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/profile 401 - 1ms [IP: ::1][39m
+  [PASS] 8b. Cross-Role Defense: Staff token rejected on customer portal route /api/v1/portal/profile (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/requests 401 - 0ms [IP: ::1][39m
+  [PASS] 8b. Cross-Role Defense: Staff token rejected on customer portal route /api/v1/portal/requests (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/tasks 401 - 1ms [IP: ::1][39m
+  [PASS] 8b. Cross-Role Defense: Staff token rejected on customer portal route /api/v1/portal/tasks (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/workflows 401 - 1ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/workflows (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/reports 401 - 0ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/reports (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/ads 401 - 1ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/ads (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/admin/clients 401 - 1ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/admin/clients (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/admin/audit-logs 401 - 0ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/admin/audit-logs (401)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/client/workspace 401 - 0ms [IP: ::1][39m
+  [PASS] 8c. Cross-Role Defense: Portal token rejected on internal staff route /api/v1/client/workspace (401)
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/logout 200 - 11ms [IP: ::1][39m
+  [PASS] 9. Portal user logout succeeds
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/auth/me 401 - 3ms [IP: ::1][39m
+  [PASS] 9b. Session Revocation: Pre-logout token immediately invalidated by tokenVersion increment
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 77ms [IP: ::1][39m
+--- Section 4: Zero-Enumeration Password Reset & Session Invalidation ---
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/forgot-password 200 - 10ms [IP: ::1][39m
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/forgot-password 200 - 2ms [IP: ::1][39m
+  [PASS] 10. Zero-Enumeration: forgot-password returns identical non-sensitive response without exposing token or user existence
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/reset-password 200 - 98ms [IP: ::1][39m
+  [PASS] 10b. Password Reset: Succeeded using single-use hashed token
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mGET /api/v1/portal/auth/me 401 - 4ms [IP: ::1][39m
+  [PASS] 10c. Session Invalidation: Pre-reset session immediately revoked upon password reset (tokenVersion incremented)
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 102ms [IP: ::1][39m
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 403 - 2ms [IP: ::1][39m
+  [PASS] 10d. CSRF Defense: Cookie-authenticated state mutation strictly rejected (403) when x-portal-csrf header is missing
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/change-password 403 - 2ms [IP: ::1][39m
+  [PASS] 10e. CSRF Defense: Authenticated password change rejected (403) when x-portal-csrf is missing
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/change-password 200 - 142ms [IP: ::1][39m
+  [PASS] 10f. Password Change: Authenticated password change succeeds with valid CSRF header
+--- Section 5: Allowlisted Profile Updates & Change Requests ---
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPATCH /api/v1/portal/profile 200 - 17ms [IP: ::1][39m
+  [PASS] 11. Allowlisted profile and preferences updated successfully
+2026-09-15 12:25:54 [[31merror[39m]: [31mError processing PATCH /api/v1/portal/profile: [[39m
+[31m  {[39m
+[31m    "code": "unrecognized_keys",[39m
+[31m    "keys": [[39m
+[31m      "clientId",[39m
+[31m      "status",[39m
+[31m      "tokenVersion"[39m
+[31m    ],[39m
+[31m    "path": [],[39m
+[31m    "message": "Disallowed fields detected. Mass assignment is prohibited."[39m
+[31m  }[39m
+[31m][39m {"issues":[{"code":"unrecognized_keys","keys":["clientId","status","tokenVersion"],"path":[],"message":"Disallowed fields detected. Mass assignment is prohibited."}],"name":"ZodError"}
+ZodError: [
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "clientId",
+      "status",
+      "tokenVersion"
+    ],
+    "path": [],
+    "message": "Disallowed fields detected. Mass assignment is prohibited."
+  }
+]
+    at get error (D:\flumenx\flumenxConectOS\backend\node_modules\zod\v3\types.cjs:45:31)
+    at ZodObject.parseAsync (D:\flumenx\flumenxConectOS\backend\node_modules\zod\v3\types.cjs:183:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (D:\flumenx\flumenxConectOS\backend\src\middleware\validate.ts:7:22)
+2026-09-15 12:25:54 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 422 - 4ms [IP: ::1][39m
+  [PASS] 12. Mass Assignment Defense: Strict Zod validation rejects disallowed fields with 422
+2026-09-15 12:25:54 [[32minfo[39m]: [32mPOST /api/v1/portal/profile/change-request 201 - 33ms [IP: ::1][39m
+  [PASS] 13. Sensitive field change request creates profile_change customer request for staff review
+--- Section 6: Scoped Request Idempotency & Attachments ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 27ms [IP: ::1][39m
+  [PASS] 14. Customer request created with scoped idempotency key
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 200 - 5ms [IP: ::1][39m
+  [PASS] 14b. Scoped Idempotency: Duplicate request submission safely returns existing record without re-creation
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 200 - 16ms [IP: ::1][39m
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 34ms [IP: ::1][39m
+  [PASS] 14c. Concurrent Idempotency: Simultaneous duplicate submissions safely resolve to same request without error
+  [PASS] 14d. Concurrency Safety: Zero duplicate CustomerRequest, Task, or Audit records created under race conditions
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/requests: Idempotency conflict: A request with this key already exists with different parameters.[39m {"statusCode":409}
+Error: Idempotency conflict: A request with this key already exists with different parameters.
+    at Function.createCustomerRequest (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:193:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async createRequest (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:54:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 409 - 4ms [IP: ::1][39m
+  [PASS] 14e. Idempotency Conflict Defense: Conflicting payload with identical idempotencyKey rejected with 409 Conflict
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/requests: Forbidden file type detected: '.exe'. Executable or script files are strictly blocked.[39m {"statusCode":422}
+Error: Forbidden file type detected: '.exe'. Executable or script files are strictly blocked.
+    at Function.validateAttachments (D:\flumenx\flumenxConectOS\backend\src\services\portalAttachment.service.ts:93:15)
+    at Function.createCustomerRequest (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:199:58)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async createRequest (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:54:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 422 - 5ms [IP: ::1][39m
+  [PASS] 15. Attachment Validation: Rejects prohibited executable file extensions (.exe) with 422
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/requests: Invalid attachment URL scheme: 'javascript:'. Only secure HTTPS storage links are permitted.[39m {"statusCode":422}
+Error: Invalid attachment URL scheme: 'javascript:'. Only secure HTTPS storage links are permitted.
+    at Function.validateAttachments (D:\flumenx\flumenxConectOS\backend\src\services\portalAttachment.service.ts:79:17)
+    at Function.createCustomerRequest (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:199:58)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async createRequest (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:54:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 422 - 4ms [IP: ::1][39m
+  [PASS] 15b. Attachment Protocol Safety: Dangerous URL scheme (javascript:) strictly rejected with 422
+--- Section 7: Message Visibility & Internal Note Stripping ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ebfa37343196c596d665/messages 201 - 21ms [IP: ::1][39m
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ebfa37343196c596d665/messages 201 - 19ms [IP: ::1][39m
+  [PASS] 16. Staff adds public reply and internal note to customer request
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665 200 - 5ms [IP: ::1][39m
+  [PASS] 16b. Record Visibility: Customer sees public replies but internal notes are strictly stripped
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfb37343196c596d6ad: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerRequest (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:385:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async getRequest (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:91:23)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfb37343196c596d6ad 404 - 5ms [IP: ::1][39m
+  [PASS] 16c. IDOR Defense: Cross-tenant customer request access returns 404 without leaking existence
+--- Section 7b: Direct Attachment Download Authorization ---
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download: Attachment is currently undergoing security scanning and is not yet available for download[39m {"statusCode":423}
+Error: Attachment is currently undergoing security scanning and is not yet available for download
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:122:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 423 - 7ms [IP: ::1][39m
+  [PASS] 16c2. Malware Gate: Pending attachment download rejected with 423
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 10ms [IP: ::1][39m
+  [PASS] 16c3. Malware Gate Webhook: Authenticated webhook transitions att_1 to clean
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 200 - 5ms [IP: ::1][39m
+  [PASS] 16d. Attachment Download Auth: Authorized customer downloads request attachment (200)
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_public_doc/download 200 - 4ms [IP: ::1][39m
+  [PASS] 16e. Attachment Download Auth: Customer downloads attachment from customer-visible message (200)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_internal_audit_doc/download: Attachment not found or access denied[39m {"statusCode":404}
+Error: Attachment not found or access denied
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:513:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_internal_audit_doc/download 404 - 5ms [IP: ::1][39m
+  [PASS] 16f. Attachment Download Isolation: Customer cannot download attachment from internal staff note (404)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:492:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 404 - 4ms [IP: ::1][39m
+  [PASS] 16g. Attachment Download Contact Isolation: Same-tenant customer from different contact rejected (404 without leaking metadata)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:492:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 404 - 4ms [IP: ::1][39m
+  [PASS] 16h. Attachment Download Tenant Isolation: Cross-tenant portal user rejected (404)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/att_1/download 401 - 0ms [IP: ::1][39m
+  [PASS] 16i. Attachment Download Auth: Unauthenticated download request rejected with 401
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/fake_attachment_id/download: Attachment not found or access denied[39m {"statusCode":404}
+Error: Attachment not found or access denied
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:513:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfa37343196c596d665/attachments/fake_attachment_id/download 404 - 5ms [IP: ::1][39m
+  [PASS] 16j. Attachment Download Defense: Tampered or non-existent attachmentId returns 404
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 200 - 13ms [IP: ::1][39m
+  [PASS] 17. Customer adds follow-up message to ticket thread
+--- Section 8: Conversation Thread Isolation & Inbound Messaging ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/conversations 200 - 5ms [IP: ::1][39m
+  [PASS] 18. Conversation Isolation: Customer only sees conversations for their own contactId (cross-tenant leakage prevented)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing GET /api/v1/portal/conversations/6aa8ebfb37343196c596d6ca/messages: Conversation not found[39m {"statusCode":404}
+Error: Conversation not found
+    at Function.getCustomerConversationMessages (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:556:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async getConversationMessages (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:169:49)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/conversations/6aa8ebfb37343196c596d6ca/messages 404 - 4ms [IP: ::1][39m
+  [PASS] 18b. IDOR Defense: Cross-tenant conversation access returns 404 without leaking existence
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 200 - 6ms [IP: ::1][39m
+  [PASS] 19. Message Channel Isolation: Internal channel & isInternal=true messages stripped from customer view
+  [PASS] 19b. Safe Default: Legacy message with missing isCustomerVisible field strictly excluded from customer view
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 201 - 17ms [IP: ::1][39m
+  [PASS] 20. Inbound Conversation Message: Customer message recorded with direction=inbound
+--- Section 9: Customer Visible Tasks & Action Completion ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/tasks 200 - 8ms [IP: ::1][39m
+  [PASS] 21. Task Visibility Boundary: Customer only sees tasks where isCustomerVisible=true
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/complete 200 - 12ms [IP: ::1][39m
+  [PASS] 22. Atomic Task Completion: Customer marks action item complete with notes
+  [PASS] 22b. customerCompletedAt timestamp safely persisted in database
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e4/complete: Task not found, already completed, or does not allow customer completion.[39m {"statusCode":400}
+Error: Task not found, already completed, or does not allow customer completion.
+    at Function.completeCustomerTaskAction (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:765:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async completeTaskAction (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:220:20)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e4/complete 400 - 4ms [IP: ::1][39m
+  [PASS] 22c. Narrow Task Authorization: Customer cannot complete internal task (isCustomerVisible=false rejected with 400)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/portal/tasks/6aa8ebfb37343196c596d6f1/complete: Task not found, already completed, or does not allow customer completion.[39m {"statusCode":400}
+Error: Task not found, already completed, or does not allow customer completion.
+    at Function.completeCustomerTaskAction (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:765:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async completeTaskAction (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:220:20)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6f1/complete 400 - 4ms [IP: ::1][39m
+  [PASS] 22d. Narrow Task Authorization: Customer cannot complete task where customerActionRequired=false (rejected with 400)
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 200 - 10ms [IP: ::1][39m
+  [PASS] 23. Customer Task Comment: Comment logged to task event history
+  [PASS] 23b. TaskEvent recorded for customer comment
+--- Section 10: In-Portal Notifications ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/notifications 200 - 6ms [IP: ::1][39m
+  [PASS] 24. Customer retrieves portal notifications
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d6fd/read 200 - 6ms [IP: ::1][39m
+  [PASS] 25. Customer marks notification as read
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/notifications/read-all 200 - 6ms [IP: ::1][39m
+  [PASS] 26. Customer marks all notifications as read
+--- Section 11: Staff Management & RBAC Permissions ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/client/portal/users 200 - 12ms [IP: ::1][39m
+  [PASS] 27. Staff with portal.view can list customer portal users
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/client/portal/requests 200 - 13ms [IP: ::1][39m
+  [PASS] 27b. Staff with portal.view can list customer requests
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 403 - 10ms [IP: ::1][39m
+  [PASS] 28. RBAC: Staff without portal.manage permission rejected (403) from inviting customers
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/client/portal/users/6aa8ebfa37343196c596d5dc/status 200 - 15ms [IP: ::1][39m
+  [PASS] 29. Staff with portal.manage suspends portal user
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mGET /api/v1/portal/auth/me 401 - 2ms [IP: ::1][39m
+  [PASS] 29b. Suspended customer user session immediately blocked
+--- Section 11b: Comprehensive Invitation Lifecycle Coverage ---
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/client/portal/invitations: A customer portal user already exists for this contact or email.[39m {"statusCode":409}
+Error: A customer portal user already exists for this contact or email.
+    at Function.inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:47:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:65:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 409 - 7ms [IP: ::1][39m
+  [PASS] 30. Invitation Lifecycle: Re-invitation of suspended customer rejected (409 Conflict)
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/client/portal/users/6aa8ebfa37343196c596d5dc/status 200 - 13ms [IP: ::1][39m
+  [PASS] 31. Staff with portal.manage reactivates portal user
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/client/portal/invitations: A customer portal user already exists for this contact or email.[39m {"statusCode":409}
+Error: A customer portal user already exists for this contact or email.
+    at Function.inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:47:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:65:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 409 - 8ms [IP: ::1][39m
+  [PASS] 32. Invitation Lifecycle: Re-invitation of reactivated customer rejected (409 Conflict)
+2026-09-15 12:25:55 [[31merror[39m]: [31mError processing POST /api/v1/client/portal/invitations: A customer portal user already exists for this contact or email.[39m {"statusCode":409}
+Error: A customer portal user already exists for this contact or email.
+    at Function.inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:47:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async inviteCustomer (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:65:22)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/client/portal/invitations 409 - 8ms [IP: ::1][39m
+  [PASS] 33. Invitation Lifecycle: Invitation with duplicate active email rejected (409 Conflict)
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 20ms [IP: ::1][39m
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/client/portal/invitations 201 - 19ms [IP: ::1][39m
+  [PASS] 34. Invitation Lifecycle: Older pending invitation automatically revoked upon re-invitation
+  [PASS] 35. Database Uniqueness: Direct creation with duplicate email rejected by Mongo unique index (code 11000)
+  [PASS] 35b. Database Uniqueness: Direct creation with duplicate contactId rejected by Mongo unique index (code 11000)
+  [PASS] 36. Invitation Security: Raw token and tokenHash are never leaked in response bodies or audit logs
+--- Section 12: Comprehensive CSRF Mutation Matrix ---
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 78ms [IP: ::1][39m
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/profile 200 - 5ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/profile with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/requests 200 - 6ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/requests with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/tasks 200 - 4ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/tasks with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/conversations 200 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/conversations with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mGET /api/v1/portal/notifications 200 - 4ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Read-Only Safe]: GET /api/v1/portal/notifications with cookie succeeds (200) without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/portal/profile 200 - 14ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Bearer Exemption]: Authorization Bearer mutation without cookie succeeds without CSRF header
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 30ms [IP: ::1][39m
+  [PASS] CSRF Matrix [Bearer Exemption]: Bearer request creation succeeds without CSRF header
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M1. Profile Update]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M1. Profile Update]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/profile 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M1. Profile Update]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/portal/profile 200 - 15ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M1. Profile Update]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/profile/change-request 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M2. Profile Change Request]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/profile/change-request 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M2. Profile Change Request]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/profile/change-request 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M2. Profile Change Request]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/profile/change-request 201 - 29ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M2. Profile Change Request]: Valid per-session CSRF token succeeds (201)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M3. Request Creation (with attachment)]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 403 - 1ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M3. Request Creation (with attachment)]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M3. Request Creation (with attachment)]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 28ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M3. Request Creation (with attachment)]: Valid per-session CSRF token succeeds (201)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M4. Request Message Reply (with attachment)]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M4. Request Message Reply (with attachment)]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M4. Request Message Reply (with attachment)]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ebfa37343196c596d665/messages 200 - 14ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M4. Request Message Reply (with attachment)]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M5. Conversation Message]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M5. Conversation Message]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M5. Conversation Message]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/conversations/6aa8ebfb37343196c596d6c8/messages 201 - 16ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M5. Conversation Message]: Valid per-session CSRF token succeeds (201)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d773/complete 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M6. Task Action Completion]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d773/complete 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M6. Task Action Completion]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d773/complete 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M6. Task Action Completion]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d773/complete 200 - 13ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M6. Task Action Completion]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M7. Task Comment]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M7. Task Comment]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M7. Task Comment]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/tasks/6aa8ebfb37343196c596d6e2/comments 200 - 9ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M7. Task Comment]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d775/read 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M8. Notification Mark Read]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d775/read 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M8. Notification Mark Read]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d775/read 403 - 1ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M8. Notification Mark Read]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPATCH /api/v1/portal/notifications/6aa8ebfb37343196c596d775/read 200 - 6ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M8. Notification Mark Read]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/notifications/read-all 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M9. Notifications Mark All Read]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/notifications/read-all 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M9. Notifications Mark All Read]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/notifications/read-all 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M9. Notifications Mark All Read]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:55 [[32minfo[39m]: [32mPOST /api/v1/portal/notifications/read-all 200 - 5ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M9. Notifications Mark All Read]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/change-password 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M10. Authenticated Password Change]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/change-password 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M10. Authenticated Password Change]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:55 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/change-password 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M10. Authenticated Password Change]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/change-password 200 - 149ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M10. Authenticated Password Change]: Valid per-session CSRF token succeeds (200)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/logout 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M11. Logout]: Missing x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/logout 403 - 2ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M11. Logout]: Forged/invalid x-portal-csrf header strictly rejected with 403
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/auth/logout 403 - 3ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M11. Logout]: Cross-session CSRF token from another user strictly rejected with 403
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/logout 200 - 12ms [IP: ::1][39m
+  [PASS] CSRF Matrix [M11. Logout]: Valid per-session CSRF token succeeds (200)
+
+--- Section 13: Production Malware-Scanning Gate & Quarantine Verification ---
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/auth/login 200 - 79ms [IP: ::1][39m
+  [PASS] Section 13 Re-Auth: Alice logs in with MatrixFinalPassword123!
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/requests 201 - 27ms [IP: ::1][39m
+  [PASS] 26a. Malware Gate: Request created with quarantined attachment in pending status
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download: Attachment is currently undergoing security scanning and is not yet available for download[39m {"statusCode":423}
+Error: Attachment is currently undergoing security scanning and is not yet available for download
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:122:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 423 - 4ms [IP: ::1][39m
+  [PASS] 26b. Malware Gate: Pending attachment download strictly rejected with 423 Locked
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Unauthorized: Missing scanner webhook authentication signature or timestamp headers[39m {"statusCode":401}
+Error: Unauthorized: Missing scanner webhook authentication signature or timestamp headers
+    at handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:140:15)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:47:12)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 401 - 1ms [IP: ::1][39m
+  [PASS] 26c. Malware Gate Webhook: Missing signature headers rejected with 401
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Unauthorized: Invalid or expired scanner webhook signature[39m {"statusCode":401}
+Error: Unauthorized: Invalid or expired scanner webhook signature
+    at handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:145:15)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:47:12)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 401 - 1ms [IP: ::1][39m
+  [PASS] 26d. Malware Gate Webhook: Forged signature strictly rejected with 401
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Unauthorized: Invalid or expired scanner webhook signature[39m {"statusCode":401}
+Error: Unauthorized: Invalid or expired scanner webhook signature
+    at handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:145:15)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:47:12)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 401 - 1ms [IP: ::1][39m
+  [PASS] 26e. Malware Gate Webhook: Stale timestamp rejected with 401
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Invalid scanner verdict 'bypass_unapproved'. Must be clean, malicious, or scan_failed.[39m {"statusCode":422}
+Error: Invalid scanner verdict 'bypass_unapproved'. Must be clean, malicious, or scan_failed.
+    at Function.processScanCallback (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:172:13)
+    at handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:148:50)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\layer.js:95:5)
+    at D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\flumenx\flumenxConectOS\backend\node_modules\express\lib\router\index.js:175:3)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 422 - 1ms [IP: ::1][39m
+  [PASS] 26f. Malware Gate Webhook: Invalid scanner verdict rejected with 422
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing POST /api/v1/portal/webhooks/malware-scan: Target request not found or workspace mismatch[39m {"statusCode":404}
+Error: Target request not found or workspace mismatch
+    at Function.processScanCallback (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:186:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async handleScannerWebhook (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:148:22)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mPOST /api/v1/portal/webhooks/malware-scan 404 - 2ms [IP: ::1][39m
+  [PASS] 26g. Malware Gate Webhook: Tenant mismatch callback rejected with 404
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 10ms [IP: ::1][39m
+  [PASS] 26h. Malware Gate Webhook: Authenticated callback marks attachment clean (200)
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 3ms [IP: ::1][39m
+  [PASS] 26i. Malware Gate Webhook: Replay of identical scan event is idempotent (status: idempotent_noop)
+2026-09-15 12:25:56 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 200 - 3ms [IP: ::1][39m
+  [PASS] 26j. Malware Gate: Clean attachment download succeeds with short-lived tokenized URL (200)
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ebfc37343196c596d826/messages 200 - 9ms [IP: ::1][39m
+  [PASS] 26k. Setup: Customer added message with att_gate_malicious
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 9ms [IP: ::1][39m
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_malicious/download: Attachment was identified as malicious and has been quarantined. Access is permanently blocked.[39m {"statusCode":403}
+Error: Attachment was identified as malicious and has been quarantined. Access is permanently blocked.
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:125:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_malicious/download 403 - 5ms [IP: ::1][39m
+  [PASS] 26l. Malware Gate: Malicious attachment download strictly rejected with 403 Forbidden
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/requests/6aa8ebfc37343196c596d826/messages 200 - 13ms [IP: ::1][39m
+  [PASS] 26m. Setup: Customer added message with att_gate_failed
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/portal/webhooks/malware-scan 200 - 10ms [IP: ::1][39m
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_failed/download: Attachment malware scanning failed. Download is blocked until security verification completes.[39m {"statusCode":423}
+Error: Attachment malware scanning failed. Download is blocked until security verification completes.
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:128:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_failed/download 423 - 5ms [IP: ::1][39m
+  [PASS] 26n. Malware Gate: Scan failed attachment download strictly rejected with 423 Locked
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download: Attachment security scan verdict has expired. Re-scanning is required before download.[39m {"statusCode":423}
+Error: Attachment security scan verdict has expired. Re-scanning is required before download.
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:131:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:517:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 423 - 4ms [IP: ::1][39m
+  [PASS] 26o. Malware Gate: Expired scan verdict download strictly rejected with 423 Locked
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:492:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 404 - 3ms [IP: ::1][39m
+  [PASS] 26p. Malware Gate Isolation: Same-tenant wrong-contact download rejected with 404
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download: Customer request not found[39m {"statusCode":404}
+Error: Customer request not found
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:492:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 404 - 3ms [IP: ::1][39m
+  [PASS] 26q. Malware Gate Isolation: Cross-tenant download rejected with 404
+2026-09-15 12:25:56 [[32minfo[39m]: [32mPOST /api/v1/client/portal/requests/6aa8ebfc37343196c596d826/messages 201 - 14ms [IP: ::1][39m
+  [PASS] 26r. Setup: Staff added internal note with attachment
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_internal/download: Attachment not found or access denied[39m {"statusCode":404}
+Error: Attachment not found or access denied
+    at Function.getCustomerAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\portalCustomer.service.ts:513:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\portalCustomerController.ts:115:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_internal/download 404 - 4ms [IP: ::1][39m
+  [PASS] 26s. Malware Gate Isolation: Customer downloading internal staff-note attachment rejected with 404
+2026-09-15 12:25:56 [[32minfo[39m]: [32mGET /api/v1/portal/requests/6aa8ebfc37343196c596d826 200 - 4ms [IP: ::1][39m
+  [PASS] 26t. Information Disclosure Defense: Quarantine and clean storage keys are never exposed in API responses
+2026-09-15 12:25:56 [[32minfo[39m]: [32mGET /api/v1/client/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_pending/download 200 - 7ms [IP: ::1][39m
+  [PASS] 26u. Staff Malware Gate: Staff download of clean attachment succeeds with signed URL
+2026-09-15 12:25:56 [[31merror[39m]: [31mError processing GET /api/v1/client/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_malicious/download: Attachment was identified as malicious and has been quarantined. Access is permanently blocked.[39m {"statusCode":403}
+Error: Attachment was identified as malicious and has been quarantined. Access is permanently blocked.
+    at Function.assertDownloadPermitted (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:125:13)
+    at Function.getAuthorizedDownloadPayload (D:\flumenx\flumenxConectOS\backend\src\services\malwareScanner.service.ts:148:10)
+    at Function.getStaffAttachmentDownload (D:\flumenx\flumenxConectOS\backend\src\services\clientPortalManagement.service.ts:494:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async downloadAttachment (D:\flumenx\flumenxConectOS\backend\src\controllers\clientPortalController.ts:250:26)
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mGET /api/v1/client/portal/requests/6aa8ebfc37343196c596d826/attachments/att_gate_malicious/download 403 - 8ms [IP: ::1][39m
+  [PASS] 26v. Staff Malware Gate: Staff download of malicious attachment strictly rejected with 403
+
+==================================================
+Test Results: 156 passed, 0 failed of 156 assertions
+==================================================
+
+2026-09-15 12:25:56 [[33mwarn[39m]: [33mMongoDB disconnected. Attempting reconnection...[39m
+2026-09-15 12:25:56 [[32minfo[39m]: [32mMongoDB connection closed gracefully[39m

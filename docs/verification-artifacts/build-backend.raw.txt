@@ -1,0 +1,28 @@
+================================================================================
+COMMAND: npm --prefix backend run build
+DIRECTORY: D:\flumenx\flumenxConectOS
+GIT COMMIT: v1.0.0 (branch master, uncommitted repository state)
+START TIMESTAMP: 2026-09-15T06:55:43.711Z
+END TIMESTAMP: 2026-09-15T06:55:51.466Z
+DURATION: 7755ms (7.75s)
+EXIT CODE: 0
+================================================================================
+
+--- STDOUT ---
+
+
+> flumenx-conect-os-backend@1.0.0 build
+> rimraf dist && tsc
+
+
+
+--- STDERR ---
+
+
+
+--- COMBINED RAW STREAM ---
+
+
+> flumenx-conect-os-backend@1.0.0 build
+> rimraf dist && tsc
+
