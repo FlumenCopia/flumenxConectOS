@@ -41,7 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mode, clientName }) => {
   const pathname = usePathname();
   const { user, memberships, activeClient, switchWorkspace, logout } = useAuth();
 
-  const displayClientName = clientName || activeClient?.clientName || 'Acme Digital Media';
+  const displayClientName = clientName || activeClient?.clientName || 'Workspace';
 
   const adminNavItems: NavItem[] = [
     { label: 'Overview', href: '/admin/dashboard', icon: LayoutDashboard },

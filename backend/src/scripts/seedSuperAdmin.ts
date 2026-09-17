@@ -5,8 +5,6 @@ import { logger } from '../config/logger';
 import { User } from '../models/User';
 import { Role } from '../models/Role';
 import { Permission } from '../models/Permission';
-import { Client } from '../models/Client';
-import { ClientMembership } from '../models/ClientMembership';
 import { AuditService } from '../services/audit.service';
 
 export const standardPermissions = [
@@ -280,65 +278,10 @@ export const seedDatabase = async () => {
       logger.info(`[i] Super Admin verified & credentials synchronized: ${adminEmail}`);
     }
 
-    // 4. Seed Initial Sample Client (Acme Digital Media) for Development Testing
-    let client = await Client.findOne({ slug: 'acme-digital-media' });
-    if (!client) {
-      client = await Client.create({
-        name: 'Acme Digital Media',
-        slug: 'acme-digital-media',
-        email: 'contact@acmedigital.com',
-        phone: '+1 555-0199',
-        industry: 'E-commerce & Retail',
-        timezone: 'America/New_York',
-        currency: 'USD',
-        status: 'active',
-        health: 'Healthy',
-        primaryAccountManagerId: superAdmin._id,
-      });
-      logger.info(`[✓] Created sample client workspace: ${client.name} (${client._id})`);
-    }
-
-    // 5. Seed Client Admin User for Acme Digital Media
-    const clientAdminEmail = 'manager@acmedigital.com';
-    let clientAdminUser = await User.findOne({ email: clientAdminEmail }).select('+passwordHash');
-    if (!clientAdminUser) {
-      const clientAdminPasswordHash = await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 10);
-      clientAdminUser = await User.create({
-        name: 'Sarah Jenkins (Acme Admin)',
-        email: clientAdminEmail,
-        passwordHash: clientAdminPasswordHash,
-        isSuperAdmin: false,
-        status: 'active',
-        mustChangePassword: true,
-      });
-      logger.info(`[✓] Created sample client admin user: ${clientAdminEmail}`);
-    } else {
-      clientAdminUser.passwordHash = await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 10);
-      clientAdminUser.status = 'active';
-      await clientAdminUser.save();
-      logger.info(`[i] Sample Client Admin credentials synchronized: ${clientAdminEmail}`);
-    }
-
-    // Link Client Admin to Acme Digital Media in ClientMembership
-    await ClientMembership.findOneAndUpdate(
-      { clientId: client._id, userId: clientAdminUser._id },
-      {
-        $set: {
-          clientId: client._id,
-          userId: clientAdminUser._id,
-          roleId: clientAdminRole._id,
-          status: 'active',
-          joinedAt: new Date(),
-        },
-      },
-      { upsert: true, new: true }
-    );
-    logger.info(`[✓] Assigned ${clientAdminEmail} as client_admin for ${client.name}`);
-
     logger.info('==================================================');
     logger.info('flumenxConectOS bootstrap completed successfully!');
     logger.info(`Super Admin account active: ${adminEmail} (Credentials configured in environment)`);
-    logger.info(`Sample Client Admin account active: ${clientAdminEmail}`);
+    logger.info('Only Super Admin and essential system roles/permissions seeded.');
     logger.info('==================================================');
   } catch (error) {
     logger.error('Error during database bootstrap:', error);

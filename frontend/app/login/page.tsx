@@ -124,23 +124,14 @@ export default function LoginPage() {
               <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center">
                 Development Quick Email Helpers
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex justify-center">
                 <button
                   type="button"
                   onClick={() => { setEmail('admin@flumenx.com'); setError(null); }}
-                  className="p-2 border border-slate-200 rounded text-[11px] text-slate-700 hover:bg-slate-50 hover:border-brand-600 transition-colors text-left"
+                  className="w-full p-2 border border-slate-200 rounded text-[11px] text-slate-700 hover:bg-slate-50 hover:border-brand-600 transition-colors text-left"
                 >
                   <div className="font-semibold text-brand-800">Super Admin</div>
                   <div className="text-slate-400 text-[10px] truncate">admin@flumenx.com</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => { setEmail('manager@acmedigital.com'); setError(null); }}
-                  className="p-2 border border-slate-200 rounded text-[11px] text-slate-700 hover:bg-slate-50 hover:border-brand-600 transition-colors text-left"
-                >
-                  <div className="font-semibold text-slate-900">Client Admin</div>
-                  <div className="text-slate-400 text-[10px] truncate">manager@acmedigital.com</div>
                 </button>
               </div>
             </div>

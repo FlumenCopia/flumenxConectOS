@@ -1,5 +1,6 @@
 import http from 'http';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import app from '../app';
@@ -50,6 +51,35 @@ const runAuthTests = async () => {
     let sampleClient: any = null;
 
     sampleClient = await Client.findOne({ slug: 'acme-digital-media' });
+    if (!sampleClient) {
+      sampleClient = await Client.create({
+        name: 'Acme Digital Media',
+        slug: 'acme-digital-media',
+        status: 'active',
+        health: 'Healthy',
+      });
+    }
+
+    let clientAdminUser = await User.findOne({ email: 'manager@acmedigital.com' });
+    if (!clientAdminUser) {
+      const clientAdminPasswordHash = await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 10);
+      clientAdminUser = await User.create({
+        name: 'Sarah Jenkins (Acme Admin)',
+        email: 'manager@acmedigital.com',
+        passwordHash: clientAdminPasswordHash,
+        isSuperAdmin: false,
+        status: 'active',
+        mustChangePassword: true,
+      });
+      const clientAdminRole = await Role.findOne({ slug: 'client_admin' });
+      await ClientMembership.create({
+        clientId: sampleClient._id,
+        userId: clientAdminUser._id,
+        roleId: clientAdminRole!._id,
+        status: 'active',
+      });
+    }
+
     const superAdminUser = await User.findOne({ email: env.INITIAL_ADMIN_EMAIL.toLowerCase().trim() });
 
     // -------------------------------------------------------------

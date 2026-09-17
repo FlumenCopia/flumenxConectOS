@@ -98,6 +98,27 @@ const runLeadManagementTests = async () => {
     }
     clientBId = clientB._id.toString();
 
+    // Ensure Client Admin exists for Client A
+    let clientAdmin = await User.findOne({ email: 'manager@acmedigital.com' });
+    if (!clientAdmin) {
+      const passwordHash = await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 10);
+      clientAdmin = await User.create({
+        name: 'Sarah Jenkins (Acme Admin)',
+        email: 'manager@acmedigital.com',
+        passwordHash,
+        isSuperAdmin: false,
+        status: 'active',
+        mustChangePassword: true,
+      });
+      const clientAdminRole = await Role.findOne({ slug: 'client_admin' });
+      await ClientMembership.create({
+        clientId: clientA._id,
+        userId: clientAdmin._id,
+        roleId: clientAdminRole!._id,
+        status: 'active',
+      });
+    }
+
     // 4. Authenticate Client Admin for Client A
     {
       const res = await fetch(`${baseUrl}/auth/login`, {

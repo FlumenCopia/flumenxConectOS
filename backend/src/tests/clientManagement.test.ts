@@ -1,4 +1,5 @@
 import http from 'http';
+import bcrypt from 'bcryptjs';
 import app from '../app';
 import { connectDatabase, disconnectDatabase } from '../config/db';
 import { env } from '../config/env';
@@ -68,6 +69,37 @@ const runClientManagementTests = async () => {
       if (rawCookie) superAdminCookie = rawCookie.split(';')[0];
     }
 
+    // Ensure sample client and client admin exist
+    let sampleClient = await Client.findOne({ slug: 'acme-digital-media' });
+    if (!sampleClient) {
+      sampleClient = await Client.create({
+        name: 'Acme Digital Media',
+        slug: 'acme-digital-media',
+        status: 'active',
+        health: 'Healthy',
+      });
+    }
+
+    let clientAdminUser = await User.findOne({ email: 'manager@acmedigital.com' });
+    if (!clientAdminUser) {
+      const clientAdminPasswordHash = await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 10);
+      clientAdminUser = await User.create({
+        name: 'Sarah Jenkins (Acme Admin)',
+        email: 'manager@acmedigital.com',
+        passwordHash: clientAdminPasswordHash,
+        isSuperAdmin: false,
+        status: 'active',
+        mustChangePassword: true,
+      });
+      const clientAdminRole = await Role.findOne({ slug: 'client_admin' });
+      await ClientMembership.create({
+        clientId: sampleClient._id,
+        userId: clientAdminUser._id,
+        roleId: clientAdminRole!._id,
+        status: 'active',
+      });
+    }
+
     // 2. Authenticate Client Admin (manager@acmedigital.com)
     {
       const res = await fetch(`${baseUrl}/auth/login`, {
@@ -83,7 +115,7 @@ const runClientManagementTests = async () => {
     }
 
     // 3. Create & Authenticate Client Staff user
-    const sampleClient = await Client.findOne({ slug: 'acme-digital-media' });
+    sampleClient = await Client.findOne({ slug: 'acme-digital-media' });
     const clientStaffRole = await Role.findOne({ slug: 'client_staff' });
     const staffEmail = 'staff.test@acmedigital.com';
 
