@@ -9,6 +9,7 @@
     "build": "rimraf dist && tsc",
     "start": "node dist/server.js",
     "seed": "tsx src/scripts/seedSuperAdmin.ts",
+    "reset:admin": "tsx src/scripts/resetAdmin.ts",
     "db:clean": "tsx src/scripts/cleanDatabase.ts",
     "smoke:manual": "tsx src/scripts/executeManualSmoke.ts",
     "verify:scanner": "tsx src/scripts/verifyStagingScannerLifecycle.ts",
