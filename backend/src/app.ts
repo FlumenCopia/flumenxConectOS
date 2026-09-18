@@ -11,6 +11,9 @@ import publicFormRoutes from './routes/publicFormRoutes';
 
 const app: Application = express();
 
+// Trust reverse proxy (CloudPanel / Nginx) for accurate IP rate limiting & cookies
+app.set('trust proxy', 1);
+
 // Enable CORS for frontend client & public website embeds
 app.use(
   cors({

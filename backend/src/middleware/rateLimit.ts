@@ -33,7 +33,15 @@ export const createRateLimiter = (options: RateLimitOptions) => {
       return;
     }
 
-    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    // Resolve client IP with support for reverse proxies (X-Forwarded-For, X-Real-IP)
+    const forwarded = req.headers['x-forwarded-for'];
+    const realIp = req.headers['x-real-ip'];
+    const ip =
+      (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : Array.isArray(forwarded) ? forwarded[0] : null) ||
+      (typeof realIp === 'string' ? realIp.trim() : null) ||
+      req.ip ||
+      req.socket.remoteAddress ||
+      'unknown';
     const key = `${ip}:${req.baseUrl}${req.path}`;
     const now = Date.now();
 
@@ -74,9 +82,9 @@ export const createRateLimiter = (options: RateLimitOptions) => {
 };
 
 export const authRateLimiter = createRateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // 10 attempts per 15 minutes
-  message: 'Too many authentication attempts from this IP address. Please wait 15 minutes before retrying.',
+  windowMs: 60 * 1000, // 1 minute
+  max: 15, // 15 requests per minute
+  message: 'Too many authentication attempts from this IP address. Please wait 1 minute before retrying.',
 });
 
 export const authLimiter = authRateLimiter;
