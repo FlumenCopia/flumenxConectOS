@@ -53,9 +53,11 @@ import contactRoutes from './contactRoutes';
 import conversationWebhookRoutes from './conversationWebhookRoutes';
 
 // Mount Release 5 Conversations & Unified Inbox routes
+router.use('/conversations/webhook', conversationWebhookRoutes);
+router.use('/conversations/webhooks', conversationWebhookRoutes);
+router.use('/client/webhooks/conversations', conversationWebhookRoutes);
 router.use('/conversations', conversationRoutes);
 router.use('/contacts', contactRoutes);
-router.use('/client/webhooks/conversations', conversationWebhookRoutes);
 
 import formRoutes from './formRoutes';
 import publicFormRoutes from './publicFormRoutes';

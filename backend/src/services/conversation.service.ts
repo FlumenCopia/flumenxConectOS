@@ -3,7 +3,9 @@ import { Conversation, IConversation, ConversationChannel, ConversationPriority,
 import { Message } from '../models/Message';
 import { ContactService } from './contact.service';
 import { ConversationActivityService } from './conversationActivity.service';
+import { MessageService } from './message.service';
 import { AppError } from '../middleware/errorHandler';
+import { logger } from '../config/logger';
 
 export interface ConversationFilters {
   status?: ConversationStatus | 'all';
@@ -173,6 +175,18 @@ export class ConversationService {
         contactName: contact.name,
       },
     });
+
+    // 4. Dispatch initial message if provided
+    if (data.initialMessage && data.initialMessage.trim()) {
+      try {
+        await MessageService.sendMessage(clientId, conversation._id.toString(), userId, {
+          body: data.initialMessage.trim(),
+          channel: conversation.channel,
+        });
+      } catch (msgErr) {
+        logger.error('Failed to dispatch initial message upon conversation creation:', msgErr);
+      }
+    }
 
     return this.getConversationById(clientId, conversation._id.toString());
   }

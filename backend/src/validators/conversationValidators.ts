@@ -28,6 +28,7 @@ export const sendMessageSchema = z.object({
   body: z.string().trim().min(1, 'Message body cannot be empty'),
   channel: z.enum(['email', 'sms', 'whatsapp', 'internal', 'other']).optional(),
   idempotencyKey: z.string().trim().optional(),
+  metadata: z.record(z.any()).optional(),
   attachments: z
     .array(
       z.object({

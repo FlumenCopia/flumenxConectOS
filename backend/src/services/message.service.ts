@@ -62,6 +62,7 @@ export class MessageService {
       channel?: MessageChannel;
       attachments?: Array<{ name: string; url: string; size?: number; mimeType?: string }>;
       idempotencyKey?: string;
+      metadata?: Record<string, any>;
     }
   ): Promise<IMessage> {
     const clientObjectId = new mongoose.Types.ObjectId(clientId);
@@ -115,6 +116,7 @@ export class MessageService {
       deliveryStatus: 'pending',
       attachments: data.attachments || [],
       idempotencyKey: data.idempotencyKey?.trim() || undefined,
+      metadata: data.metadata,
       sentAt: new Date(),
     });
 
@@ -127,6 +129,7 @@ export class MessageService {
         body: sanitizedBody,
         attachments: data.attachments,
         idempotencyKey: data.idempotencyKey,
+        metadata: data.metadata,
       });
 
       if (sendResult.success) {

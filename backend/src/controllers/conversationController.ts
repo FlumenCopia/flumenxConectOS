@@ -355,12 +355,43 @@ export const testCommunicationProvider = async (req: Request, res: Response, nex
         const { phoneNumberId, accessToken } = configuration || {};
         if (!phoneNumberId) throw new AppError('WhatsApp Phone Number ID is required', 400);
         if (!accessToken) throw new AppError('WhatsApp Cloud API Access Token is required', 400);
-        return sendSuccess(res, {
-          verified: true,
-          providerType,
-          phoneNumberId,
-          status: 'ready',
-        }, 'WhatsApp Cloud API connection parameters validated successfully');
+
+        try {
+          const metaRes = await fetch(
+            `https://graph.facebook.com/v21.0/${phoneNumberId.trim()}?fields=verified_name,code_verification_status,display_phone_number,quality_rating`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken.trim()}`,
+              },
+            }
+          );
+          const metaData = (await metaRes.json()) as any;
+
+          if (!metaRes.ok || metaData.error) {
+            const err = metaData.error || {};
+            throw new AppError(
+              `Meta Cloud API verification failed (${err.code || metaRes.status}): ${err.message || 'Invalid credentials'}`,
+              400
+            );
+          }
+
+          return sendSuccess(
+            res,
+            {
+              verified: true,
+              providerType,
+              phoneNumberId: phoneNumberId.trim(),
+              displayPhoneNumber: metaData.display_phone_number,
+              verifiedName: metaData.verified_name,
+              qualityRating: metaData.quality_rating,
+              status: 'ready',
+            },
+            `WhatsApp Cloud API verified successfully: ${metaData.display_phone_number || metaData.verified_name || phoneNumberId}`
+          );
+        } catch (fetchErr: any) {
+          if (fetchErr instanceof AppError) throw fetchErr;
+          throw new AppError(`Failed to reach Meta Graph API: ${fetchErr.message}`, 502);
+        }
       }
       case 'meta_instagram': {
         const { instagramAccountId, pageAccessToken } = configuration || {};

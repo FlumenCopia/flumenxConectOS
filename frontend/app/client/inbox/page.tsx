@@ -31,6 +31,7 @@ import {
   RefreshCw,
   Radio,
   Sliders,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -250,6 +251,39 @@ function UnifiedInboxContent() {
     } catch (err: any) {
       alert(err?.response?.data?.message || 'Failed to dispatch message');
       setReplyText(bodyToSend);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Handle Send WhatsApp Template (e.g. hello_world)
+  const handleSendTemplate = async (templateName: string = 'hello_world') => {
+    if (!activeConversationId || isSending) return;
+    setIsSending(true);
+    try {
+      const newMsg = await sendMessageApi(activeConversationId, {
+        body: `[Template: ${templateName}]`,
+        channel: 'whatsapp',
+        metadata: {
+          type: 'template',
+          templateName,
+        },
+      });
+
+      setMessages((prev) => [...prev, newMsg]);
+
+      const updatedActs = await getConversationActivitiesApi(activeConversationId);
+      setActivities(updatedActs);
+
+      setConversations((prev) =>
+        prev.map((c) =>
+          c._id === activeConversationId
+            ? { ...c, lastMessageSnippet: `[Template: ${templateName}]`, lastMessageAt: new Date().toISOString() }
+            : c
+        )
+      );
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to dispatch WhatsApp template');
     } finally {
       setIsSending(false);
     }
@@ -824,25 +858,39 @@ function UnifiedInboxContent() {
 
                           {/* Failure banner with Retry */}
                           {isFailed && (
-                            <div className="mt-2 pt-2 border-t border-rose-200 flex items-center justify-between text-[11px] text-rose-700">
-                              <span className="flex items-center gap-1">
-                                <AlertCircle className="w-3 h-3" />
-                                {msg.failureReason || 'Dispatch failed'}
-                              </span>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleRetryMessage(msg._id)}
-                                disabled={retryingMessageId === msg._id}
-                                className="h-5 px-2 text-[10px] bg-white border-rose-300 text-rose-800 hover:bg-rose-100"
-                              >
-                                {retryingMessageId === msg._id ? (
-                                  <RotateCw className="w-2.5 h-2.5 animate-spin mr-1" />
-                                ) : (
-                                  <RotateCw className="w-2.5 h-2.5 mr-1" />
-                                )}
-                                Retry
-                              </Button>
+                            <div className="mt-2 pt-2 border-t border-rose-200 flex flex-col gap-1.5 text-[11px] text-rose-700">
+                              <div className="flex items-start justify-between gap-2">
+                                <span className="flex items-start gap-1">
+                                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                                  <span>{msg.failureReason || 'Dispatch failed'}</span>
+                                </span>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleRetryMessage(msg._id)}
+                                  disabled={retryingMessageId === msg._id}
+                                  className="h-5 px-2 text-[10px] bg-white border-rose-300 text-rose-800 hover:bg-rose-100 shrink-0"
+                                >
+                                  {retryingMessageId === msg._id ? (
+                                    <RotateCw className="w-2.5 h-2.5 animate-spin mr-1" />
+                                  ) : (
+                                    <RotateCw className="w-2.5 h-2.5 mr-1" />
+                                  )}
+                                  Retry
+                                </Button>
+                              </div>
+
+                              {(msg.failureReason?.includes('24-Hour') || msg.failureReason?.includes('131047') || msg.failureReason?.includes('template')) && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSendTemplate('hello_world')}
+                                  disabled={isSending}
+                                  className="text-[10px] self-start px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 hover:bg-emerald-200 font-semibold transition flex items-center gap-1 mt-0.5"
+                                >
+                                  <Sparkles className="w-2.5 h-2.5 text-emerald-700" />
+                                  Send "hello_world" template to initiate conversation
+                                </button>
+                              )}
                             </div>
                           )}
                         </div>
@@ -921,6 +969,19 @@ function UnifiedInboxContent() {
                       <option value="sms">SMS</option>
                       <option value="internal">Internal Note</option>
                     </select>
+
+                    {replyChannel === 'whatsapp' && (
+                      <button
+                        type="button"
+                        onClick={() => handleSendTemplate('hello_world')}
+                        disabled={isSending}
+                        title="Meta allows sending pre-approved templates outside the 24h window"
+                        className="text-[10px] font-medium px-2 py-0.5 rounded border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition flex items-center gap-1"
+                      >
+                        <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                        Send "hello_world" Template
+                      </button>
+                    )}
                   </div>
 
                   <span className="text-[11px] text-slate-400">
@@ -1073,14 +1134,34 @@ function UnifiedInboxContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Message</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-slate-700">Initial Message</label>
+                  {newThreadData.channel === 'whatsapp' && (
+                    <button
+                      type="button"
+                      onClick={() => setNewThreadData({ ...newThreadData, initialMessage: 'hello_world' })}
+                      className="text-[11px] text-emerald-700 hover:text-emerald-800 font-medium underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <Sparkles className="w-2.5 h-2.5" /> Use "hello_world" starter template
+                    </button>
+                  )}
+                </div>
                 <textarea
                   rows={3}
                   value={newThreadData.initialMessage}
                   onChange={(e) => setNewThreadData({ ...newThreadData, initialMessage: e.target.value })}
-                  placeholder="Type the opening message to send to the contact..."
+                  placeholder={
+                    newThreadData.channel === 'whatsapp'
+                      ? 'Type message or use "hello_world" template for new numbers...'
+                      : 'Type the opening message to send to the contact...'
+                  }
                   className="w-full text-xs p-3 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600"
                 />
+                {newThreadData.channel === 'whatsapp' && (
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    Meta Rule: For contacts outside the 24h window, use <code className="text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded">hello_world</code> or have the contact message your WhatsApp test number first.
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">

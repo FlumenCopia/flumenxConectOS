@@ -186,6 +186,7 @@ export const sendMessageApi = async (
     channel?: ConversationChannel;
     attachments?: Array<{ name: string; url: string; size?: number; mimeType?: string }>;
     idempotencyKey?: string;
+    metadata?: Record<string, any>;
   }
 ) => {
   const res = await apiClient.post<ApiResponse<MessageItem>>(`/conversations/${conversationId}/messages`, data);
