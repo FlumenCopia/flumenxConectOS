@@ -298,7 +298,7 @@ export const saveCommunicationProvider = async (req: Request, res: Response, nex
       if (displayName) existing.displayName = displayName;
       const updatedConfig = { ...existing.configuration };
       for (const [k, v] of Object.entries(configuration || {})) {
-        if (typeof v === 'string' && v.includes('••••')) {
+        if (typeof v === 'string' && v.includes('•')) {
           continue;
         }
         updatedConfig[k] = v;
@@ -352,9 +352,20 @@ export const testCommunicationProvider = async (req: Request, res: Response, nex
 
     switch (providerType) {
       case 'whatsapp': {
-        const { phoneNumberId, accessToken } = configuration || {};
+        let { phoneNumberId, accessToken } = configuration || {};
         if (!phoneNumberId) throw new AppError('WhatsApp Phone Number ID is required', 400);
-        if (!accessToken) throw new AppError('WhatsApp Cloud API Access Token is required', 400);
+
+        // If accessToken is masked (e.g. contains bullets •), load the real unmasked token from existing configuration
+        if (!accessToken || accessToken.includes('•')) {
+          const existingDoc = await CommunicationProvider.findOne({ clientId, providerType: 'whatsapp' });
+          if (existingDoc?.configuration?.accessToken && !existingDoc.configuration.accessToken.includes('•')) {
+            accessToken = existingDoc.configuration.accessToken;
+          }
+        }
+
+        if (!accessToken || accessToken.includes('•')) {
+          throw new AppError('WhatsApp Cloud API Access Token is required. Please paste your token.', 400);
+        }
 
         try {
           const metaRes = await fetch(
