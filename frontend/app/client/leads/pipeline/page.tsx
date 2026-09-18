@@ -78,17 +78,25 @@ export default function PipelinePage() {
     setIsLoading(true);
     try {
       const [leadsRes, summaryRes, teamRes] = await Promise.all([
-        getLeadsApi({ limit: 150 }),
-        getPipelineSummaryApi(),
+        getLeadsApi({ limit: 150 }).catch((err) => {
+          console.error('getLeadsApi error', err);
+          return { leads: [], pagination: { total: 0 } };
+        }),
+        getPipelineSummaryApi().catch((err) => {
+          console.warn('getPipelineSummaryApi error', err);
+          return [];
+        }),
         getWorkspaceTeamApi().catch(() => null),
       ]);
 
-      setLeads(leadsRes.leads || []);
+      setLeads(leadsRes?.leads || []);
 
       const summaryMap: Record<string, PipelineSummary> = {};
-      summaryRes.forEach((s) => {
-        summaryMap[s.stage] = s;
-      });
+      if (Array.isArray(summaryRes)) {
+        summaryRes.forEach((s) => {
+          if (s?.stage) summaryMap[s.stage] = s;
+        });
+      }
       setSummaries(summaryMap);
 
       if (teamRes?.members) {

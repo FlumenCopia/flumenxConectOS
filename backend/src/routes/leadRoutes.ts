@@ -17,8 +17,9 @@ const router = Router();
 // Base protection: require active user session
 router.use(requireAuth);
 
-// 1. Pipeline aggregation summary
+// 1. Pipeline aggregation summary (supports both hyphen and slash conventions)
 router.get('/pipeline-summary', requirePermission('leads.view'), LeadController.getPipelineSummary);
+router.get('/pipeline/summary', requirePermission('leads.view'), LeadController.getPipelineSummary);
 
 // 2. CSV Export (must be declared before :leadId)
 router.get('/export', requirePermission('leads.export'), LeadController.exportLeadsCsv);

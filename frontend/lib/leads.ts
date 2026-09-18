@@ -170,7 +170,7 @@ export const addLeadNoteApi = async (id: string, note: string) => {
 };
 
 export const getPipelineSummaryApi = async () => {
-  const res = await apiClient.get<ApiResponse<PipelineSummary[]>>('/leads/pipeline/summary');
+  const res = await apiClient.get<ApiResponse<PipelineSummary[]>>('/leads/pipeline-summary');
   return res.data.data!;
 };
 

@@ -31,7 +31,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const bottomNavItems = [
     { label: 'Home', href: '/client/dashboard', icon: LayoutDashboard },
     { label: 'Leads', href: '/client/leads', icon: Users },
-    { label: 'Inbox', href: '/client/inbox', icon: MessageSquare, badge: true },
+    { label: 'Inbox', href: '/client/inbox', icon: MessageSquare, badge: false },
     { label: 'Tasks', href: '/client/tasks', icon: CheckSquare },
   ];
 

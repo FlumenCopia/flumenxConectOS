@@ -58,12 +58,62 @@ export const Sidebar: React.FC<SidebarProps> = ({ mode, clientName, onNavigate }
     { label: 'System Settings', href: '/admin/settings', icon: Settings },
   ];
 
+  const [unreadCount, setUnreadCount] = React.useState<number>(0);
+  const [openTasksCount, setOpenTasksCount] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    if (mode !== 'client') return;
+    let isMounted = true;
+
+    const fetchCounts = async () => {
+      try {
+        const { getConversationsApi } = await import('@/lib/conversations');
+        const { getTasksApi } = await import('@/lib/tasks');
+
+        const [convRes, tasksRes] = await Promise.all([
+          getConversationsApi({ limit: 1 }).catch(() => null),
+          getTasksApi({ status: 'open', limit: 1 }).catch(() => null),
+        ]);
+
+        if (isMounted) {
+          if (convRes?.counts?.unread !== undefined) {
+            setUnreadCount(convRes.counts.unread);
+          }
+          if (tasksRes?.data?.pagination?.total !== undefined) {
+            setOpenTasksCount(tasksRes.data.pagination.total);
+          }
+        }
+      } catch (err) {
+        // Silently ignore
+      }
+    };
+
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 60000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [mode, activeClient?.clientId]);
+
   const clientNavItems: NavItem[] = [
     { label: 'Dashboard', href: '/client/dashboard', icon: LayoutDashboard },
     { label: 'Leads', href: '/client/leads', icon: Users },
     { label: 'Pipeline Board', href: '/client/leads/pipeline', icon: CheckSquare },
-    { label: 'Inbox', href: '/client/inbox', icon: MessageSquare, badge: '3', badgeColor: 'bg-rose-500' },
-    { label: 'Tasks', href: '/client/tasks', icon: CheckSquare, badge: '5', badgeColor: 'bg-rose-500' },
+    {
+      label: 'Inbox',
+      href: '/client/inbox',
+      icon: MessageSquare,
+      badge: unreadCount > 0 ? (unreadCount > 99 ? '99+' : unreadCount.toString()) : undefined,
+      badgeColor: 'bg-rose-500',
+    },
+    {
+      label: 'Tasks',
+      href: '/client/tasks',
+      icon: CheckSquare,
+      badge: openTasksCount > 0 ? (openTasksCount > 99 ? '99+' : openTasksCount.toString()) : undefined,
+      badgeColor: 'bg-rose-500',
+    },
     { label: 'Campaigns', href: '/client/campaigns', icon: Megaphone },
     { label: 'Forms', href: '/client/forms', icon: FileText },
     { label: 'Reports', href: '/client/reports', icon: BarChart3 },

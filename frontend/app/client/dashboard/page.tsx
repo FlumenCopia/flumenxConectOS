@@ -12,6 +12,7 @@ import {
   RefreshCw,
   MoreHorizontal,
   ChevronDown,
+  BarChart3,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { getLeadsApi, LeadItem } from '@/lib/leads';
@@ -93,26 +94,47 @@ export default function ClientDashboardPage() {
   const userName = user?.name ? user.name.split(' ')[0] : 'John';
   const clientTitle = activeClient?.clientName || 'Acme Co.';
 
-  // Lead Performance Monthly Data (Bar Chart)
-  const monthlyData = [
-    { month: 'Jan', newLeads: 45, converted: 18 },
-    { month: 'Feb', newLeads: 62, converted: 26 },
-    { month: 'Mar', newLeads: 80, converted: 34 },
-    { month: 'Apr', newLeads: 55, converted: 22 },
-    { month: 'May', newLeads: 95, converted: 42 },
-    { month: 'Jun', newLeads: 110, converted: 48 },
-    { month: 'Jul', newLeads: 124, converted: 56 },
-  ];
+  const sourceColorMap: Record<string, { name: string; color: string; hex: string }> = {
+    meta_ads: { name: 'Meta Ads', color: 'bg-teal-500', hex: '#14B8A6' },
+    google_ads: { name: 'Google Ads', color: 'bg-brand-600', hex: '#166534' },
+    elementor_form: { name: 'Website Form', color: 'bg-emerald-500', hex: '#22C55E' },
+    referral: { name: 'Referral', color: 'bg-amber-500', hex: '#F59E0B' },
+    manual: { name: 'Manual CRM', color: 'bg-sky-500', hex: '#0EA5E9' },
+    custom_webhook: { name: 'Webhook', color: 'bg-purple-500', hex: '#A855F7' },
+  };
 
-  // Sources breakdown calculation
-  const sourceBreakdown = [
-    { name: 'Meta Ads', percentage: 34, color: 'bg-teal-500' },
-    { name: 'Google Ads', percentage: 26, color: 'bg-brand-600' },
-    { name: 'Website Form', percentage: 18, color: 'bg-emerald-500' },
-    { name: 'Referral', percentage: 10, color: 'bg-amber-500' },
-    { name: 'Manual', percentage: 8, color: 'bg-sky-500' },
-    { name: 'Other', percentage: 4, color: 'bg-sage-400' },
-  ];
+  const dynamicSources = React.useMemo(() => {
+    if (totalLeadsCount === 0 || leads.length === 0) return [];
+    const counts: Record<string, number> = {};
+    leads.forEach((l) => {
+      const src = l.source || 'manual';
+      counts[src] = (counts[src] || 0) + 1;
+    });
+    return Object.entries(counts).map(([src, count]) => {
+      const meta = sourceColorMap[src] || { name: src, color: 'bg-sage-400', hex: '#94A3B8' };
+      const pct = Math.round((count / leads.length) * 100);
+      return { name: meta.name, count, percentage: pct, color: meta.color, hex: meta.hex };
+    });
+  }, [leads, totalLeadsCount]);
+
+  // Lead Performance Monthly Data dynamically bucketed from real leads
+  const dynamicMonthlyData = React.useMemo(() => {
+    if (leads.length === 0) return [];
+    const monthBuckets: Record<string, { month: string; newLeads: number; converted: number }> = {};
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    leads.forEach((l) => {
+      const d = new Date(l.createdAt || Date.now());
+      const mName = months[d.getMonth()];
+      if (!monthBuckets[mName]) {
+        monthBuckets[mName] = { month: mName, newLeads: 0, converted: 0 };
+      }
+      monthBuckets[mName].newLeads += 1;
+      if (l.stage === 'won') {
+        monthBuckets[mName].converted += 1;
+      }
+    });
+    return Object.values(monthBuckets);
+  }, [leads]);
 
   const formatSourceLabel = (src: string) => {
     switch (src) {
@@ -172,35 +194,35 @@ export default function ClientDashboardPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <StatCard
             label="Total Leads"
-            value={totalLeadsCount > 0 ? totalLeadsCount : '124'}
-            change="↑ 12% from last week"
-            isPositive={true}
+            value={totalLeadsCount.toString()}
+            change={totalLeadsCount > 0 ? `${totalLeadsCount} active prospects` : 'No prospects yet'}
+            isPositive={totalLeadsCount > 0}
             icon={Users}
             iconBgColor="bg-emerald-50"
             iconColor="text-emerald-700"
           />
           <StatCard
             label="Unread Messages"
-            value={unreadMessagesCount > 0 ? unreadMessagesCount : '48'}
-            change="↑ 6% from last week"
-            isPositive={true}
+            value={unreadMessagesCount.toString()}
+            change={unreadMessagesCount > 0 ? `${unreadMessagesCount} unread incoming` : 'All caught up'}
+            isPositive={unreadMessagesCount === 0}
             icon={MessageSquare}
             iconBgColor="bg-blue-50"
             iconColor="text-blue-600"
           />
           <StatCard
             label="Overdue Follow-ups"
-            value={overdueTasksCount > 0 ? overdueTasksCount : '12'}
-            change="↓ 3 from yesterday"
-            isPositive={false}
+            value={overdueTasksCount.toString()}
+            change={overdueTasksCount > 0 ? `${overdueTasksCount} overdue tasks` : 'Zero overdue'}
+            isPositive={overdueTasksCount === 0}
             icon={Clock}
             iconBgColor="bg-rose-50"
             iconColor="text-rose-600"
           />
           <StatCard
             label="Open Tasks"
-            value={openTasksCount > 0 ? openTasksCount : '28'}
-            change="↑ 14% from last week"
+            value={openTasksCount.toString()}
+            change={openTasksCount > 0 ? `${openTasksCount} scheduled follow-ups` : 'No open tasks'}
             isPositive={true}
             icon={CheckSquare}
             iconBgColor="bg-teal-50"
@@ -232,32 +254,43 @@ export default function ClientDashboardPage() {
           </div>
 
           {/* Bar Chart Visualization */}
-          <div className="pt-4 pb-2">
-            <div className="h-40 flex items-end justify-between gap-2 px-2 border-b border-sage-100 pb-2">
-              {monthlyData.map((item, idx) => {
-                const heightPct = Math.round((item.newLeads / 130) * 100);
-                const convHeightPct = Math.round((item.converted / 130) * 100);
-                return (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                    <div className="w-full flex items-end justify-center gap-1 h-full">
-                      {/* New Leads Bar */}
-                      <div
-                        style={{ height: `${heightPct}%` }}
-                        className="w-2.5 sm:w-3.5 bg-emerald-600 rounded-t-sm transition-all group-hover:bg-emerald-700"
-                        title={`${item.newLeads} New Leads`}
-                      />
-                      {/* Converted Bar */}
-                      <div
-                        style={{ height: `${convHeightPct}%` }}
-                        className="w-1.5 sm:w-2 bg-teal-300 rounded-t-sm transition-all group-hover:bg-teal-400"
-                        title={`${item.converted} Converted`}
-                      />
+          <div className="pt-2 pb-2">
+            {dynamicMonthlyData.length === 0 ? (
+              <div className="h-40 flex flex-col items-center justify-center text-center p-4 border border-dashed border-sage-200 rounded-xl bg-sage-50/50">
+                <BarChart3 className="w-7 h-7 text-sage-300 mb-1.5" />
+                <p className="text-xs font-semibold text-sage-800">No lead performance data yet</p>
+                <p className="text-[11px] text-sage-500 mt-0.5 max-w-xs">
+                  Leads captured via ad campaigns, forms, or CRM will populate volume trends here.
+                </p>
+              </div>
+            ) : (
+              <div className="h-40 flex items-end justify-between gap-2 px-2 border-b border-sage-100 pb-2">
+                {dynamicMonthlyData.map((item, idx) => {
+                  const maxVal = Math.max(...dynamicMonthlyData.map((d) => d.newLeads), 1);
+                  const heightPct = Math.round((item.newLeads / maxVal) * 100);
+                  const convHeightPct = Math.round((item.converted / maxVal) * 100);
+                  return (
+                    <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                      <div className="w-full flex items-end justify-center gap-1 h-full">
+                        {/* New Leads Bar */}
+                        <div
+                          style={{ height: `${Math.max(8, heightPct)}%` }}
+                          className="w-3 sm:w-4 bg-emerald-600 rounded-t-sm transition-all group-hover:bg-emerald-700"
+                          title={`${item.newLeads} New Leads`}
+                        />
+                        {/* Converted Bar */}
+                        <div
+                          style={{ height: `${item.converted > 0 ? Math.max(8, convHeightPct) : 0}%` }}
+                          className="w-2 sm:w-2.5 bg-teal-300 rounded-t-sm transition-all group-hover:bg-teal-400"
+                          title={`${item.converted} Converted`}
+                        />
+                      </div>
+                      <span className="text-[10px] font-medium text-sage-500">{item.month}</span>
                     </div>
-                    <span className="text-[10px] font-medium text-sage-500">{item.month}</span>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Legend */}
@@ -283,47 +316,54 @@ export default function ClientDashboardPage() {
           <div className="relative flex items-center justify-center my-2">
             <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
               <circle cx="18" cy="18" r="15.915" fill="transparent" stroke="#E3E8E4" strokeWidth="3" />
-              {/* Meta Ads (34%) */}
-              <circle
-                cx="18" cy="18" r="15.915" fill="transparent" stroke="#14B8A6" strokeWidth="3.5"
-                strokeDasharray="34 66" strokeDashoffset="0"
-              />
-              {/* Google Ads (26%) */}
-              <circle
-                cx="18" cy="18" r="15.915" fill="transparent" stroke="#166534" strokeWidth="3.5"
-                strokeDasharray="26 74" strokeDashoffset="-34"
-              />
-              {/* Website Form (18%) */}
-              <circle
-                cx="18" cy="18" r="15.915" fill="transparent" stroke="#22C55E" strokeWidth="3.5"
-                strokeDasharray="18 82" strokeDashoffset="-60"
-              />
-              {/* Referral (10%) */}
-              <circle
-                cx="18" cy="18" r="15.915" fill="transparent" stroke="#F59E0B" strokeWidth="3.5"
-                strokeDasharray="10 90" strokeDashoffset="-78"
-              />
+              {dynamicSources.length > 0 &&
+                (() => {
+                  let accumulated = 0;
+                  return dynamicSources.map((src, idx) => {
+                    const offset = -accumulated;
+                    accumulated += src.percentage;
+                    return (
+                      <circle
+                        key={idx}
+                        cx="18"
+                        cy="18"
+                        r="15.915"
+                        fill="transparent"
+                        stroke={src.hex}
+                        strokeWidth="3.5"
+                        strokeDasharray={`${src.percentage} ${100 - src.percentage}`}
+                        strokeDashoffset={offset}
+                      />
+                    );
+                  });
+                })()}
             </svg>
             <div className="absolute flex flex-col items-center justify-center text-center">
               <span className="text-lg font-extrabold text-sage-900 leading-none">
-                {totalLeadsCount > 0 ? totalLeadsCount : '482'}
+                {totalLeadsCount.toString()}
               </span>
               <span className="text-[9px] font-semibold text-sage-400 mt-0.5 uppercase tracking-wider">Total Leads</span>
             </div>
           </div>
 
           {/* Source List */}
-          <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 pt-2 text-[11px]">
-            {sourceBreakdown.map((src, idx) => (
-              <div key={idx} className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <span className={`h-2 w-2 rounded-full ${src.color}`} />
-                  <span className="text-sage-600 truncate max-w-[70px]">{src.name}</span>
+          {dynamicSources.length === 0 ? (
+            <div className="text-center py-3 text-[11px] text-sage-400 border-t border-sage-100 mt-1">
+              No sources recorded yet
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 pt-2 text-[11px]">
+              {dynamicSources.map((src, idx) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className={`h-2 w-2 rounded-full ${src.color}`} />
+                    <span className="text-sage-600 truncate max-w-[70px]">{src.name}</span>
+                  </div>
+                  <span className="font-semibold text-sage-800">{src.percentage}%</span>
                 </div>
-                <span className="font-semibold text-sage-800">{src.percentage}%</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 3. Recent Conversations */}
