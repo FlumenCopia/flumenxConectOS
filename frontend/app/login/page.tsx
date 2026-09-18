@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
 import {
@@ -80,8 +81,14 @@ export default function LoginPage() {
           {/* Top Brand Header */}
           <div className="relative z-10">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center font-bold text-white text-base shadow-sm">
-                FX
+              <div className="h-11 w-11 rounded-xl overflow-hidden bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-sm">
+                <Image
+                  src="/icons/icon-192x192.png"
+                  alt="flumenxConectOS"
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <h2 className="font-bold text-lg tracking-tight text-white leading-none">flumenxConectOS</h2>
@@ -145,10 +152,16 @@ export default function LoginPage() {
           <div className="max-w-md w-full mx-auto">
             {/* Mobile-only logo */}
             <div className="lg:hidden text-center mb-6">
-              <div className="h-11 w-11 rounded-xl bg-brand-800 text-white font-bold text-lg flex items-center justify-center mx-auto mb-2 shadow-forest-sm">
-                FX
+              <div className="flex justify-center mb-2">
+                <Image
+                  src="/images/logo.png"
+                  alt="flumenxConectOS"
+                  width={220}
+                  height={55}
+                  priority
+                  className="h-10 w-auto object-contain"
+                />
               </div>
-              <h2 className="font-bold text-base text-sage-900">flumenxConectOS</h2>
               <p className="text-[10px] text-sage-500 tracking-wider uppercase font-semibold">
                 Marketing Operations Platform
               </p>

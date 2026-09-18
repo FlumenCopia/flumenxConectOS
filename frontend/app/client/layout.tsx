@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Topbar } from '@/components/layout/Topbar';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -71,8 +72,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           {/* Mobile Top Header (hidden on md and up) */}
           <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-sage-200/90 sticky top-0 z-20 shadow-soft-xs">
             <div className="flex items-center gap-2.5">
-              <div className="h-7 w-7 rounded-lg bg-brand-800 text-white font-bold text-xs flex items-center justify-center shadow-forest-sm">
-                FX
+              <div className="h-7 w-7 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
+                <Image
+                  src="/icons/icon-192x192.png"
+                  alt="flumenxConectOS"
+                  width={28}
+                  height={28}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-xs text-sage-900 tracking-tight leading-none">flumenxConectOS</span>

@@ -101,6 +101,26 @@ const config: Config = {
         'forest-sm': '0 2px 6px -1px rgba(22, 101, 52, 0.25)',
         'forest-md': '0 4px 12px -2px rgba(22, 101, 52, 0.35)',
       },
+      keyframes: {
+        'spin-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        'bounce-subtle': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
+        'progress-indeterminate': {
+          '0%': { transform: 'translateX(-100%)' },
+          '50%': { transform: 'translateX(30%)' },
+          '100%': { transform: 'translateX(200%)' },
+        },
+      },
+      animation: {
+        'spin-slow': 'spin-slow 12s linear infinite',
+        'bounce-subtle': 'bounce-subtle 2.5s ease-in-out infinite',
+        'progress-indeterminate': 'progress-indeterminate 1.4s ease-in-out infinite',
+      },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
       },

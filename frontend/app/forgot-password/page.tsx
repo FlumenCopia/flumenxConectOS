@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { forgotPasswordApi } from '@/lib/auth';
@@ -33,8 +34,15 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 select-none">
       <div className="max-w-md w-full bg-white border border-slate-200 rounded-lg shadow-sm p-8">
         <div className="text-center mb-6">
-          <div className="h-10 w-10 rounded bg-brand-800 text-white font-bold flex items-center justify-center mx-auto mb-3">
-            FX
+          <div className="flex justify-center mb-3">
+            <Image
+              src="/images/logo.png"
+              alt="flumenxConectOS"
+              width={200}
+              height={50}
+              priority
+              className="h-10 w-auto object-contain"
+            />
           </div>
           <h1 className="text-lg font-bold text-slate-900">Reset Your Password</h1>
           <p className="text-xs text-slate-500 mt-1">

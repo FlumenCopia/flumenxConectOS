@@ -82,16 +82,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ mode, clientName, onNavigate }
   return (
     <aside className="w-64 bg-white text-sage-900 flex flex-col shrink-0 h-screen sticky top-0 border-r border-sage-200/90 select-none shadow-soft-xs z-30">
       {/* Brand Header */}
-      <div className="h-16 flex items-center px-6 border-b border-sage-100 gap-2.5">
-        <div className="h-8 w-8 rounded-lg bg-brand-800 flex items-center justify-center font-bold text-white text-sm tracking-wider shadow-forest-sm">
-          FX
-        </div>
-        <div className="flex flex-col">
-          <span className="font-bold text-sage-900 text-sm tracking-tight">flumenxConectOS</span>
-          <span className="text-[9px] text-sage-500 tracking-wider uppercase font-medium">
-            {mode === 'admin' ? 'Super Admin HQ' : 'Marketing Operations'}
-          </span>
-        </div>
+      <div className="h-16 flex items-center px-5 border-b border-sage-100">
+        <Link
+          href={mode === 'admin' ? '/admin/dashboard' : '/client/dashboard'}
+          className="flex items-center gap-2.5 group"
+        >
+          <img
+            src="/icons/icon-192x192.png"
+            alt="flumenxConectOS"
+            className="h-8 w-8 rounded-xl object-contain shadow-soft-xs group-hover:scale-105 transition-transform shrink-0"
+          />
+          <div className="flex flex-col min-w-0">
+            <span className="font-bold text-charcoal-900 text-sm tracking-tight leading-tight">
+              flumenx<span className="text-forest-700">Conect</span><span className="text-lime-600">OS</span>
+            </span>
+            <span className="text-[9px] text-sage-500 tracking-wider uppercase font-medium">
+              {mode === 'admin' ? 'Super Admin HQ' : 'Marketing Operations'}
+            </span>
+          </div>
+        </Link>
       </div>
 
       {/* Workspace Context & Switcher */}

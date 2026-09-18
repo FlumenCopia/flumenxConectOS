@@ -1,14 +1,21 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Building2, Shield, ArrowRight, ExternalLink } from 'lucide-react';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#F7F8F5] flex flex-col justify-center items-center p-6 select-none">
       <div className="max-w-md w-full bg-white border border-sage-200/90 rounded-2xl shadow-soft-md p-8 text-center">
-        <div className="h-12 w-12 rounded-xl bg-brand-800 text-white font-bold text-xl flex items-center justify-center mx-auto mb-4 shadow-forest-sm">
-          FX
+        <div className="flex justify-center mb-4">
+          <Image
+            src="/images/logo.png"
+            alt="flumenxConectOS"
+            width={240}
+            height={60}
+            priority
+            className="h-12 w-auto object-contain"
+          />
         </div>
-        <h1 className="text-xl font-bold text-sage-900 tracking-tight">flumenxConectOS</h1>
         <p className="text-xs text-sage-500 mt-1 mb-6">
           FlumenX Digital Marketing Operations Platform
         </p>

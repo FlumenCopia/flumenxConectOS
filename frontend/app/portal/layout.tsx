@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { PortalAuthProvider, usePortalAuth } from '@/context/PortalAuthContext';
 import {
@@ -81,8 +82,14 @@ function PortalShell({ children }: { children: React.ReactNode }) {
       {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between px-4 py-3.5 bg-white border-b border-sage-200/90 sticky top-0 z-40 shadow-soft-xs">
         <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-lg bg-brand-800 flex items-center justify-center text-white font-bold text-xs shadow-forest-sm">
-            FX
+          <div className="w-7 h-7 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
+            <Image
+              src="/icons/icon-192x192.png"
+              alt="flumenxConect Portal"
+              width={28}
+              height={28}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <span className="font-bold text-xs tracking-tight block">Customer Portal</span>
@@ -107,8 +114,14 @@ function PortalShell({ children }: { children: React.ReactNode }) {
         <div>
           {/* Brand header */}
           <div className="flex items-center space-x-2.5 mb-6">
-            <div className="w-8 h-8 rounded-lg bg-brand-800 flex items-center justify-center text-white font-bold text-sm shadow-forest-sm">
-              FX
+            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
+              <Image
+                src="/icons/icon-192x192.png"
+                alt="flumenxConect Portal"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <h1 className="font-bold text-sm tracking-tight text-sage-900 flex items-center space-x-1.5">
