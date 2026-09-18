@@ -393,18 +393,18 @@ function UnifiedInboxContent() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] overflow-hidden bg-white border border-slate-200 rounded-xl shadow-xs">
+    <div className="flex h-[calc(100vh-6rem)] overflow-hidden bg-white border border-sage-200/90 rounded-2xl shadow-soft-xs">
       {/* ------------------------------------------------------------- */}
       {/* PANE 1: Quick Folders & Channel Filter (200px) */}
       {/* ------------------------------------------------------------- */}
-      <div className="w-52 border-r border-slate-200 bg-slate-50/70 flex flex-col shrink-0">
-        <div className="p-3 border-b border-slate-200 flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Inbox Hub</span>
+      <div className="w-52 border-r border-sage-200/90 bg-sage-50/50 flex flex-col shrink-0">
+        <div className="p-3 border-b border-sage-100 flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-sage-500">Inbox Hub</span>
           <Button
             size="sm"
             variant="primary"
             onClick={() => setIsNewModalOpen(true)}
-            className="h-7 px-2 text-[11px] bg-brand-800 text-white"
+            className="h-7 px-2 text-[11px] shadow-forest-sm"
           >
             <Plus className="w-3.5 h-3.5 mr-1" /> New
           </Button>
@@ -418,10 +418,10 @@ function UnifiedInboxContent() {
               setStatusFilter('all');
               setUnreadOnly(false);
             }}
-            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
               statusFilter === 'all' && !unreadOnly
-                ? 'bg-brand-800 text-white font-semibold'
-                : 'text-slate-700 hover:bg-slate-200/60'
+                ? 'bg-brand-800 text-white font-semibold shadow-soft-xs'
+                : 'text-sage-700 hover:bg-sage-100/70'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -436,10 +436,10 @@ function UnifiedInboxContent() {
             onClick={() => {
               setUnreadOnly(!unreadOnly);
             }}
-            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
               unreadOnly
-                ? 'bg-brand-800 text-white font-semibold'
-                : 'text-slate-700 hover:bg-slate-200/60'
+                ? 'bg-brand-800 text-white font-semibold shadow-soft-xs'
+                : 'text-sage-700 hover:bg-sage-100/70'
             }`}
           >
             <div className="flex items-center gap-2">

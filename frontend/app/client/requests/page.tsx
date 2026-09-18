@@ -132,19 +132,19 @@ export default function ClientRequestsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage-200 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-2 rounded-lg bg-brand-50 text-brand-700">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
               <FileText className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">
               Customer Service Requests & Support Tickets
             </h1>
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-sage-500">
             Monitor, prioritize, and respond to inquiries submitted by client contacts through the Customer Portal.
           </p>
         </div>
@@ -155,15 +155,15 @@ export default function ClientRequestsPage() {
             size="sm"
             onClick={() => fetchRequests(true)}
             disabled={refreshing || loading}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700"
           >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin text-brand-600' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin text-brand-800' : ''}`} />
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
 
           <Link href="/client/portal-users">
-            <Button size="sm" variant="outline" className="flex items-center gap-1.5 text-xs">
-              <User className="h-3.5 w-3.5" />
+            <Button size="sm" variant="outline" className="flex items-center gap-1.5 text-xs rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700">
+              <User className="h-3.5 w-3.5 text-sage-500" />
               Manage Portal Users
             </Button>
           </Link>
@@ -172,20 +172,20 @@ export default function ClientRequestsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-slate-200 shadow-sm bg-white">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
+        <Card className="border-sage-200/90 shadow-soft-xs bg-white rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between text-sage-500 text-xs font-bold uppercase tracking-wider">
               <span>Total Requests</span>
-              <Inbox className="h-4 w-4 text-slate-400" />
+              <Inbox className="h-4 w-4 text-brand-700" />
             </div>
-            <div className="mt-2 text-2xl font-bold text-slate-900">{totalCount}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">All customer inquiries</div>
+            <div className="mt-2 text-2xl font-bold text-charcoal-900">{totalCount}</div>
+            <div className="text-[11px] text-sage-400 mt-0.5">All customer inquiries</div>
           </CardContent>
         </Card>
 
-        <Card className="border-amber-200 shadow-sm bg-amber-50/40">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-amber-800 text-xs font-semibold uppercase tracking-wider">
+        <Card className="border-amber-200 shadow-soft-xs bg-amber-50/50 rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between text-amber-800 text-xs font-bold uppercase tracking-wider">
               <span>Awaiting Review</span>
               <AlertCircle className="h-4 w-4 text-amber-600" />
             </div>
@@ -194,48 +194,48 @@ export default function ClientRequestsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-brand-200 shadow-sm bg-brand-50/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-brand-800 text-xs font-semibold uppercase tracking-wider">
+        <Card className="border-forest-200 shadow-soft-xs bg-forest-50/40 rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between text-forest-800 text-xs font-bold uppercase tracking-wider">
               <span>In Progress</span>
-              <Clock className="h-4 w-4 text-brand-600" />
+              <Clock className="h-4 w-4 text-forest-600" />
             </div>
-            <div className="mt-2 text-2xl font-bold text-brand-900">{inProgressCount}</div>
-            <div className="text-[11px] text-brand-700 mt-0.5">Actively being resolved</div>
+            <div className="mt-2 text-2xl font-bold text-forest-900">{inProgressCount}</div>
+            <div className="text-[11px] text-forest-700 mt-0.5">Actively being resolved</div>
           </CardContent>
         </Card>
 
-        <Card className="border-emerald-200 shadow-sm bg-emerald-50/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-emerald-800 text-xs font-semibold uppercase tracking-wider">
+        <Card className="border-teal-200 shadow-soft-xs bg-teal-50/40 rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between text-teal-800 text-xs font-bold uppercase tracking-wider">
               <span>Completed / Closed</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              <CheckCircle2 className="h-4 w-4 text-teal-600" />
             </div>
-            <div className="mt-2 text-2xl font-bold text-emerald-900">{completedCount}</div>
-            <div className="text-[11px] text-emerald-700 mt-0.5">Resolved requests</div>
+            <div className="mt-2 text-2xl font-bold text-teal-900">{completedCount}</div>
+            <div className="text-[11px] text-teal-700 mt-0.5">Resolved requests</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+        <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-sage-200/90 shadow-soft-xs">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-sage-400" />
           <input
             type="text"
             placeholder="Search by subject, request #, or contact..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-sage-200 bg-sage-50/50 text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
           />
         </div>
 
@@ -244,7 +244,7 @@ export default function ClientRequestsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="text-xs bg-white border border-sage-200 rounded-xl px-3 py-2 font-medium text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
           >
             <option value="all">All Statuses</option>
             <option value="submitted">Submitted</option>
@@ -257,7 +257,7 @@ export default function ClientRequestsPage() {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="text-xs bg-white border border-sage-200 rounded-xl px-3 py-2 font-medium text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
           >
             <option value="all">All Priorities</option>
             <option value="urgent">Urgent</option>
@@ -303,7 +303,7 @@ export default function ClientRequestsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-600 uppercase">
+                <tr className="bg-sage-50/70 border-b border-sage-200 text-[11px] font-bold text-sage-600 uppercase tracking-wider">
                   <th className="py-3 px-4">Ticket</th>
                   <th className="py-3 px-4">Subject & Description</th>
                   <th className="py-3 px-4">Customer Contact</th>
@@ -315,7 +315,7 @@ export default function ClientRequestsPage() {
                   <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-sage-100">
                 {filteredRequests.map((req) => {
                   const customerName =
                     typeof req.portalUserId === 'object' && req.portalUserId !== null
@@ -337,9 +337,9 @@ export default function ClientRequestsPage() {
                   return (
                     <tr
                       key={req._id}
-                      className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
+                      className="hover:bg-sage-50/60 transition-colors group cursor-pointer"
                     >
-                      <td className="py-3.5 px-4 font-mono font-semibold text-brand-700 whitespace-nowrap">
+                      <td className="py-3.5 px-4 font-mono font-bold text-brand-800 whitespace-nowrap">
                         <Link
                           href={`/client/requests/${req._id}`}
                           className="hover:underline flex items-center gap-1"
@@ -351,10 +351,10 @@ export default function ClientRequestsPage() {
 
                       <td className="py-3.5 px-4 max-w-xs">
                         <Link href={`/client/requests/${req._id}`} className="block">
-                          <p className="font-semibold text-slate-900 truncate hover:text-brand-700">
+                          <p className="font-bold text-charcoal-900 truncate hover:text-brand-800">
                             {req.subject}
                           </p>
-                          <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                          <p className="text-[11px] text-sage-500 truncate mt-0.5">
                             {req.description}
                           </p>
                         </Link>
@@ -362,18 +362,18 @@ export default function ClientRequestsPage() {
 
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <div className="h-6 w-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px]">
+                          <div className="h-6 w-6 rounded-full bg-forest-50 text-forest-800 border border-forest-100 flex items-center justify-center font-bold text-[10px]">
                             {customerName.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-medium text-slate-800">{customerName}</p>
-                            <p className="text-[10px] text-slate-400">{customerEmail}</p>
+                            <p className="font-semibold text-charcoal-900">{customerName}</p>
+                            <p className="text-[10px] text-sage-400">{customerEmail}</p>
                           </div>
                         </div>
                       </td>
 
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="capitalize text-slate-700 font-medium">
+                        <span className="capitalize text-charcoal-800 font-medium">
                           {req.category.replace('_', ' ')}
                         </span>
                       </td>
@@ -388,8 +388,8 @@ export default function ClientRequestsPage() {
 
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {req.attachments && req.attachments.length > 0 ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600">
-                            <Paperclip className="h-3 w-3 text-slate-400" />
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-charcoal-700">
+                            <Paperclip className="h-3 w-3 text-sage-400" />
                             {req.attachments.length}
                             {hasMalicious ? (
                               <span title="Malware detected">
@@ -401,22 +401,22 @@ export default function ClientRequestsPage() {
                               </span>
                             ) : (
                               <span title="Scanned clean">
-                                <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 ml-1" />
+                                <ShieldCheck className="h-3.5 w-3.5 text-forest-600 ml-1" />
                               </span>
                             )}
                           </span>
                         ) : (
-                          <span className="text-slate-400 text-[11px]">—</span>
+                          <span className="text-sage-400 text-[11px]">—</span>
                         )}
                       </td>
 
-                      <td className="py-3.5 px-4 text-slate-400 whitespace-nowrap text-[11px]">
+                      <td className="py-3.5 px-4 text-sage-400 whitespace-nowrap text-[11px]">
                         {new Date(req.createdAt).toLocaleDateString()}
                       </td>
 
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         <Link href={`/client/requests/${req._id}`}>
-                          <Button variant="outline" size="sm" className="h-7 text-[11px] px-2.5">
+                          <Button variant="outline" size="sm" className="h-7 text-[11px] px-2.5 rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700">
                             View Thread
                           </Button>
                         </Link>

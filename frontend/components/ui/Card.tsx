@@ -6,7 +6,10 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
 export const Card: React.FC<CardProps> = ({ className, children, ...props }) => {
   return (
     <div
-      className={cn('bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden', className)}
+      className={cn(
+        'bg-white rounded-xl border border-sage-200/90 shadow-soft-xs transition-shadow duration-200 overflow-hidden',
+        className
+      )}
       {...props}
     >
       {children}
@@ -20,7 +23,7 @@ export const CardHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   ...props
 }) => {
   return (
-    <div className={cn('px-5 py-4 border-b border-slate-100 flex items-center justify-between', className)} {...props}>
+    <div className={cn('px-5 py-4 border-b border-sage-100 flex items-center justify-between', className)} {...props}>
       {children}
     </div>
   );
@@ -32,7 +35,7 @@ export const CardTitle: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({
   ...props
 }) => {
   return (
-    <h3 className={cn('text-base font-semibold text-slate-900', className)} {...props}>
+    <h3 className={cn('text-sm font-bold text-sage-900 tracking-tight', className)} {...props}>
       {children}
     </h3>
   );
@@ -44,7 +47,7 @@ export const CardDescription: React.FC<React.HTMLAttributes<HTMLParagraphElement
   ...props
 }) => {
   return (
-    <p className={cn('text-xs text-slate-500 mt-0.5', className)} {...props}>
+    <p className={cn('text-xs text-sage-500 mt-0.5 font-normal', className)} {...props}>
       {children}
     </p>
   );
@@ -68,8 +71,9 @@ export const CardFooter: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   ...props
 }) => {
   return (
-    <div className={cn('px-5 py-3 bg-slate-50 border-t border-slate-100 text-xs text-slate-600', className)} {...props}>
+    <div className={cn('px-5 py-3.5 bg-sage-50/50 border-t border-sage-100 text-xs text-sage-600', className)} {...props}>
       {children}
     </div>
   );
 };
+

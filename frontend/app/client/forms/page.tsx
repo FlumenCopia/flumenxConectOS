@@ -353,19 +353,19 @@ export default function ClientFormsPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">
               Website Lead Intake Forms
             </h1>
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
-              Release 6
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-forest-50 text-forest-800 border border-forest-100">
+              Intake Engine
             </span>
           </div>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-xs text-sage-500 mt-1">
             Build responsive intake widgets, configure custom CRM field mappings, embed on external sites, and automate Unified Inbox routing.
           </p>
         </div>
@@ -373,14 +373,14 @@ export default function ClientFormsPage() {
           <button
             onClick={fetchForms}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-700 transition"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-charcoal-700 bg-white border border-sage-200 rounded-xl hover:bg-sage-50 shadow-soft-xs transition"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
           <button
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-brand-800 hover:bg-brand-900 rounded-xl shadow-forest-sm transition"
           >
             <Plus className="w-4 h-4" />
             Create Form
@@ -390,57 +390,57 @@ export default function ClientFormsPage() {
 
       {/* KPI Stats Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-1">
-            <span className="text-xs font-medium uppercase tracking-wider">Total Forms</span>
-            <FileText className="w-4 h-4 text-blue-500" />
+        <div className="bg-white p-4 rounded-2xl border border-sage-200/90 shadow-soft-xs">
+          <div className="flex items-center justify-between text-sage-500 mb-1">
+            <span className="text-xs font-bold uppercase tracking-wider">Total Forms</span>
+            <FileText className="w-4 h-4 text-brand-700" />
           </div>
-          <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{counts.total}</div>
+          <div className="text-2xl font-bold text-charcoal-900">{counts.total}</div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-1">
-            <span className="text-xs font-medium uppercase tracking-wider">Active Published</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+        <div className="bg-white p-4 rounded-2xl border border-sage-200/90 shadow-soft-xs">
+          <div className="flex items-center justify-between text-sage-500 mb-1">
+            <span className="text-xs font-bold uppercase tracking-wider">Active Published</span>
+            <CheckCircle2 className="w-4 h-4 text-forest-600" />
           </div>
-          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{counts.published}</div>
+          <div className="text-2xl font-bold text-forest-700">{counts.published}</div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-1">
-            <span className="text-xs font-medium uppercase tracking-wider">Draft Forms</span>
+        <div className="bg-white p-4 rounded-2xl border border-sage-200/90 shadow-soft-xs">
+          <div className="flex items-center justify-between text-sage-500 mb-1">
+            <span className="text-xs font-bold uppercase tracking-wider">Draft Forms</span>
             <Clock className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{counts.draft}</div>
+          <div className="text-2xl font-bold text-amber-700">{counts.draft}</div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400 mb-1">
-            <span className="text-xs font-medium uppercase tracking-wider">Total Ingested Leads</span>
-            <UserCheck className="w-4 h-4 text-purple-500" />
+        <div className="bg-white p-4 rounded-2xl border border-sage-200/90 shadow-soft-xs">
+          <div className="flex items-center justify-between text-sage-500 mb-1">
+            <span className="text-xs font-bold uppercase tracking-wider">Total Ingested Leads</span>
+            <UserCheck className="w-4 h-4 text-teal-600" />
           </div>
-          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+          <div className="text-2xl font-bold text-teal-700">
             {forms.reduce((acc, f) => acc + (f.submissionsCount || 0), 0)}
           </div>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-white dark:bg-zinc-900 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
+      <div className="bg-white p-3 rounded-2xl border border-sage-200/90 shadow-soft-xs flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-sage-400" />
           <input
             type="text"
             placeholder="Search forms by title, description or public key..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-sage-200 bg-sage-50/50 text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Filter className="w-4 h-4 text-zinc-400" />
+          <Filter className="w-4 h-4 text-sage-400" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 text-xs font-medium rounded-xl border border-sage-200 bg-white text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
           >
             <option value="all">All Statuses ({counts.total})</option>
             <option value="published">Published ({counts.published})</option>
@@ -453,36 +453,36 @@ export default function ClientFormsPage() {
 
       {/* Forms Listing */}
       {loading && forms.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-3" />
-          <p className="text-sm text-zinc-500">Loading website forms...</p>
+        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-sage-200/90 shadow-soft-xs">
+          <RefreshCw className="w-8 h-8 text-brand-800 animate-spin mb-3" />
+          <p className="text-xs font-medium text-sage-500">Loading website forms...</p>
         </div>
       ) : error ? (
-        <div className="p-6 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-xl text-red-700 dark:text-red-300">
+        <div className="p-6 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800">
           <div className="flex items-center gap-2 font-semibold mb-1">
-            <AlertCircle className="w-5 h-5" />
+            <AlertCircle className="w-5 h-5 text-rose-600" />
             Failed to load forms
           </div>
-          <p className="text-sm">{error}</p>
+          <p className="text-xs">{error}</p>
           <button
             onClick={fetchForms}
-            className="mt-3 px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 transition"
+            className="mt-3 px-3 py-1.5 text-xs font-semibold bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition"
           >
             Retry
           </button>
         </div>
       ) : forms.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 bg-white dark:bg-zinc-900 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 text-center">
-          <FileText className="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-3" />
-          <h3 className="text-base font-semibold text-zinc-800 dark:text-zinc-200">No forms found</h3>
-          <p className="text-sm text-zinc-500 max-w-md mt-1 mb-4">
+        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-dashed border-sage-300 text-center">
+          <FileText className="w-12 h-12 text-sage-300 mb-3" />
+          <h3 className="text-base font-bold text-charcoal-900">No forms found</h3>
+          <p className="text-xs text-sage-500 max-w-md mt-1 mb-4">
             {search
               ? 'No forms match your search query. Try broadening your filter.'
               : 'Create your first lead capture form to embed on your website, landing pages, or digital campaigns.'}
           </p>
           <button
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-brand-800 hover:bg-brand-900 rounded-xl shadow-forest-sm transition"
           >
             <Plus className="w-4 h-4" />
             Create First Form
@@ -491,53 +491,53 @@ export default function ClientFormsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {forms.map((form) => {
-            const statusColors: Record<FormStatus, { bg: string; text: string }> = {
-              published: { bg: 'bg-emerald-100 dark:bg-emerald-950/50', text: 'text-emerald-800 dark:text-emerald-300' },
-              draft: { bg: 'bg-amber-100 dark:bg-amber-950/50', text: 'text-amber-800 dark:text-amber-300' },
-              paused: { bg: 'bg-orange-100 dark:bg-orange-950/50', text: 'text-orange-800 dark:text-orange-300' },
-              archived: { bg: 'bg-zinc-100 dark:bg-zinc-800', text: 'text-zinc-700 dark:text-zinc-400' },
+            const statusColors: Record<FormStatus, { bg: string; text: string; border: string }> = {
+              published: { bg: 'bg-emerald-50', text: 'text-emerald-800', border: 'border-emerald-200' },
+              draft: { bg: 'bg-amber-50', text: 'text-amber-800', border: 'border-amber-200' },
+              paused: { bg: 'bg-orange-50', text: 'text-orange-800', border: 'border-orange-200' },
+              archived: { bg: 'bg-sage-100', text: 'text-charcoal-700', border: 'border-sage-200' },
             };
+
+            const statusStyle = statusColors[form.status] || { bg: 'bg-sage-50', text: 'text-charcoal-700', border: 'border-sage-200' };
 
             return (
               <div
                 key={form._id}
-                className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow transition flex flex-col justify-between overflow-hidden"
+                className="bg-white rounded-2xl border border-sage-200/90 shadow-soft-xs hover:shadow-soft-md transition flex flex-col justify-between overflow-hidden"
               >
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50 line-clamp-1">
+                    <h2 className="text-base font-bold text-charcoal-900 line-clamp-1">
                       {form.name}
                     </h2>
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold capitalize ${
-                        statusColors[form.status]?.bg
-                      } ${statusColors[form.status]?.text}`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
                     >
                       {form.status}
                     </span>
                   </div>
 
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 min-h-[32px] mb-4">
+                  <p className="text-xs text-sage-500 line-clamp-2 min-h-[32px] mb-4">
                     {form.description || 'No description provided.'}
                   </p>
 
-                  <div className="grid grid-cols-2 gap-2 bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg text-xs mb-4">
+                  <div className="grid grid-cols-2 gap-2 bg-sage-50/70 p-3 rounded-xl text-xs mb-4 border border-sage-100">
                     <div>
-                      <span className="text-zinc-400 block">Submissions</span>
-                      <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm">
+                      <span className="text-sage-400 block text-[11px]">Submissions</span>
+                      <span className="font-bold text-charcoal-900 text-sm">
                         {form.submissionsCount || 0}
                       </span>
                     </div>
                     <div>
-                      <span className="text-zinc-400 block">Fields</span>
-                      <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm">
+                      <span className="text-sage-400 block text-[11px]">Fields</span>
+                      <span className="font-bold text-charcoal-900 text-sm">
                         {form.fieldsCount || 0} fields
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-zinc-400">
-                    <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
+                  <div className="flex items-center justify-between text-xs text-sage-400">
+                    <span className="font-mono bg-sage-100 px-2 py-0.5 rounded-md text-charcoal-700 text-[11px]">
                       {form.publicKey}
                     </span>
                     <span>{new Date(form.createdAt).toLocaleDateString()}</span>
@@ -545,11 +545,11 @@ export default function ClientFormsPage() {
                 </div>
 
                 {/* Card Action Footer */}
-                <div className="border-t border-zinc-100 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between gap-1 text-xs">
+                <div className="border-t border-sage-100 p-3 bg-sage-50/40 flex items-center justify-between gap-1 text-xs">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEdit(form._id)}
-                      className="p-1.5 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded transition"
+                      className="p-1.5 text-charcoal-700 hover:text-brand-800 hover:bg-sage-100 rounded-lg transition"
                       title="Edit Form & Fields"
                     >
                       <Settings className="w-4 h-4" />
@@ -559,28 +559,28 @@ export default function ClientFormsPage() {
                         const res = await getFormByIdApi(form._id);
                         if (res.data) setPreviewForm(res.data);
                       }}
-                      className="p-1.5 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded transition"
+                      className="p-1.5 text-charcoal-700 hover:text-brand-800 hover:bg-sage-100 rounded-lg transition"
                       title="Preview Form"
                     >
                       <Eye className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleOpenEmbed(form._id)}
-                      className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded transition"
+                      className="p-1.5 text-forest-700 hover:bg-forest-50 rounded-lg transition"
                       title="Get Embed Code"
                     >
                       <Code2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleOpenSubmissions(form)}
-                      className="p-1.5 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 rounded transition"
+                      className="p-1.5 text-teal-700 hover:bg-teal-50 rounded-lg transition"
                       title="View Submissions & Event Timeline"
                     >
                       <MessageSquare className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDuplicate(form._id)}
-                      className="p-1.5 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded transition"
+                      className="p-1.5 text-charcoal-700 hover:text-brand-800 hover:bg-sage-100 rounded-lg transition"
                       title="Duplicate Form"
                     >
                       <Layers className="w-4 h-4" />
@@ -591,14 +591,14 @@ export default function ClientFormsPage() {
                     {form.status === 'published' ? (
                       <button
                         onClick={() => handleStatusChange(form._id, 'paused')}
-                        className="px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950/40 rounded transition"
+                        className="px-2.5 py-1 text-xs font-semibold text-amber-800 hover:bg-amber-100 rounded-lg transition"
                       >
                         Pause
                       </button>
                     ) : form.status === 'draft' || form.status === 'paused' ? (
                       <button
                         onClick={() => handleStatusChange(form._id, 'published')}
-                        className="px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 rounded transition"
+                        className="px-2.5 py-1 text-xs font-semibold text-forest-800 hover:bg-forest-100 rounded-lg transition"
                       >
                         Publish
                       </button>
@@ -607,7 +607,7 @@ export default function ClientFormsPage() {
                     {form.status !== 'archived' && (
                       <button
                         onClick={() => handleArchive(form._id)}
-                        className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition"
+                        className="p-1.5 text-sage-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                         title="Archive Form"
                       >
                         <Archive className="w-4 h-4" />
@@ -625,54 +625,54 @@ export default function ClientFormsPage() {
       {/* FORM BUILDER & FIELD EDITOR MODAL */}
       {/* ============================================================= */}
       {isEditorOpen && editingForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal-900/60 p-4 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl shadow-soft-xl border border-sage-200 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
             {/* Modal Header */}
-            <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="p-5 border-b border-sage-100 flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
+                <h3 className="text-lg font-bold text-charcoal-900">
                   {editingForm._id ? `Edit Form: ${editingForm.name}` : 'Create Website Intake Form'}
                 </h3>
-                <p className="text-xs text-zinc-500 mt-0.5">
+                <p className="text-xs text-sage-500 mt-0.5">
                   Configure form parameters, field layout, and CRM Lead & Contact mappings.
                 </p>
               </div>
               <button
                 onClick={() => setIsEditorOpen(false)}
-                className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded"
+                className="p-1.5 text-sage-400 hover:text-charcoal-700 rounded-lg transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Tab Controls */}
-            <div className="flex border-b border-zinc-200 dark:border-zinc-800 px-5 bg-zinc-50/50 dark:bg-zinc-800/30">
+            <div className="flex border-b border-sage-200 px-5 bg-sage-50/40">
               <button
                 onClick={() => setActiveTab('fields')}
-                className={`py-3 px-4 text-sm font-medium border-b-2 transition ${
+                className={`py-3 px-4 text-xs font-bold border-b-2 transition ${
                   activeTab === 'fields'
-                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    ? 'border-brand-800 text-brand-800'
+                    : 'border-transparent text-sage-500 hover:text-charcoal-800'
                 }`}
               >
                 Field Builder ({editingFields.length})
               </button>
               <button
                 onClick={() => setActiveTab('mapping')}
-                className={`py-3 px-4 text-sm font-medium border-b-2 transition ${
+                className={`py-3 px-4 text-xs font-bold border-b-2 transition ${
                   activeTab === 'mapping'
-                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    ? 'border-brand-800 text-brand-800'
+                    : 'border-transparent text-sage-500 hover:text-charcoal-800'
                 }`}
               >
                 CRM Field Mapping
               </button>
               <button
                 onClick={() => setActiveTab('settings')}
-                className={`py-3 px-4 text-sm font-medium border-b-2 transition ${
+                className={`py-3 px-4 text-xs font-bold border-b-2 transition ${
                   activeTab === 'settings'
-                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+                    ? 'border-brand-800 text-brand-800'
+                    : 'border-transparent text-sage-500 hover:text-charcoal-800'
                 }`}
               >
                 Form Settings & Anti-Spam
@@ -1059,11 +1059,11 @@ export default function ClientFormsPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-end gap-3">
+            <div className="p-4 border-t border-sage-100 bg-sage-50/50 flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setIsEditorOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg transition"
+                className="px-4 py-2 text-xs font-semibold text-charcoal-700 hover:bg-sage-200/60 rounded-xl transition"
               >
                 Cancel
               </button>
@@ -1071,9 +1071,9 @@ export default function ClientFormsPage() {
                 type="button"
                 onClick={handleSaveForm}
                 disabled={isSaving}
-                className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition disabled:opacity-50 flex items-center gap-2"
+                className="px-5 py-2 text-xs font-semibold text-white bg-brand-800 hover:bg-brand-900 rounded-xl shadow-forest-sm transition disabled:opacity-50 flex items-center gap-2"
               >
-                {isSaving && <RefreshCw className="w-4 h-4 animate-spin" />}
+                {isSaving && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                 {editingForm._id ? 'Update Form' : 'Create & Save Form'}
               </button>
             </div>
@@ -1085,66 +1085,48 @@ export default function ClientFormsPage() {
       {/* LIVE FORM PREVIEW MODAL */}
       {/* ============================================================= */}
       {previewForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-            <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal-900/60 p-4 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl shadow-soft-xl border border-sage-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-sage-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4 text-blue-500" />
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">Interactive Form Preview</h3>
+                <Eye className="w-4 h-4 text-forest-600" />
+                <h3 className="text-sm font-bold text-charcoal-900">Interactive Form Preview</h3>
               </div>
-              <button onClick={() => setPreviewForm(null)} className="p-1 text-zinc-400 hover:text-zinc-600">
+              <button onClick={() => setPreviewForm(null)} className="p-1.5 text-sage-400 hover:text-charcoal-700 rounded-lg">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="p-6 overflow-y-auto space-y-4">
-              <div>
-                <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{previewForm.name}</h4>
+              <div className="p-4 bg-sage-50/70 rounded-xl border border-sage-200/80 mb-2">
+                <h4 className="font-bold text-charcoal-900 text-sm">{previewForm.name}</h4>
                 {previewForm.description && (
-                  <p className="text-xs text-zinc-500 mt-1">{previewForm.description}</p>
+                  <p className="text-xs text-sage-500 mt-1">{previewForm.description}</p>
                 )}
               </div>
 
-              <div className="space-y-3 pt-2">
-                {(previewForm.fields || []).map((field) => (
-                  <div key={field._id || field.fieldKey}>
-                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                      {field.label} {field.required && <span className="text-red-500">*</span>}
-                    </label>
+              {(previewForm.fields || []).map((f, i) => (
+                <div key={i} className="space-y-1">
+                  <label className="block text-xs font-semibold text-charcoal-800">
+                    {f.label} {f.required && <span className="text-rose-500">*</span>}
+                  </label>
+                  <input
+                    type={f.type === 'email' ? 'email' : f.type === 'phone' ? 'tel' : 'text'}
+                    placeholder={f.placeholder || ''}
+                    disabled
+                    className="w-full px-3 py-2 rounded-xl border border-sage-200 bg-sage-50/40 text-xs text-charcoal-700"
+                  />
+                  {f.helpText && <p className="text-[10px] text-sage-400">{f.helpText}</p>}
+                </div>
+              ))}
 
-                    {field.type === 'textarea' ? (
-                      <textarea
-                        rows={3}
-                        placeholder={field.placeholder}
-                        className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800"
-                      />
-                    ) : field.type === 'select' ? (
-                      <select className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800">
-                        <option value="">-- Select an option --</option>
-                        {(field.options || []).map((o) => (
-                          <option key={o.value} value={o.value}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type={field.type || 'text'}
-                        placeholder={field.placeholder}
-                        className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800"
-                      />
-                    )}
-                  </div>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={() => alert(`Preview submit verified: "${previewForm.successMessage}"`)}
-                  className="w-full py-2.5 px-4 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition mt-4"
-                >
-                  {previewForm.submitButtonLabel || 'Submit Form'}
-                </button>
-              </div>
+              <button
+                type="button"
+                disabled
+                className="w-full py-2.5 px-4 rounded-xl font-bold text-xs text-white bg-brand-800 opacity-90 shadow-forest-sm cursor-not-allowed"
+              >
+                {previewForm.submitButtonLabel || 'Submit Form'}
+              </button>
             </div>
           </div>
         </div>
@@ -1154,16 +1136,16 @@ export default function ClientFormsPage() {
       {/* EMBED CODE MODAL */}
       {/* ============================================================= */}
       {embedConfig && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 w-full max-w-2xl overflow-hidden">
-            <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal-900/60 p-4 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl shadow-soft-xl border border-sage-200 w-full max-w-2xl overflow-hidden">
+            <div className="p-4 border-b border-sage-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Code2 className="w-5 h-5 text-blue-500" />
-                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50">
+                <Code2 className="w-5 h-5 text-forest-700" />
+                <h3 className="text-base font-bold text-charcoal-900">
                   Embed Form: {embedConfig.formName}
                 </h3>
               </div>
-              <button onClick={() => setEmbedConfig(null)} className="p-1 text-zinc-400 hover:text-zinc-600">
+              <button onClick={() => setEmbedConfig(null)} className="p-1.5 text-sage-400 hover:text-charcoal-700 rounded-lg">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -1172,16 +1154,16 @@ export default function ClientFormsPage() {
               {/* Standalone Link */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">Public Direct Form URL</span>
+                  <span className="font-semibold text-charcoal-800">Public Direct Form URL</span>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(embedConfig.standaloneUrl);
                       setCopiedUrl(true);
                       setTimeout(() => setCopiedUrl(false), 2000);
                     }}
-                    className="text-blue-600 hover:underline flex items-center gap-1"
+                    className="text-brand-800 hover:underline flex items-center gap-1 font-medium"
                   >
-                    {copiedUrl ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedUrl ? <Check className="w-3.5 h-3.5 text-forest-600" /> : <Copy className="w-3.5 h-3.5" />}
                     {copiedUrl ? 'Copied' : 'Copy URL'}
                   </button>
                 </div>
@@ -1189,13 +1171,13 @@ export default function ClientFormsPage() {
                   <input
                     readOnly
                     value={embedConfig.standaloneUrl}
-                    className="w-full px-2.5 py-1.5 rounded border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-mono text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-sage-200 bg-sage-50/50 font-mono text-xs text-charcoal-800"
                   />
                   <a
                     href={embedConfig.standaloneUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-1.5 text-zinc-500 hover:text-zinc-800 border rounded"
+                    className="p-2 text-sage-500 hover:text-charcoal-800 border border-sage-200 rounded-xl hover:bg-sage-50"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>
@@ -1205,7 +1187,7 @@ export default function ClientFormsPage() {
               {/* Responsive Iframe Snippet */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                  <span className="font-semibold text-charcoal-800">
                     Responsive iFrame Embed (Recommended)
                   </span>
                   <button
@@ -1214,9 +1196,9 @@ export default function ClientFormsPage() {
                       setCopiedIframe(true);
                       setTimeout(() => setCopiedIframe(false), 2000);
                     }}
-                    className="text-blue-600 hover:underline flex items-center gap-1"
+                    className="text-brand-800 hover:underline flex items-center gap-1 font-medium"
                   >
-                    {copiedIframe ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedIframe ? <Check className="w-3.5 h-3.5 text-forest-600" /> : <Copy className="w-3.5 h-3.5" />}
                     {copiedIframe ? 'Copied' : 'Copy iFrame Code'}
                   </button>
                 </div>
@@ -1224,14 +1206,14 @@ export default function ClientFormsPage() {
                   readOnly
                   rows={3}
                   value={embedConfig.iframeSnippet}
-                  className="w-full p-2.5 rounded border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-mono text-xs"
+                  className="w-full p-3 rounded-xl border border-sage-200 bg-sage-50/50 font-mono text-xs text-charcoal-800"
                 />
               </div>
 
               {/* JavaScript Embed Snippet */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                  <span className="font-semibold text-charcoal-800">
                     JavaScript Embed Snippet
                   </span>
                   <button
@@ -1240,9 +1222,9 @@ export default function ClientFormsPage() {
                       setCopiedScript(true);
                       setTimeout(() => setCopiedScript(false), 2000);
                     }}
-                    className="text-blue-600 hover:underline flex items-center gap-1"
+                    className="text-brand-800 hover:underline flex items-center gap-1 font-medium"
                   >
-                    {copiedScript ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedScript ? <Check className="w-3.5 h-3.5 text-forest-600" /> : <Copy className="w-3.5 h-3.5" />}
                     {copiedScript ? 'Copied' : 'Copy Script Code'}
                   </button>
                 </div>
@@ -1250,7 +1232,7 @@ export default function ClientFormsPage() {
                   readOnly
                   rows={3}
                   value={embedConfig.scriptSnippet}
-                  className="w-full p-2.5 rounded border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-mono text-xs"
+                  className="w-full p-3 rounded-xl border border-sage-200 bg-sage-50/50 font-mono text-xs text-charcoal-800"
                 />
               </div>
             </div>
@@ -1262,15 +1244,15 @@ export default function ClientFormsPage() {
       {/* SUBMISSIONS HISTORY & TIMELINE DRAWER */}
       {/* ============================================================= */}
       {submissionsForm && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs">
-          <div className="w-full max-w-2xl bg-white dark:bg-zinc-900 h-full shadow-2xl flex flex-col border-l border-zinc-200 dark:border-zinc-800">
+        <div className="fixed inset-0 z-50 flex justify-end bg-charcoal-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-2xl bg-white h-full shadow-soft-xl flex flex-col border-l border-sage-200">
             {/* Drawer Header */}
-            <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="p-4 border-b border-sage-100 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50">
+                <h3 className="text-base font-bold text-charcoal-900">
                   Submissions: {submissionsForm.name}
                 </h3>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-sage-500">
                   Real-time lead intake logs, CRM mappings, and delivery events.
                 </p>
               </div>
@@ -1279,7 +1261,7 @@ export default function ClientFormsPage() {
                   setSubmissionsForm(null);
                   setSelectedSubmission(null);
                 }}
-                className="p-1 text-zinc-400 hover:text-zinc-600"
+                className="p-1.5 text-sage-400 hover:text-charcoal-700 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1289,10 +1271,10 @@ export default function ClientFormsPage() {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {submissionsLoading ? (
                 <div className="flex items-center justify-center p-12">
-                  <RefreshCw className="w-6 h-6 text-blue-500 animate-spin" />
+                  <RefreshCw className="w-6 h-6 text-brand-800 animate-spin" />
                 </div>
               ) : submissions.length === 0 ? (
-                <div className="text-center p-8 text-zinc-500 text-sm">
+                <div className="text-center p-8 text-sage-400 text-xs italic">
                   No submissions recorded for this form yet.
                 </div>
               ) : (

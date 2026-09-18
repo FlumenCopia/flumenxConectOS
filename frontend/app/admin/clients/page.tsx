@@ -204,29 +204,34 @@ export default function AdminClientsPage() {
   return (
     <div className="space-y-6">
       {/* Top Banner / Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage-200/80 pb-5">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-brand-700" />
+          <h1 className="text-xl font-bold text-charcoal-900 tracking-tight flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-forest-50 border border-forest-100 text-brand-800">
+              <Building2 className="h-5 w-5" />
+            </span>
             Client Directory
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Manage FlumenX agency client accounts, workspaces, account managers, and onboarding status.
+          <p className="text-xs text-sage-500 mt-1">
+            Manage FlumenX agency client accounts, multi-tenant workspaces, account managers, and onboarding workflows.
           </p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)} className="gap-1.5 h-9 text-xs font-semibold shrink-0">
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="gap-2 h-9 text-xs font-semibold shrink-0 bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-forest-sm"
+        >
           <Plus className="h-4 w-4" />
           Provision Client
         </Button>
       </div>
 
       {/* Filter and Search Bar */}
-      <Card className="border-slate-200 shadow-sm">
+      <Card className="border-sage-200/90 shadow-soft-xs rounded-2xl bg-white">
         <CardContent className="p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
             {/* Search Input */}
             <div className="relative">
-              <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
+              <Search className="h-4 w-4 absolute left-3 top-2.5 text-sage-400" />
               <input
                 type="text"
                 value={search}
@@ -235,20 +240,20 @@ export default function AdminClientsPage() {
                   setPage(1);
                 }}
                 placeholder="Search by name, email, slug..."
-                className="w-full pl-9 pr-3 py-1.5 text-xs border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-900 placeholder-slate-400"
+                className="w-full pl-9 pr-3 py-1.5 text-xs border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900 placeholder-sage-400 bg-white"
               />
             </div>
 
             {/* Status Filter */}
             <div className="flex items-center gap-2">
-              <label className="text-[11px] font-medium text-slate-500 whitespace-nowrap">Status:</label>
+              <label className="text-[11px] font-semibold text-sage-500 whitespace-nowrap">Status:</label>
               <select
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="w-full text-xs py-1.5 px-2 border border-slate-300 rounded-md bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                className="w-full text-xs py-1.5 px-2.5 border border-sage-200 rounded-xl bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
               >
                 <option value="all">All Statuses</option>
                 <option value="active">Active</option>
@@ -261,14 +266,14 @@ export default function AdminClientsPage() {
 
             {/* Health Filter */}
             <div className="flex items-center gap-2">
-              <label className="text-[11px] font-medium text-slate-500 whitespace-nowrap">Health:</label>
+              <label className="text-[11px] font-semibold text-sage-500 whitespace-nowrap">Health:</label>
               <select
                 value={healthFilter}
                 onChange={(e) => {
                   setHealthFilter(e.target.value);
                   setPage(1);
                 }}
-                className="w-full text-xs py-1.5 px-2 border border-slate-300 rounded-md bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                className="w-full text-xs py-1.5 px-2.5 border border-sage-200 rounded-xl bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
               >
                 <option value="all">All Health Scores</option>
                 <option value="healthy">Healthy</option>
@@ -280,14 +285,14 @@ export default function AdminClientsPage() {
 
             {/* Manager Filter */}
             <div className="flex items-center gap-2">
-              <label className="text-[11px] font-medium text-slate-500 whitespace-nowrap">Manager:</label>
+              <label className="text-[11px] font-semibold text-sage-500 whitespace-nowrap">Manager:</label>
               <select
                 value={managerFilter}
                 onChange={(e) => {
                   setManagerFilter(e.target.value);
                   setPage(1);
                 }}
-                className="w-full text-xs py-1.5 px-2 border border-slate-300 rounded-md bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                className="w-full text-xs py-1.5 px-2.5 border border-sage-200 rounded-xl bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
               >
                 <option value="all">All Managers</option>
                 {accountManagers.map((m) => (
@@ -299,8 +304,8 @@ export default function AdminClientsPage() {
             </div>
 
             {/* Sort Filter */}
-            <div className="flex items-center gap-2">
-              <label className="text-[11px] font-medium text-slate-500 whitespace-nowrap">Sort:</label>
+            <div className="flex items-center gap-2 md:col-span-4 lg:col-span-1">
+              <label className="text-[11px] font-semibold text-sage-500 whitespace-nowrap">Sort:</label>
               <select
                 value={`${sortBy}:${sortOrder}`}
                 onChange={(e) => {
@@ -309,7 +314,7 @@ export default function AdminClientsPage() {
                   setSortOrder(order as 'asc' | 'desc');
                   setPage(1);
                 }}
-                className="w-full text-xs py-1.5 px-2 border border-slate-300 rounded-md bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                className="w-full text-xs py-1.5 px-2.5 border border-sage-200 rounded-xl bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
               >
                 <option value="createdAt:desc">Newest First</option>
                 <option value="createdAt:asc">Oldest First</option>
@@ -324,24 +329,24 @@ export default function AdminClientsPage() {
 
       {/* Error Banner */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded text-xs text-red-700 flex items-center gap-2">
+        <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Main Clients Table */}
-      <Card className="border-slate-200 shadow-sm overflow-hidden">
+      <Card className="border-sage-200/90 shadow-soft-xs rounded-2xl bg-white overflow-hidden">
         {isLoading ? (
-          <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-2">
-            <Loader2 className="h-6 w-6 animate-spin text-brand-600" />
-            <span className="text-xs">Loading client directory...</span>
+          <div className="py-24 flex flex-col items-center justify-center text-sage-400 gap-2">
+            <Loader2 className="h-6 w-6 animate-spin text-brand-800" />
+            <span className="text-xs font-medium">Loading client directory...</span>
           </div>
         ) : clients.length === 0 ? (
-          <div className="py-20 text-center text-slate-400 space-y-2">
-            <Building2 className="h-10 w-10 mx-auto text-slate-300" />
-            <p className="text-sm font-semibold text-slate-700">No client workspaces found</p>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <div className="py-20 text-center text-sage-400 space-y-3">
+            <Building2 className="h-10 w-10 mx-auto text-sage-300" />
+            <p className="text-sm font-bold text-charcoal-900">No client workspaces found</p>
+            <p className="text-xs text-sage-500 max-w-sm mx-auto">
               {search || statusFilter !== 'all' || healthFilter !== 'all'
                 ? 'Try adjusting your search criteria or active filters.'
                 : 'Click "Provision Client" to create your first multi-tenant workspace.'}
@@ -351,36 +356,36 @@ export default function AdminClientsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
-                  <th className="py-3 px-4">Client Workspace</th>
+                <tr className="bg-[#FAFBF9] border-b border-sage-200/80 text-[11px] font-semibold text-sage-600 uppercase tracking-wider">
+                  <th className="py-3 px-5">Client Workspace</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4">Health</th>
                   <th className="py-3 px-4">Account Manager</th>
                   <th className="py-3 px-4">Onboarding</th>
                   <th className="py-3 px-4">Members</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-sage-100">
                 {clients.map((client) => (
-                  <tr key={client._id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={client._id} className="hover:bg-forest-50/40 transition-colors group">
                     {/* Client Info */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-3.5 px-5">
                       <div className="flex items-center gap-3">
                         <div
-                          className="h-8 w-8 rounded font-bold text-white flex items-center justify-center shrink-0 text-xs shadow-sm"
-                          style={{ backgroundColor: client.brandColor || '#1e40af' }}
+                          className="h-8 w-8 rounded-xl font-bold text-white flex items-center justify-center shrink-0 text-xs shadow-soft-xs"
+                          style={{ backgroundColor: client.brandColor || '#166534' }}
                         >
                           {client.name.slice(0, 2).toUpperCase()}
                         </div>
                         <div className="flex flex-col min-w-0">
                           <Link
                             href={`/admin/clients/${client._id}`}
-                            className="font-semibold text-slate-900 hover:text-brand-700 truncate"
+                            className="font-semibold text-charcoal-900 hover:text-brand-800 truncate"
                           >
                             {client.name}
                           </Link>
-                          <span className="text-[11px] text-slate-400 font-mono truncate">
+                          <span className="text-[11px] text-sage-400 font-mono truncate">
                             /{client.slug}
                           </span>
                         </div>
@@ -397,20 +402,20 @@ export default function AdminClientsPage() {
                     <td className="py-3.5 px-4">
                       {client.primaryAccountManagerId ? (
                         <div className="flex items-center gap-2">
-                          <div className="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-semibold text-slate-700 shrink-0">
+                          <div className="h-6 w-6 rounded-full bg-forest-50 border border-forest-200 flex items-center justify-center text-[10px] font-bold text-brand-800 shrink-0">
                             {(typeof client.primaryAccountManagerId === 'object' && client.primaryAccountManagerId.name
                               ? client.primaryAccountManagerId.name
                               : 'AM'
                             ).slice(0, 2).toUpperCase()}
                           </div>
-                          <span className="text-xs text-slate-800 truncate">
+                          <span className="text-xs text-charcoal-900 truncate font-medium">
                             {typeof client.primaryAccountManagerId === 'object' && client.primaryAccountManagerId
                               ? client.primaryAccountManagerId.name || 'Account Manager'
                               : String(client.primaryAccountManagerId || '')}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[11px] text-slate-400 italic">Unassigned</span>
+                        <span className="text-[11px] text-sage-400 italic">Unassigned</span>
                       )}
                     </td>
 
@@ -418,16 +423,16 @@ export default function AdminClientsPage() {
                     <td className="py-3.5 px-4">
                       <div className="w-32">
                         <div className="flex items-center justify-between text-[11px] mb-1">
-                          <span className="text-slate-600 font-medium">{client.onboardingProgress}%</span>
-                          <span className="text-[10px] text-slate-400 capitalize">{client.onboardingStatus}</span>
+                          <span className="text-charcoal-900 font-semibold">{client.onboardingProgress}%</span>
+                          <span className="text-[10px] text-sage-400 capitalize">{client.onboardingStatus}</span>
                         </div>
-                        <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                        <div className="w-full bg-sage-100 rounded-full h-1.5 overflow-hidden">
                           <div
                             className={`h-1.5 rounded-full transition-all duration-300 ${
                               client.onboardingProgress === 100
-                                ? 'bg-green-600'
+                                ? 'bg-forest-600'
                                 : client.onboardingProgress > 50
-                                ? 'bg-brand-600'
+                                ? 'bg-brand-700'
                                 : 'bg-amber-500'
                             }`}
                             style={{ width: `${client.onboardingProgress}%` }}
@@ -437,15 +442,15 @@ export default function AdminClientsPage() {
                     </td>
 
                     {/* Members Count */}
-                    <td className="py-3.5 px-4 text-slate-600 font-medium">
+                    <td className="py-3.5 px-4 text-sage-600 font-medium">
                       {client.activeMemberCount || 0} user{client.activeMemberCount === 1 ? '' : 's'}
                     </td>
 
                     {/* Actions */}
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
+                    <td className="py-3.5 px-5 text-right">
+                      <div className="flex items-center justify-end gap-2">
                         <Link href={`/admin/clients/${client._id}`}>
-                          <Button variant="outline" size="sm" className="h-7 px-2.5 text-[11px]">
+                          <Button variant="outline" size="sm" className="h-7 px-3 text-[11px] border-sage-200/90 rounded-xl hover:bg-sage-50 text-charcoal-900">
                             View Profile
                           </Button>
                         </Link>
@@ -454,7 +459,7 @@ export default function AdminClientsPage() {
                             type="button"
                             title="Archive Client"
                             onClick={() => setClientToArchive(client)}
-                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                            className="p-1.5 text-sage-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           >
                             <Archive className="h-3.5 w-3.5" />
                           </button>
@@ -470,7 +475,7 @@ export default function AdminClientsPage() {
 
         {/* Pagination Footer */}
         {clients.length > 0 && (
-          <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
+          <div className="px-5 py-3.5 border-t border-sage-100 bg-[#FAFBF9] flex items-center justify-between text-xs text-sage-600">
             <span>
               Showing {clients.length} of {totalCount} workspace{totalCount === 1 ? '' : 's'}
             </span>
@@ -480,11 +485,11 @@ export default function AdminClientsPage() {
                 size="sm"
                 disabled={page <= 1 || isLoading}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="h-7 px-2"
+                className="h-7 px-2 border-sage-200/90 rounded-lg"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
               </Button>
-              <span className="px-2 font-medium text-slate-700">
+              <span className="px-2 font-semibold text-charcoal-900">
                 Page {page} of {totalPages}
               </span>
               <Button
@@ -492,7 +497,7 @@ export default function AdminClientsPage() {
                 size="sm"
                 disabled={page >= totalPages || isLoading}
                 onClick={() => setPage((p) => p + 1)}
-                className="h-7 px-2"
+                className="h-7 px-2 border-sage-200/90 rounded-lg"
               >
                 <ChevronRight className="h-3.5 w-3.5" />
               </Button>
@@ -503,17 +508,19 @@ export default function AdminClientsPage() {
 
       {/* Provision Client Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl max-w-xl w-full border border-slate-200 overflow-hidden my-8">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-brand-700" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal-900/50 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-soft-xl max-w-xl w-full border border-sage-200/90 overflow-hidden my-8">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-sage-100 bg-surface/50">
+              <h2 className="text-sm font-bold text-charcoal-900 flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-forest-50 text-brand-800">
+                  <Building2 className="h-4 w-4" />
+                </span>
                 Provision Client Workspace
               </h2>
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-sage-400 hover:text-charcoal-900 p-1"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -521,7 +528,7 @@ export default function AdminClientsPage() {
 
             <form onSubmit={handleCreateClient} className="p-6 space-y-4">
               {formError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded text-xs text-red-700 flex items-center gap-2">
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 shrink-0" />
                   <span>{formError}</span>
                 </div>
@@ -529,7 +536,7 @@ export default function AdminClientsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">
+                  <label className="block text-xs font-semibold text-charcoal-900">
                     Client Workspace Name *
                   </label>
                   <input
@@ -538,64 +545,64 @@ export default function AdminClientsPage() {
                     value={newClient.name}
                     onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
                     placeholder="e.g. Acme Digital Media"
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-900"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">Legal Business Name</label>
+                  <label className="block text-xs font-semibold text-charcoal-900">Legal Business Name</label>
                   <input
                     type="text"
                     value={newClient.legalName}
                     onChange={(e) => setNewClient({ ...newClient, legalName: e.target.value })}
                     placeholder="e.g. Acme Holdings LLC"
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-900"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">Contact Email</label>
+                  <label className="block text-xs font-semibold text-charcoal-900">Contact Email</label>
                   <input
                     type="email"
                     value={newClient.email}
                     onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
                     placeholder="billing@client.com"
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-900"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">Phone</label>
+                  <label className="block text-xs font-semibold text-charcoal-900">Phone</label>
                   <input
                     type="text"
                     value={newClient.phone}
                     onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
                     placeholder="+1 555-0199"
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-900"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">Website</label>
+                  <label className="block text-xs font-semibold text-charcoal-900">Website</label>
                   <input
                     type="text"
                     value={newClient.website}
                     onChange={(e) => setNewClient({ ...newClient, website: e.target.value })}
                     placeholder="https://client.com"
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-900"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">Timezone</label>
+                  <label className="block text-xs font-semibold text-charcoal-900">Timezone</label>
                   <select
                     value={newClient.timezone}
                     onChange={(e) => setNewClient({ ...newClient, timezone: e.target.value })}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                   >
                     <option value="America/New_York">America/New_York (EST)</option>
                     <option value="America/Chicago">America/Chicago (CST)</option>
@@ -606,11 +613,11 @@ export default function AdminClientsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">Currency</label>
+                  <label className="block text-xs font-semibold text-charcoal-900">Currency</label>
                   <select
                     value={newClient.currency}
                     onChange={(e) => setNewClient({ ...newClient, currency: e.target.value })}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                   >
                     <option value="USD">USD ($)</option>
                     <option value="EUR">EUR (€)</option>
@@ -622,11 +629,11 @@ export default function AdminClientsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">Primary Account Manager</label>
+                  <label className="block text-xs font-semibold text-charcoal-900">Primary Account Manager</label>
                   <select
                     value={newClient.primaryAccountManagerId}
                     onChange={(e) => setNewClient({ ...newClient, primaryAccountManagerId: e.target.value })}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                   >
                     <option value="">-- None Assigned --</option>
                     {accountManagers.map((m) => (
@@ -638,11 +645,11 @@ export default function AdminClientsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-700">Backup Account Manager</label>
+                  <label className="block text-xs font-semibold text-charcoal-900">Backup Account Manager</label>
                   <select
                     value={newClient.backupAccountManagerId}
                     onChange={(e) => setNewClient({ ...newClient, backupAccountManagerId: e.target.value })}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                    className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                   >
                     <option value="">-- None Assigned --</option>
                     {accountManagers.map((m) => (
@@ -655,45 +662,51 @@ export default function AdminClientsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-semibold text-slate-700">Brand Primary Color</label>
+                <label className="block text-xs font-semibold text-charcoal-900">Brand Primary Color</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
                     value={newClient.brandColor}
                     onChange={(e) => setNewClient({ ...newClient, brandColor: e.target.value })}
-                    className="h-8 w-12 border border-slate-300 rounded cursor-pointer p-0.5"
+                    className="h-8 w-12 border border-sage-200 rounded-xl cursor-pointer p-0.5"
                   />
                   <input
                     type="text"
                     value={newClient.brandColor}
                     onChange={(e) => setNewClient({ ...newClient, brandColor: e.target.value })}
-                    className="w-28 text-xs px-2 py-1.5 border border-slate-300 rounded-md text-slate-900 font-mono"
+                    className="w-28 text-xs px-2.5 py-1.5 border border-sage-200 rounded-xl text-charcoal-900 font-mono"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-semibold text-slate-700">Internal Agency Notes</label>
+                <label className="block text-xs font-semibold text-charcoal-900">Internal Agency Notes</label>
                 <textarea
                   rows={2}
                   value={newClient.notes}
                   onChange={(e) => setNewClient({ ...newClient, notes: e.target.value })}
                   placeholder="Onboarding background or key marketing requirements..."
-                  className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-900"
+                  className="w-full text-xs px-3 py-2 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-sage-100">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setIsCreateModalOpen(false)}
                   disabled={actionLoading}
+                  className="border-sage-200/90 rounded-xl text-charcoal-900"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" disabled={actionLoading} className="gap-1.5">
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={actionLoading}
+                  className="gap-1.5 bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-forest-sm font-semibold"
+                >
                   {actionLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                   Create Workspace
                 </Button>
@@ -705,22 +718,23 @@ export default function AdminClientsPage() {
 
       {/* Archive Confirmation Dialog */}
       {clientToArchive && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-200 p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal-900/50 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl shadow-soft-xl max-w-md w-full border border-sage-200/90 p-6 space-y-4">
             <div className="flex items-center gap-3 text-red-600">
               <AlertTriangle className="h-6 w-6 shrink-0" />
-              <h3 className="text-sm font-bold text-slate-900">Archive Client Workspace?</h3>
+              <h3 className="text-sm font-bold text-charcoal-900">Archive Client Workspace?</h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-sage-600 leading-relaxed">
               Are you sure you want to archive <strong>{clientToArchive.name}</strong>? Client users will lose access to
               the workspace. Historical records, CRM leads, and campaigns will be safely preserved.
             </p>
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div className="flex items-center justify-end gap-2.5 pt-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setClientToArchive(null)}
                 disabled={actionLoading}
+                className="border-sage-200/90 rounded-xl"
               >
                 Cancel
               </Button>
@@ -729,7 +743,7 @@ export default function AdminClientsPage() {
                 size="sm"
                 onClick={handleConfirmArchive}
                 disabled={actionLoading}
-                className="gap-1.5"
+                className="gap-1.5 rounded-xl font-semibold"
               >
                 {actionLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 Confirm Archive

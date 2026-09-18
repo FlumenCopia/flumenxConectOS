@@ -177,19 +177,19 @@ export default function ClientPortalUsersPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage-200 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-2 rounded-lg bg-brand-50 text-brand-700">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
               <Users className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">
               Customer Portal Users & Invitations
             </h1>
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-sage-500">
             Provision self-service access for clients and customers to view tickets, profile info, and shared tasks.
           </p>
         </div>
@@ -200,16 +200,16 @@ export default function ClientPortalUsersPage() {
             size="sm"
             onClick={() => fetchData(true)}
             disabled={refreshing || loading}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700 shadow-soft-xs"
           >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin text-brand-600' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin text-brand-800' : ''}`} />
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
 
           <Button
             size="sm"
             onClick={() => setIsInviteModalOpen(true)}
-            className="bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-1.5"
+            className="bg-brand-800 hover:bg-brand-900 text-white flex items-center gap-1.5 rounded-xl shadow-soft-xs px-4"
           >
             <UserPlus className="h-4 w-4" />
             Invite Customer
@@ -219,37 +219,37 @@ export default function ClientPortalUsersPage() {
 
       {/* Notifications */}
       {success && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center justify-between">
+        <div className="p-3.5 bg-forest-50/80 border border-forest-200 rounded-xl text-xs text-forest-900 flex items-center justify-between shadow-soft-xs">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-forest-600" />
             <span>{success}</span>
           </div>
-          <button onClick={() => setSuccess(null)} className="text-emerald-600 hover:text-emerald-800">
+          <button onClick={() => setSuccess(null)} className="text-forest-700 hover:text-forest-900 p-1">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
       )}
 
       {error && (
-        <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800 flex items-center justify-between">
+        <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center justify-between shadow-soft-xs">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{error}</span>
           </div>
-          <button onClick={() => setError(null)} className="text-rose-600 hover:text-rose-800">
+          <button onClick={() => setError(null)} className="text-rose-600 hover:text-rose-800 p-1">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-slate-200 gap-6 text-xs font-semibold">
+      <div className="flex border-b border-sage-200 gap-6 text-xs font-semibold">
         <button
           onClick={() => setActiveTab('users')}
-          className={`pb-3 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`pb-3.5 flex items-center gap-2 border-b-2 transition-colors ${
             activeTab === 'users'
-              ? 'border-brand-600 text-brand-700'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
+              ? 'border-brand-800 text-brand-900'
+              : 'border-transparent text-sage-500 hover:text-charcoal-800'
           }`}
         >
           <ShieldCheck className="h-4 w-4" />
@@ -258,10 +258,10 @@ export default function ClientPortalUsersPage() {
 
         <button
           onClick={() => setActiveTab('invitations')}
-          className={`pb-3 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`pb-3.5 flex items-center gap-2 border-b-2 transition-colors ${
             activeTab === 'invitations'
-              ? 'border-brand-600 text-brand-700'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
+              ? 'border-brand-800 text-brand-900'
+              : 'border-transparent text-sage-500 hover:text-charcoal-800'
           }`}
         >
           <Clock className="h-4 w-4" />
@@ -269,16 +269,16 @@ export default function ClientPortalUsersPage() {
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+      {/* Search & Filter Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-sage-200/90 shadow-soft-xs">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-sage-400" />
           <input
             type="text"
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-sage-200 bg-sage-50/50 text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
           />
         </div>
 
@@ -286,7 +286,7 @@ export default function ClientPortalUsersPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="text-xs bg-white border border-sage-200 rounded-xl px-3 py-2 font-medium text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition shadow-soft-xs"
           >
             <option value="all">All Statuses</option>
             <option value="active">Active Accounts</option>
@@ -297,20 +297,20 @@ export default function ClientPortalUsersPage() {
 
       {/* TAB 1: PORTAL USERS */}
       {activeTab === 'users' && (
-        <Card className="border-slate-200 shadow-sm overflow-hidden bg-white">
+        <Card className="border-sage-200/90 shadow-soft-xs overflow-hidden bg-white rounded-2xl">
           {loading ? (
-            <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-2">
-              <RefreshCw className="h-6 w-6 animate-spin text-brand-600" />
+            <div className="py-20 flex flex-col items-center justify-center text-sage-400 gap-2">
+              <RefreshCw className="h-6 w-6 animate-spin text-brand-800" />
               <span className="text-xs">Loading portal users...</span>
             </div>
           ) : filteredUsers.length === 0 ? (
             <div className="py-20 text-center space-y-3">
-              <Users className="h-10 w-10 text-slate-300 mx-auto" />
-              <h3 className="text-sm font-semibold text-slate-800">No portal users found</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              <Users className="h-10 w-10 text-sage-300 mx-auto" />
+              <h3 className="text-sm font-semibold text-charcoal-900">No portal users found</h3>
+              <p className="text-xs text-sage-500 max-w-sm mx-auto">
                 Invite a CRM contact to grant them access to their self-service Customer Portal.
               </p>
-              <Button size="sm" onClick={() => setIsInviteModalOpen(true)} className="mt-2">
+              <Button size="sm" onClick={() => setIsInviteModalOpen(true)} className="mt-2 bg-brand-800 hover:bg-brand-900 text-white rounded-xl">
                 Invite Customer Contact
               </Button>
             </div>
@@ -318,7 +318,7 @@ export default function ClientPortalUsersPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-600 uppercase">
+                  <tr className="bg-sage-50/70 border-b border-sage-200/90 text-[11px] font-semibold text-sage-600 uppercase">
                     <th className="py-3 px-4">Customer</th>
                     <th className="py-3 px-4">Contact Phone</th>
                     <th className="py-3 px-4">Status</th>
@@ -328,58 +328,58 @@ export default function ClientPortalUsersPage() {
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-sage-100">
                   {filteredUsers.map((u) => (
-                    <tr key={u._id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3 px-4 whitespace-nowrap">
+                    <tr key={u._id} className="hover:bg-sage-50/50 transition-colors">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-2.5">
-                          <div className="h-7 w-7 rounded-full bg-brand-100 text-brand-800 flex items-center justify-center font-bold text-xs">
+                          <div className="h-8 w-8 rounded-full bg-forest-100 text-forest-800 flex items-center justify-center font-bold text-xs border border-forest-200">
                             {u.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-semibold text-slate-900">{u.name}</p>
-                            <p className="text-[11px] text-slate-400">{u.email}</p>
+                            <p className="font-semibold text-charcoal-900">{u.name}</p>
+                            <p className="text-[11px] text-sage-400">{u.email}</p>
                           </div>
                         </div>
                       </td>
 
-                      <td className="py-3 px-4 text-slate-600 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-charcoal-700 whitespace-nowrap">
                         {u.phone || '—'}
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         <Badge variant={u.status === 'active' ? 'success' : 'danger'}>
                           {u.status.toUpperCase()}
                         </Badge>
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         {u.consentGiven ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-medium">
-                            <CheckCircle2 className="h-3.5 w-3.5" /> Consent Active
+                          <span className="inline-flex items-center gap-1 text-[11px] text-forest-800 font-medium">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-forest-600" /> Consent Active
                           </span>
                         ) : (
-                          <span className="text-slate-400 text-[11px]">Not recorded</span>
+                          <span className="text-sage-400 text-[11px]">Not recorded</span>
                         )}
                       </td>
 
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-sage-500 whitespace-nowrap">
                         {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : 'Never logged in'}
                       </td>
 
-                      <td className="py-3 px-4 text-slate-400 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-sage-400 whitespace-nowrap">
                         {new Date(u.createdAt).toLocaleDateString()}
                       </td>
 
-                      <td className="py-3 px-4 text-right whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleToggleUserStatus(u)}
-                          className={`h-7 text-[11px] px-2.5 ${
+                          className={`h-7 text-[11px] px-2.5 rounded-lg ${
                             u.status === 'active'
-                              ? 'text-rose-600 hover:bg-rose-50 hover:border-rose-200'
-                              : 'text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200'
+                              ? 'text-rose-600 hover:bg-rose-50 border-rose-200'
+                              : 'text-forest-700 hover:bg-forest-50 border-forest-200'
                           }`}
                         >
                           {u.status === 'active' ? 'Suspend Access' : 'Reactivate Access'}
@@ -396,17 +396,17 @@ export default function ClientPortalUsersPage() {
 
       {/* TAB 2: INVITATIONS */}
       {activeTab === 'invitations' && (
-        <Card className="border-slate-200 shadow-sm overflow-hidden bg-white">
+        <Card className="border-sage-200/90 shadow-soft-xs overflow-hidden bg-white rounded-2xl">
           {loading ? (
-            <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-2">
-              <RefreshCw className="h-6 w-6 animate-spin text-brand-600" />
+            <div className="py-20 flex flex-col items-center justify-center text-sage-400 gap-2">
+              <RefreshCw className="h-6 w-6 animate-spin text-brand-800" />
               <span className="text-xs">Loading invitations...</span>
             </div>
           ) : filteredInvitations.length === 0 ? (
             <div className="py-20 text-center space-y-3">
-              <Clock className="h-10 w-10 text-slate-300 mx-auto" />
-              <h3 className="text-sm font-semibold text-slate-800">No invitations found</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              <Clock className="h-10 w-10 text-sage-300 mx-auto" />
+              <h3 className="text-sm font-semibold text-charcoal-900">No invitations found</h3>
+              <p className="text-xs text-sage-500 max-w-sm mx-auto">
                 Dispatched invitations will be listed here with status tracking.
               </p>
             </div>
@@ -414,7 +414,7 @@ export default function ClientPortalUsersPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-600 uppercase">
+                  <tr className="bg-sage-50/70 border-b border-sage-200/90 text-[11px] font-semibold text-sage-600 uppercase">
                     <th className="py-3 px-4">Recipient</th>
                     <th className="py-3 px-4">Status</th>
                     <th className="py-3 px-4">Invited By</th>
@@ -423,17 +423,17 @@ export default function ClientPortalUsersPage() {
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-sage-100">
                   {filteredInvitations.map((inv) => (
-                    <tr key={inv._id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3 px-4 whitespace-nowrap">
+                    <tr key={inv._id} className="hover:bg-sage-50/50 transition-colors">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         <div>
-                          <p className="font-semibold text-slate-900">{inv.name || 'Customer'}</p>
-                          <p className="text-[11px] text-slate-400 font-mono">{inv.email}</p>
+                          <p className="font-semibold text-charcoal-900">{inv.name || 'Customer'}</p>
+                          <p className="text-[11px] text-sage-400 font-mono">{inv.email}</p>
                         </div>
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         <Badge
                           variant={
                             inv.status === 'accepted'
@@ -447,25 +447,25 @@ export default function ClientPortalUsersPage() {
                         </Badge>
                       </td>
 
-                      <td className="py-3 px-4 text-slate-600 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-charcoal-700 whitespace-nowrap">
                         {inv.invitedBy?.name || 'Staff Member'}
                       </td>
 
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-sage-500 whitespace-nowrap">
                         {new Date(inv.expiresAt).toLocaleDateString()}
                       </td>
 
-                      <td className="py-3 px-4 text-slate-400 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-sage-400 whitespace-nowrap">
                         {new Date(inv.createdAt).toLocaleDateString()}
                       </td>
 
-                      <td className="py-3 px-4 text-right whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         {inv.status === 'pending' && (
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleRevokeInvitation(inv)}
-                            className="h-7 text-[11px] px-2.5 text-rose-600 hover:bg-rose-50 hover:border-rose-200"
+                            className="h-7 text-[11px] px-2.5 rounded-lg text-rose-600 hover:bg-rose-50 border-rose-200"
                           >
                             Revoke Invite
                           </Button>
@@ -482,21 +482,21 @@ export default function ClientPortalUsersPage() {
 
       {/* Invite Customer Modal */}
       {isInviteModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-charcoal-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sage-200/90 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-4 border-b border-sage-100">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-brand-50 text-brand-700">
+                <div className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
                   <UserPlus className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">Invite Customer to Portal</h3>
-                  <p className="text-[11px] text-slate-400">Generate a single-use onboarding link</p>
+                  <h3 className="font-bold text-charcoal-900 text-base">Invite Customer to Portal</h3>
+                  <p className="text-[11px] text-sage-500">Generate a single-use onboarding link</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsInviteModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-sage-400 hover:text-charcoal-700 p-1.5 rounded-lg transition"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -504,14 +504,14 @@ export default function ClientPortalUsersPage() {
 
             <form onSubmit={handleInviteSubmit} className="space-y-4 pt-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-charcoal-800 mb-1">
                   Select Existing CRM Contact:
                 </label>
                 <select
                   value={selectedContactId}
                   onChange={(e) => handleContactSelect(e.target.value)}
                   required
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 bg-slate-50"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 bg-sage-50/50 text-charcoal-900 transition"
                 >
                   <option value="">-- Choose Contact --</option>
                   {contacts.map((c) => (
@@ -523,7 +523,7 @@ export default function ClientPortalUsersPage() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-charcoal-800 mb-1">
                   Customer Full Name:
                 </label>
                 <input
@@ -531,12 +531,12 @@ export default function ClientPortalUsersPage() {
                   value={inviteName}
                   onChange={(e) => setInviteName(e.target.value)}
                   placeholder="e.g. John Doe"
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900 transition"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-charcoal-800 mb-1">
                   Recipient Email:
                 </label>
                 <input
@@ -545,13 +545,13 @@ export default function ClientPortalUsersPage() {
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="john@example.com"
                   required
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900 transition"
                 />
               </div>
 
-              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-[11px] text-slate-500 space-y-1">
-                <p className="font-semibold text-slate-700">Security Guarantee:</p>
-                <p>
+              <div className="p-3.5 rounded-2xl bg-forest-50/50 border border-forest-100 text-[11px] text-sage-600 space-y-1">
+                <p className="font-semibold text-forest-900">Security Guarantee:</p>
+                <p className="text-forest-800 leading-relaxed">
                   A 32-byte cryptographic token with SHA-256 hash storage will be generated. The recipient will be invited to set their password.
                 </p>
               </div>
@@ -562,6 +562,7 @@ export default function ClientPortalUsersPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setIsInviteModalOpen(false)}
+                  className="rounded-xl border-sage-200 text-charcoal-700 hover:bg-sage-50"
                 >
                   Cancel
                 </Button>
@@ -569,7 +570,7 @@ export default function ClientPortalUsersPage() {
                   type="submit"
                   size="sm"
                   disabled={inviting || !selectedContactId || !inviteEmail}
-                  className="bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-1.5"
+                  className="bg-brand-800 hover:bg-brand-900 text-white flex items-center gap-1.5 rounded-xl shadow-soft-xs px-4"
                 >
                   <Send className="h-3.5 w-3.5" />
                   {inviting ? 'Dispatching...' : 'Send Invitation'}

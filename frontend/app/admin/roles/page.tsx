@@ -229,17 +229,17 @@ export default function AdminRolesPage() {
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage-200/80 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-2 rounded-lg bg-brand-50 text-brand-700">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-forest-50 border border-forest-100 text-brand-800">
               <ShieldCheck className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-xl font-bold tracking-tight text-charcoal-900">
               Role-Based Access Control (RBAC) & Permissions Matrix
             </h1>
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-sage-500">
             Define system roles, audit tenant permission boundaries, and enforce least-privilege security across MongoDB collections.
           </p>
         </div>
@@ -248,7 +248,7 @@ export default function AdminRolesPage() {
           <Button
             size="sm"
             onClick={() => setIsModalOpen(true)}
-            className="bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-1.5"
+            className="bg-brand-800 hover:bg-brand-900 text-white flex items-center gap-1.5 rounded-xl shadow-forest-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
             Create Custom Role
@@ -258,12 +258,12 @@ export default function AdminRolesPage() {
 
       {/* Success alert */}
       {success && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center justify-between">
+        <div className="p-3.5 bg-forest-50 border border-forest-200 rounded-xl text-xs text-forest-900 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
-            <span>{success}</span>
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-forest-700" />
+            <span className="font-medium">{success}</span>
           </div>
-          <button onClick={() => setSuccess(null)} className="text-emerald-600 hover:text-emerald-800">
+          <button onClick={() => setSuccess(null)} className="text-forest-700 hover:text-forest-900 p-1">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -277,19 +277,19 @@ export default function AdminRolesPage() {
             <div
               key={r.id}
               onClick={() => setSelectedRoleSlug(r.slug)}
-              className={`p-4 rounded-xl border transition-all cursor-pointer ${
+              className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-brand-50/40 border-brand-500 shadow-sm ring-1 ring-brand-500'
-                  : 'bg-white border-slate-200 hover:border-slate-300'
+                  ? 'bg-forest-50/60 border-brand-800 shadow-soft-xs ring-1 ring-brand-800'
+                  : 'bg-white border-sage-200/90 hover:border-sage-300 shadow-soft-xs'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Shield className={`h-4 w-4 ${isSelected ? 'text-brand-700' : 'text-slate-400'}`} />
-                  <span className="font-bold text-slate-900 text-xs">{r.name}</span>
+                  <Shield className={`h-4 w-4 ${isSelected ? 'text-brand-800' : 'text-sage-400'}`} />
+                  <span className="font-bold text-charcoal-900 text-xs">{r.name}</span>
                 </div>
                 {r.isSystem ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-sage-600 bg-sage-50 px-2 py-0.5 rounded-full border border-sage-200">
                     <Lock className="h-2.5 w-2.5" /> System Lock
                   </span>
                 ) : (
@@ -297,13 +297,13 @@ export default function AdminRolesPage() {
                 )}
               </div>
 
-              <p className="text-[11px] text-slate-500 mt-2 line-clamp-2 leading-relaxed">
+              <p className="text-[11px] text-sage-500 mt-2 line-clamp-2 leading-relaxed">
                 {r.description}
               </p>
 
-              <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span className="text-slate-400 font-mono">{r.slug}</span>
-                <span className="font-semibold text-brand-700">{r.permissions.length} capabilities</span>
+              <div className="mt-3 pt-2.5 border-t border-sage-100 flex items-center justify-between text-[11px]">
+                <span className="text-sage-400 font-mono">{r.slug}</span>
+                <span className="font-semibold text-brand-800">{r.permissions.length} capabilities</span>
               </div>
             </div>
           );
@@ -311,40 +311,40 @@ export default function AdminRolesPage() {
       </div>
 
       {/* Permission Matrix for Selected Role */}
-      <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
-        <div className="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <Card className="border-sage-200/90 shadow-soft-xs bg-white rounded-2xl overflow-hidden">
+        <div className="p-5 border-b border-sage-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface/40">
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-slate-900">
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-sm font-bold text-charcoal-900">
                 Active Capability Matrix for &quot;{selectedRole.name}&quot;
               </h2>
               <Badge variant="brand">{selectedRole.permissions.length} of {ALL_PERMISSIONS.length} granted</Badge>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-sage-500 mt-0.5">
               Review and audit granular access rights enforced on Express routes and MongoDB middleware.
             </p>
           </div>
 
           <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-sage-400" />
             <input
               type="text"
               placeholder="Search capabilities..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-sage-200 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900 bg-white"
             />
           </div>
         </div>
 
         {/* Module Filters */}
-        <div className="px-5 py-2.5 bg-slate-50 border-b border-slate-100 flex flex-wrap gap-1.5 text-xs">
+        <div className="px-5 py-2.5 bg-surface/70 border-b border-sage-100 flex flex-wrap gap-1.5 text-xs">
           <button
             onClick={() => setActiveModuleTab('all')}
-            className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+            className={`px-3 py-1 rounded-xl font-medium transition-all ${
               activeModuleTab === 'all'
-                ? 'bg-white text-brand-700 shadow-sm border border-slate-200 font-semibold'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-brand-800 shadow-soft-xs border border-sage-200 font-bold'
+                : 'text-sage-600 hover:text-charcoal-900'
             }`}
           >
             All Modules
@@ -353,10 +353,10 @@ export default function AdminRolesPage() {
             <button
               key={m}
               onClick={() => setActiveModuleTab(m)}
-              className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+              className={`px-3 py-1 rounded-xl font-medium transition-all ${
                 activeModuleTab === m
-                  ? 'bg-white text-brand-700 shadow-sm border border-slate-200 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-brand-800 shadow-soft-xs border border-sage-200 font-bold'
+                  : 'text-sage-600 hover:text-charcoal-900'
               }`}
             >
               {m}
@@ -368,7 +368,7 @@ export default function AdminRolesPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-600 uppercase">
+              <tr className="bg-[#FAFBF9] border-b border-sage-200/80 text-[11px] font-semibold text-sage-600 uppercase">
                 <th className="py-3 px-4 w-12 text-center">Granted</th>
                 <th className="py-3 px-4">Capability Name</th>
                 <th className="py-3 px-4">Module</th>
@@ -376,39 +376,39 @@ export default function AdminRolesPage() {
                 <th className="py-3 px-4">Description & Scope</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-sage-100">
               {filteredPermissions.map((perm) => {
                 const isGranted = selectedRole.permissions.includes(perm.code);
 
                 return (
-                  <tr key={perm.code} className="hover:bg-slate-50/70 transition-colors">
+                  <tr key={perm.code} className="hover:bg-forest-50/40 transition-colors">
                     <td className="py-3 px-4 text-center">
                       {isGranted ? (
-                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-emerald-100 text-emerald-700">
+                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-forest-100 text-brand-800">
                           <Check className="h-3 w-3" />
                         </span>
                       ) : (
-                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-slate-100 text-slate-300">
+                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-sage-100 text-sage-300">
                           <X className="h-3 w-3" />
                         </span>
                       )}
                     </td>
 
-                    <td className="py-3 px-4 font-semibold text-slate-900 whitespace-nowrap">
+                    <td className="py-3 px-4 font-semibold text-charcoal-900 whitespace-nowrap">
                       {perm.name}
                     </td>
 
                     <td className="py-3 px-4 whitespace-nowrap">
-                      <span className="text-slate-600 bg-slate-100 px-2 py-0.5 rounded text-[10px] font-medium border border-slate-200">
+                      <span className="text-sage-700 bg-sage-50 px-2 py-0.5 rounded-full text-[10px] font-medium border border-sage-200">
                         {perm.module}
                       </span>
                     </td>
 
-                    <td className="py-3 px-4 font-mono text-brand-700 whitespace-nowrap text-[11px]">
+                    <td className="py-3 px-4 font-mono text-brand-800 whitespace-nowrap text-[11px] font-semibold">
                       {perm.code}
                     </td>
 
-                    <td className="py-3 px-4 text-slate-500">
+                    <td className="py-3 px-4 text-sage-500">
                       {perm.description}
                     </td>
                   </tr>
@@ -421,76 +421,76 @@ export default function AdminRolesPage() {
 
       {/* Create Custom Role Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-charcoal-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-soft-xl border border-sage-200/90 animate-in fade-in zoom-in-95 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-4 border-b border-sage-100">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-brand-50 text-brand-700">
+                <div className="p-2 rounded-xl bg-forest-50 text-brand-800">
                   <Plus className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">Create Specialized Agency Role</h3>
-                  <p className="text-[11px] text-slate-400">Assemble customized capability sets</p>
+                  <h3 className="font-bold text-charcoal-900 text-sm">Create Specialized Agency Role</h3>
+                  <p className="text-[11px] text-sage-500">Assemble customized capability sets</p>
                 </div>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
+              <button onClick={() => setIsModalOpen(false)} className="text-sage-400 hover:text-charcoal-900 p-1">
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <form onSubmit={handleCreateRole} className="space-y-4 pt-4 text-xs overflow-y-auto flex-1 pr-1">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Role Title:</label>
+                <label className="block font-semibold text-charcoal-900 mb-1">Role Title:</label>
                 <input
                   type="text"
                   value={newRoleName}
                   onChange={(e) => setNewRoleName(e.target.value)}
                   placeholder="e.g. Senior Copywriter & Content Strategist"
                   required
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Description:</label>
+                <label className="block font-semibold text-charcoal-900 mb-1">Description:</label>
                 <textarea
                   rows={2}
                   value={newRoleDesc}
                   onChange={(e) => setNewRoleDesc(e.target.value)}
                   placeholder="Outline responsibilities and boundary permissions..."
-                  className="w-full p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="font-semibold text-slate-700">Select Granted Capabilities:</label>
-                  <span className="text-brand-600 font-bold">{selectedPerms.length} selected</span>
+                  <label className="font-semibold text-charcoal-900">Select Granted Capabilities:</label>
+                  <span className="text-brand-800 font-bold">{selectedPerms.length} selected</span>
                 </div>
-                <div className="border border-slate-200 rounded-lg p-3 max-h-48 overflow-y-auto space-y-1.5 bg-slate-50">
+                <div className="border border-sage-200 rounded-xl p-3 max-h-48 overflow-y-auto space-y-1.5 bg-surface/50">
                   {ALL_PERMISSIONS.map((perm) => (
                     <label
                       key={perm.code}
-                      className="flex items-center gap-2 p-1.5 rounded hover:bg-white cursor-pointer select-none"
+                      className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white cursor-pointer select-none transition-colors"
                     >
                       <input
                         type="checkbox"
                         checked={selectedPerms.includes(perm.code)}
                         onChange={() => togglePermissionForCustomRole(perm.code)}
-                        className="rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                        className="rounded border-sage-300 text-brand-800 focus:ring-brand-800"
                       />
-                      <span className="font-medium text-slate-800">{perm.name}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">({perm.code})</span>
+                      <span className="font-medium text-charcoal-900">{perm.name}</span>
+                      <span className="text-[10px] text-sage-400 font-mono">({perm.code})</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsModalOpen(false)}>
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsModalOpen(false)} className="border-sage-200/90 rounded-xl">
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" disabled={!newRoleName.trim()} className="bg-brand-600 hover:bg-brand-700 text-white">
+                <Button type="submit" size="sm" disabled={!newRoleName.trim()} className="bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-forest-sm font-semibold">
                   Save Role
                 </Button>
               </div>

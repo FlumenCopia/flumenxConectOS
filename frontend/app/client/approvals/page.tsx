@@ -164,19 +164,19 @@ export default function ClientApprovalsPage() {
   const changesCount = approvals.filter((a) => a.status === 'changes_requested').length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage-200 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-2 rounded-lg bg-brand-50 text-brand-700">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
               <CheckCircle2 className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              Creative & Campaign Approvals (Release 12)
+            <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">
+              Creative & Campaign Approvals
             </h1>
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-sage-500">
             Collaborative client sign-off workflow for ad graphics, copywriting, landing pages, and budget scaling.
           </p>
         </div>
@@ -185,7 +185,7 @@ export default function ClientApprovalsPage() {
           <Button
             size="sm"
             onClick={() => setIsNewModalOpen(true)}
-            className="bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-1.5"
+            className="bg-brand-800 hover:bg-brand-900 text-white flex items-center gap-1.5 rounded-xl shadow-soft-xs px-4"
           >
             <Plus className="h-4 w-4" />
             Submit Approval Item
@@ -195,9 +195,9 @@ export default function ClientApprovalsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border-amber-200 shadow-sm bg-amber-50/40">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-amber-800 text-xs font-semibold uppercase tracking-wider">
+        <Card className="border-amber-200 shadow-soft-xs bg-amber-50/50 rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between text-amber-800 text-xs font-bold uppercase tracking-wider">
               <span>Pending Review</span>
               <Clock className="h-4 w-4 text-amber-600" />
             </div>
@@ -206,20 +206,20 @@ export default function ClientApprovalsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-emerald-200 shadow-sm bg-emerald-50/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-emerald-800 text-xs font-semibold uppercase tracking-wider">
+        <Card className="border-forest-200 shadow-soft-xs bg-forest-50/50 rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between text-forest-800 text-xs font-bold uppercase tracking-wider">
               <span>Approved & Live</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              <CheckCircle2 className="h-4 w-4 text-forest-600" />
             </div>
-            <div className="mt-2 text-2xl font-bold text-emerald-900">{approvedCount}</div>
-            <div className="text-[11px] text-emerald-700 mt-0.5">Authorized for publishing</div>
+            <div className="mt-2 text-2xl font-bold text-forest-900">{approvedCount}</div>
+            <div className="text-[11px] text-forest-700 mt-0.5">Authorized for publishing</div>
           </CardContent>
         </Card>
 
-        <Card className="border-rose-200 shadow-sm bg-rose-50/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-rose-800 text-xs font-semibold uppercase tracking-wider">
+        <Card className="border-rose-200 shadow-soft-xs bg-rose-50/50 rounded-2xl">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between text-rose-800 text-xs font-bold uppercase tracking-wider">
               <span>Revisions Requested</span>
               <XCircle className="h-4 w-4 text-rose-600" />
             </div>
@@ -231,27 +231,27 @@ export default function ClientApprovalsPage() {
 
       {/* Notifications */}
       {success && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center justify-between">
+        <div className="p-3.5 bg-forest-50/80 border border-forest-200 rounded-xl text-xs text-forest-900 flex items-center justify-between shadow-soft-xs">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-forest-600" />
             <span>{success}</span>
           </div>
-          <button onClick={() => setSuccess(null)} className="text-emerald-600 hover:text-emerald-800">
+          <button onClick={() => setSuccess(null)} className="text-forest-700 hover:text-forest-900 p-1">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
       )}
 
       {/* Filters and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-sage-200/90 shadow-soft-xs">
         <div className="relative flex-1 w-full sm:max-w-sm">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-sage-400" />
           <input
             type="text"
             placeholder="Search proposals by title, campaign, or copy..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-sage-200 bg-sage-50/50 text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
           />
         </div>
 
@@ -259,7 +259,7 @@ export default function ClientApprovalsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="text-xs bg-white border border-sage-200 rounded-xl px-3 py-2 font-medium text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 shadow-soft-xs transition"
           >
             <option value="all">All Approval States</option>
             <option value="pending_approval">Pending Review</option>
@@ -274,19 +274,19 @@ export default function ClientApprovalsPage() {
         {filteredApprovals.map((item) => (
           <Card
             key={item.id}
-            className="border-slate-200 shadow-sm bg-white hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden"
+            className="border-sage-200/90 shadow-soft-xs bg-white hover:border-forest-300 transition-all flex flex-col justify-between overflow-hidden rounded-2xl"
           >
             <CardContent className="p-5 space-y-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-sage-100 text-charcoal-700 border border-sage-200">
                       {item.platform}
                     </span>
-                    <span className="text-slate-400 text-xs">•</span>
-                    <span className="text-xs font-semibold text-slate-500">{item.campaignName}</span>
+                    <span className="text-sage-300 text-xs">•</span>
+                    <span className="text-xs font-semibold text-sage-500">{item.campaignName}</span>
                   </div>
-                  <h3 className="font-bold text-slate-900 text-sm mt-1.5">{item.title}</h3>
+                  <h3 className="font-bold text-charcoal-900 text-base mt-1.5">{item.title}</h3>
                 </div>
 
                 <Badge
@@ -308,7 +308,7 @@ export default function ClientApprovalsPage() {
 
               {/* Visual Preview if present */}
               {item.previewUrl && (
-                <div className="relative rounded-xl overflow-hidden border border-slate-100 bg-slate-50 aspect-video flex items-center justify-center">
+                <div className="relative rounded-xl overflow-hidden border border-sage-200 bg-sage-50 aspect-video flex items-center justify-center">
                   <img
                     src={item.previewUrl}
                     alt={item.title}
@@ -319,14 +319,14 @@ export default function ClientApprovalsPage() {
 
               {/* Budget Comparison if budget change */}
               {item.budgetChange && (
-                <div className="p-3.5 rounded-xl border border-brand-200 bg-brand-50/40 text-xs space-y-2">
-                  <div className="flex items-center justify-between font-semibold text-slate-800">
+                <div className="p-3.5 rounded-xl border border-forest-200 bg-forest-50/40 text-xs space-y-2">
+                  <div className="flex items-center justify-between font-semibold text-charcoal-800">
                     <span>Proposed Spend Scaling:</span>
-                    <span className="text-brand-700 font-bold">
+                    <span className="text-forest-800 font-bold">
                       ${item.budgetChange.currentBudget.toLocaleString()} → ${item.budgetChange.proposedBudget.toLocaleString()} / mo
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-sage-500">
                     Effective Target Date: {item.budgetChange.effectiveDate}
                   </p>
                 </div>
@@ -334,33 +334,33 @@ export default function ClientApprovalsPage() {
 
               {/* Ad Copy preview */}
               {item.headline && (
-                <div className="p-3 rounded-lg border border-slate-100 bg-slate-50 text-xs space-y-1">
-                  <p className="font-bold text-slate-900">&quot;{item.headline}&quot;</p>
-                  {item.bodyText && <p className="text-slate-600 text-[11px]">{item.bodyText}</p>}
+                <div className="p-3 rounded-xl border border-sage-200 bg-sage-50/50 text-xs space-y-1">
+                  <p className="font-bold text-charcoal-900">&quot;{item.headline}&quot;</p>
+                  {item.bodyText && <p className="text-sage-600 text-[11px]">{item.bodyText}</p>}
                 </div>
               )}
 
-              <p className="text-xs text-slate-600 leading-relaxed">{item.description}</p>
+              <p className="text-xs text-charcoal-700 leading-relaxed">{item.description}</p>
 
               {/* Audit trail feedback if already reviewed */}
               {item.clientComments && (
-                <div className="p-3 rounded-lg border border-slate-200 bg-slate-50/80 text-xs space-y-1">
-                  <div className="flex items-center justify-between text-[10px] text-slate-400">
-                    <span className="font-semibold text-slate-700">Client Feedback ({item.reviewedBy}):</span>
+                <div className="p-3 rounded-xl border border-sage-200 bg-sage-50/70 text-xs space-y-1">
+                  <div className="flex items-center justify-between text-[10px] text-sage-400">
+                    <span className="font-semibold text-charcoal-800">Client Feedback ({item.reviewedBy}):</span>
                     <span>{item.reviewedAt ? new Date(item.reviewedAt).toLocaleDateString() : ''}</span>
                   </div>
-                  <p className="text-slate-700 italic">&quot;{item.clientComments}&quot;</p>
+                  <p className="text-charcoal-700 italic">&quot;{item.clientComments}&quot;</p>
                 </div>
               )}
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <div className="pt-3 border-t border-sage-100 flex items-center justify-between text-[11px] text-sage-400">
                 <span>Requested by {item.requestedBy}</span>
                 <span>{new Date(item.requestedAt).toLocaleDateString()}</span>
               </div>
             </CardContent>
 
             {/* Action Bar */}
-            <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+            <div className="px-5 py-3 bg-sage-50/60 border-t border-sage-100 flex items-center justify-end gap-2">
               {item.status === 'pending_approval' ? (
                 <>
                   <Button
@@ -370,7 +370,7 @@ export default function ClientApprovalsPage() {
                       setSelectedItem(item);
                       setReviewMode('request_changes');
                     }}
-                    className="h-8 text-xs text-rose-700 hover:bg-rose-50 hover:border-rose-200"
+                    className="h-8 text-xs text-rose-700 hover:bg-rose-50 border-rose-200 rounded-xl"
                   >
                     Request Changes
                   </Button>
@@ -378,14 +378,14 @@ export default function ClientApprovalsPage() {
                   <Button
                     size="sm"
                     onClick={() => handleApprove(item)}
-                    className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5"
+                    className="h-8 text-xs bg-brand-800 hover:bg-brand-900 text-white flex items-center gap-1.5 rounded-xl shadow-soft-xs"
                   >
                     <ThumbsUp className="h-3.5 w-3.5" />
                     Approve Proposal
                   </Button>
                 </>
               ) : (
-                <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500">
+                <div className="flex items-center gap-1 text-[11px] font-semibold text-sage-500">
                   <History className="h-3.5 w-3.5" />
                   <span>Audit Sign-off Recorded</span>
                 </div>
@@ -397,33 +397,33 @@ export default function ClientApprovalsPage() {
 
       {/* Request Changes Modal */}
       {selectedItem && reviewMode === 'request_changes' && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-charcoal-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sage-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-4 border-b border-sage-100">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-rose-50 text-rose-700">
+                <div className="p-2 rounded-xl bg-rose-50 text-rose-700">
                   <RotateCcw className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">Request Deliverable Changes</h3>
-                  <p className="text-[11px] text-slate-400">Provide direct feedback to the agency creative team</p>
+                  <h3 className="font-bold text-charcoal-900 text-sm">Request Deliverable Changes</h3>
+                  <p className="text-[11px] text-sage-500">Provide direct feedback to the agency creative team</p>
                 </div>
               </div>
-              <button onClick={() => setSelectedItem(null)} className="text-slate-400 hover:text-slate-600 p-1">
+              <button onClick={() => setSelectedItem(null)} className="text-sage-400 hover:text-charcoal-600 p-1">
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <form onSubmit={handleRequestChangesSubmit} className="space-y-4 pt-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Proposal Title:</label>
-                <p className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-slate-800 font-medium">
+                <label className="block font-semibold text-charcoal-700 mb-1">Proposal Title:</label>
+                <p className="p-2.5 bg-sage-50 rounded-xl border border-sage-200 text-charcoal-800 font-medium">
                   {selectedItem.title}
                 </p>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-charcoal-700 mb-1">
                   Required Modifications & Feedback:
                 </label>
                 <textarea
@@ -432,19 +432,19 @@ export default function ClientApprovalsPage() {
                   onChange={(e) => setRevisionComments(e.target.value)}
                   placeholder="Specify desired copy changes, visual tweaks, targeting adjustments, or budget boundaries..."
                   required
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                 />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setSelectedItem(null)}>
+                <Button type="button" variant="outline" size="sm" onClick={() => setSelectedItem(null)} className="rounded-xl border-sage-200">
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   size="sm"
                   disabled={isSubmitting || !revisionComments.trim()}
-                  className="bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5"
+                  className="bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5 rounded-xl"
                 >
                   <Send className="h-3.5 w-3.5" />
                   {isSubmitting ? 'Submitting...' : 'Submit Revision Request'}
@@ -457,43 +457,43 @@ export default function ClientApprovalsPage() {
 
       {/* Submit Approval Item Modal */}
       {isNewModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-charcoal-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sage-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-4 border-b border-sage-100">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-brand-50 text-brand-700">
+                <div className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
                   <Plus className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">Submit Item for Approval</h3>
-                  <p className="text-[11px] text-slate-400">Request formal sign-off from the client</p>
+                  <h3 className="font-bold text-charcoal-900 text-base">Submit Item for Approval</h3>
+                  <p className="text-[11px] text-sage-500">Request formal sign-off from the client</p>
                 </div>
               </div>
-              <button onClick={() => setIsNewModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
+              <button onClick={() => setIsNewModalOpen(false)} className="text-sage-400 hover:text-charcoal-600 p-1.5 rounded-lg transition">
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <form onSubmit={handleCreateApproval} className="space-y-4 pt-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Deliverable Title:</label>
+                <label className="block font-semibold text-charcoal-800 mb-1">Deliverable Title:</label>
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Black Friday Reel Creative & Copy"
                   required
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Item Type:</label>
+                  <label className="block font-semibold text-charcoal-800 mb-1">Item Type:</label>
                   <select
                     value={newType}
                     onChange={(e) => setNewType(e.target.value as ApprovalType)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 bg-slate-50"
+                    className="w-full p-2.5 rounded-xl border border-sage-200 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 bg-sage-50/50 text-charcoal-900"
                   >
                     <option value="creative_ad">Ad Visual / Graphic</option>
                     <option value="copywriting">Ad Copywriting</option>
@@ -503,11 +503,11 @@ export default function ClientApprovalsPage() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Target Channel:</label>
+                  <label className="block font-semibold text-charcoal-800 mb-1">Target Channel:</label>
                   <select
                     value={newPlatform}
                     onChange={(e) => setNewPlatform(e.target.value as any)}
-                    className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 bg-slate-50"
+                    className="w-full p-2.5 rounded-xl border border-sage-200 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 bg-sage-50/50 text-charcoal-900"
                   >
                     <option value="Meta Ads">Meta Ads</option>
                     <option value="Google Ads">Google Ads</option>
@@ -517,43 +517,43 @@ export default function ClientApprovalsPage() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Associated Campaign:</label>
+                <label className="block font-semibold text-charcoal-800 mb-1">Associated Campaign:</label>
                 <input
                   type="text"
                   value={newCampaign}
                   onChange={(e) => setNewCampaign(e.target.value)}
                   placeholder="e.g. Q4 Holiday Scale 2026"
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Headline / Primary Copy:</label>
+                <label className="block font-semibold text-charcoal-800 mb-1">Headline / Primary Copy:</label>
                 <input
                   type="text"
                   value={newHeadline}
                   onChange={(e) => setNewHeadline(e.target.value)}
                   placeholder="Catchy headline or primary ad copy..."
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Description & Context:</label>
+                <label className="block font-semibold text-charcoal-800 mb-1">Description & Context:</label>
                 <textarea
                   rows={3}
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Provide background, targeting rationale, and goals..."
-                  className="w-full p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-2.5 rounded-xl border border-sage-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-charcoal-900"
                 />
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsNewModalOpen(false)}>
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsNewModalOpen(false)} className="rounded-xl border-sage-200">
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" disabled={!newTitle.trim()} className="bg-brand-600 hover:bg-brand-700 text-white">
+                <Button type="submit" size="sm" disabled={!newTitle.trim()} className="bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-soft-xs px-4">
                   Submit for Approval
                 </Button>
               </div>

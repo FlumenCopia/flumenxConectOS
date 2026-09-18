@@ -290,17 +290,17 @@ export default function ClientWorkflowsPage() {
   const successRate = runs.length > 0 ? Math.round((completedRunsCount / runs.length) * 100) : 100;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Workflow Automations</h1>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
-              Release 10 Engine
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-charcoal-900 tracking-tight">Workflow Automations</h1>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-forest-50 text-forest-800 font-semibold border border-forest-100">
+              Automation Engine
             </span>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs text-sage-500 mt-1">
             Trigger operational lead routing, SLA alerts, auto-followups, and notification events.
           </p>
         </div>
@@ -312,7 +312,7 @@ export default function ClientWorkflowsPage() {
               if (activeTab === 'workflows') fetchWorkflows();
               else fetchRuns();
             }}
-            className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"
+            className="p-2 text-sage-600 hover:text-charcoal-900 hover:bg-sage-50 rounded-xl border border-sage-200 shadow-soft-xs transition-colors"
             title="Refresh"
           >
             <RefreshCw className={`h-4 w-4 ${workflowsLoading || runsLoading ? 'animate-spin' : ''}`} />
@@ -322,7 +322,7 @@ export default function ClientWorkflowsPage() {
             <button
               type="button"
               onClick={handleOpenCreate}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-800 hover:bg-brand-900 text-white rounded-xl text-xs font-semibold shadow-forest-sm transition-colors"
             >
               <Plus className="h-4 w-4" />
               <span>Create Workflow</span>
@@ -333,62 +333,62 @@ export default function ClientWorkflowsPage() {
 
       {/* Alerts */}
       {successMsg && (
-        <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
-          <span>{successMsg}</span>
+        <div className="p-3.5 rounded-xl bg-forest-50 border border-forest-200 text-forest-800 text-xs flex items-center gap-2">
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-forest-600" />
+          <span className="font-medium">{successMsg}</span>
         </div>
       )}
       {errorMsg && (
-        <div className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
-          <XCircle className="h-4 w-4 shrink-0 text-red-600" />
+        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+          <XCircle className="h-4 w-4 shrink-0 text-rose-600" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-4 rounded-2xl border border-sage-200/90 shadow-soft-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Workflows</span>
-            <Workflow className="h-4 w-4 text-brand-600" />
+            <span className="text-xs font-bold text-sage-500 uppercase tracking-wider">Total Workflows</span>
+            <Workflow className="h-4 w-4 text-brand-700" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">{workflowsTotal}</p>
+          <p className="text-2xl font-bold text-charcoal-900 mt-2">{workflowsTotal}</p>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-4 rounded-2xl border border-sage-200/90 shadow-soft-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Active Triggers</span>
-            <Zap className="h-4 w-4 text-emerald-600" />
+            <span className="text-xs font-bold text-sage-500 uppercase tracking-wider">Active Triggers</span>
+            <Zap className="h-4 w-4 text-forest-600" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">{activeCount}</p>
+          <p className="text-2xl font-bold text-forest-700 mt-2">{activeCount}</p>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-4 rounded-2xl border border-sage-200/90 shadow-soft-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Recorded Runs</span>
-            <Layers className="h-4 w-4 text-purple-600" />
+            <span className="text-xs font-bold text-sage-500 uppercase tracking-wider">Recorded Runs</span>
+            <Layers className="h-4 w-4 text-teal-600" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">{runsTotal || runs.length}</p>
+          <p className="text-2xl font-bold text-teal-700 mt-2">{runsTotal || runs.length}</p>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-4 rounded-2xl border border-sage-200/90 shadow-soft-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Success Rate</span>
-            <CheckCircle2 className="h-4 w-4 text-blue-600" />
+            <span className="text-xs font-bold text-sage-500 uppercase tracking-wider">Success Rate</span>
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">{successRate}%</p>
+          <p className="text-2xl font-bold text-emerald-700 mt-2">{successRate}%</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-4 border-b border-slate-200 pb-2">
+      <div className="flex items-center gap-4 border-b border-sage-200 pb-2">
         <button
           type="button"
           onClick={() => setActiveTab('workflows')}
-          className={`text-sm font-semibold pb-2 border-b-2 transition-colors ${
+          className={`text-xs font-bold pb-2 border-b-2 transition-colors ${
             activeTab === 'workflows'
-              ? 'border-brand-600 text-brand-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-brand-800 text-brand-800'
+              : 'border-transparent text-sage-500 hover:text-charcoal-800'
           }`}
         >
           Automations ({workflows.length})
@@ -396,10 +396,10 @@ export default function ClientWorkflowsPage() {
         <button
           type="button"
           onClick={() => setActiveTab('runs')}
-          className={`text-sm font-semibold pb-2 border-b-2 transition-colors ${
+          className={`text-xs font-bold pb-2 border-b-2 transition-colors ${
             activeTab === 'runs'
-              ? 'border-brand-600 text-brand-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-brand-800 text-brand-800'
+              : 'border-transparent text-sage-500 hover:text-charcoal-800'
           }`}
         >
           Execution History ({runs.length})
@@ -410,26 +410,26 @@ export default function ClientWorkflowsPage() {
       {activeTab === 'workflows' && (
         <div className="space-y-4">
           {/* Filter Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-sage-200/90 shadow-soft-xs">
             <div className="relative w-full sm:w-80">
-              <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
+              <Search className="h-4 w-4 absolute left-3 top-2.5 text-sage-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search workflows..."
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-md border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-sage-200 bg-sage-50/50 text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
               />
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs text-slate-500 flex items-center gap-1">
+              <span className="text-xs text-sage-500 flex items-center gap-1 font-medium">
                 <Filter className="h-3 w-3" /> Status:
               </span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="text-xs py-1.5 px-2.5 rounded-md border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-brand-600"
+                className="text-xs py-1.5 px-3 rounded-xl border border-sage-200 bg-white text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
               >
                 <option value="">All Statuses</option>
                 <option value="active">Active</option>
@@ -442,22 +442,22 @@ export default function ClientWorkflowsPage() {
 
           {/* List */}
           {workflowsLoading ? (
-            <div className="bg-white p-12 rounded-xl border border-slate-200 text-center text-slate-400">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600 mb-2" />
-              <p className="text-xs">Loading workflows...</p>
+            <div className="bg-white p-12 rounded-2xl border border-sage-200/90 shadow-soft-xs text-center text-sage-400">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-800 mb-2" />
+              <p className="text-xs font-medium text-sage-500">Loading workflows...</p>
             </div>
           ) : workflows.length === 0 ? (
-            <div className="bg-white p-12 rounded-xl border border-slate-200 text-center text-slate-400">
-              <Workflow className="h-10 w-10 mx-auto text-slate-300 stroke-[1.5] mb-2" />
-              <h3 className="text-sm font-semibold text-slate-800">No workflows found</h3>
-              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            <div className="bg-white p-12 rounded-2xl border border-dashed border-sage-300 text-center text-sage-400">
+              <Workflow className="h-10 w-10 mx-auto text-sage-300 stroke-[1.5] mb-2" />
+              <h3 className="text-sm font-bold text-charcoal-900">No workflows found</h3>
+              <p className="text-xs text-sage-500 mt-1 max-w-sm mx-auto">
                 Create an automated workflow to auto-assign leads, schedule follow-ups, and trigger team notifications.
               </p>
               {canCreate && (
                 <button
                   type="button"
                   onClick={handleOpenCreate}
-                  className="mt-4 px-3.5 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-semibold"
+                  className="mt-4 px-4 py-2 bg-brand-800 hover:bg-brand-900 text-white rounded-xl text-xs font-semibold shadow-forest-sm transition"
                 >
                   Create First Workflow
                 </button>
@@ -472,51 +472,51 @@ export default function ClientWorkflowsPage() {
                 return (
                   <div
                     key={wf._id}
-                    className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                    className="bg-white p-5 rounded-2xl border border-sage-200/90 shadow-soft-xs hover:shadow-soft-md hover:border-sage-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
                   >
                     <div className="space-y-2 flex-1">
                       <div className="flex items-center gap-3">
-                        <h3 className="text-base font-semibold text-slate-900">{wf.name}</h3>
+                        <h3 className="text-base font-bold text-charcoal-900">{wf.name}</h3>
                         <span
-                          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
+                          className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
                             isActive
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              ? 'bg-forest-50 text-forest-800 border-forest-200'
                               : isPaused
-                              ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-slate-50 text-slate-600 border-slate-200'
+                              ? 'bg-amber-50 text-amber-800 border-amber-200'
+                              : 'bg-sage-50 text-charcoal-700 border-sage-200'
                           }`}
                         >
                           {wf.status.toUpperCase()}
                         </span>
-                        <span className="text-[10px] text-slate-400 font-mono">
+                        <span className="text-[10px] text-sage-400 font-mono">
                           Limit: {wf.maxExecutionsPerHour}/hr
                         </span>
                       </div>
 
                       {wf.description && (
-                        <p className="text-xs text-slate-500 line-clamp-1">{wf.description}</p>
+                        <p className="text-xs text-sage-500 line-clamp-1">{wf.description}</p>
                       )}
 
                       {/* Trigger & Steps Summary */}
                       <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 text-slate-700 text-xs font-mono">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-sage-50 text-charcoal-800 text-xs font-mono border border-sage-100">
                           <Zap className="h-3 w-3 text-amber-500" />
                           <span>When: {wf.trigger.eventType}</span>
                         </div>
 
                         {wf.conditions && wf.conditions.length > 0 && (
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-sage-400">
                             • {wf.conditions.length} condition{wf.conditions.length > 1 ? 's' : ''}
                           </span>
                         )}
 
-                        <ArrowRight className="h-3 w-3 text-slate-300" />
+                        <ArrowRight className="h-3 w-3 text-sage-300" />
 
                         <div className="flex items-center gap-1">
                           {wf.actions.map((act, idx) => (
                             <span
                               key={act.id || idx}
-                              className="text-[11px] px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200 font-medium"
+                              className="text-[11px] px-2.5 py-0.5 rounded-xl bg-forest-50 text-forest-800 border border-forest-200 font-medium"
                             >
                               {act.type.replace('_', ' ')}
                             </span>
@@ -526,7 +526,7 @@ export default function ClientWorkflowsPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
+                    <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-sage-100">
                       {/* Test Button */}
                       {canExecute && (
                         <button
@@ -535,10 +535,10 @@ export default function ClientWorkflowsPage() {
                             setTestModalWorkflow(wf);
                             setTestResult(null);
                           }}
-                          className="px-2.5 py-1.5 text-xs text-slate-700 hover:text-brand-600 hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors inline-flex items-center gap-1.5"
+                          className="px-3 py-1.5 text-xs font-semibold text-charcoal-700 hover:text-brand-800 hover:bg-sage-50 rounded-xl border border-sage-200 transition-colors inline-flex items-center gap-1.5 shadow-soft-xs"
                           title="Test conditions or execute manually"
                         >
-                          <Play className="h-3.5 w-3.5" />
+                          <Play className="h-3.5 w-3.5 text-forest-700" />
                           <span>Test & Run</span>
                         </button>
                       )}
@@ -549,10 +549,10 @@ export default function ClientWorkflowsPage() {
                           type="button"
                           disabled={actionLoadingId === wf._id}
                           onClick={() => handleToggleStatus(wf)}
-                          className={`p-1.5 rounded-lg border text-xs font-medium transition-colors ${
+                          className={`p-2 rounded-xl border text-xs font-semibold transition-colors ${
                             isActive
-                              ? 'text-amber-700 border-amber-200 hover:bg-amber-50'
-                              : 'text-emerald-700 border-emerald-200 hover:bg-emerald-50'
+                              ? 'text-amber-800 border-amber-200 bg-amber-50 hover:bg-amber-100'
+                              : 'text-forest-800 border-forest-200 bg-forest-50 hover:bg-forest-100'
                           }`}
                           title={isActive ? 'Pause Workflow' : 'Activate Workflow'}
                         >
@@ -565,7 +565,7 @@ export default function ClientWorkflowsPage() {
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(wf)}
-                          className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors"
+                          className="p-2 text-sage-600 hover:text-charcoal-900 hover:bg-sage-50 rounded-xl border border-sage-200 transition-colors"
                           title="Edit Workflow"
                         >
                           <Edit2 className="h-4 w-4" />
@@ -578,7 +578,7 @@ export default function ClientWorkflowsPage() {
                           type="button"
                           disabled={actionLoadingId === wf._id}
                           onClick={() => handleDelete(wf)}
-                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200 transition-colors"
+                          className="p-2 text-sage-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-sage-200 transition-colors"
                           title="Delete Workflow"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -597,27 +597,27 @@ export default function ClientWorkflowsPage() {
       {activeTab === 'runs' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-sage-500 font-medium">
               Audit trail of automated and manual workflow executions.
             </span>
             <button
               type="button"
               onClick={fetchRuns}
-              className="text-xs text-brand-600 hover:underline inline-flex items-center gap-1"
+              className="text-xs text-brand-800 font-semibold hover:underline inline-flex items-center gap-1"
             >
               <RefreshCw className="h-3 w-3" /> Refresh runs
             </button>
           </div>
 
           {runsLoading ? (
-            <div className="bg-white p-12 rounded-xl border border-slate-200 text-center text-slate-400">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600 mb-2" />
-              <p className="text-xs">Loading execution history...</p>
+            <div className="bg-white p-12 rounded-2xl border border-sage-200/90 shadow-soft-xs text-center text-sage-400">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-800 mb-2" />
+              <p className="text-xs font-medium text-sage-500">Loading execution history...</p>
             </div>
           ) : runs.length === 0 ? (
-            <div className="bg-white p-12 rounded-xl border border-slate-200 text-center text-slate-400">
-              <Clock className="h-8 w-8 mx-auto text-slate-300 stroke-[1.5] mb-2" />
-              <h3 className="text-sm font-semibold text-slate-800">No execution runs recorded yet</h3>
+            <div className="bg-white p-12 rounded-2xl border border-dashed border-sage-300 text-center text-sage-400">
+              <Clock className="h-8 w-8 mx-auto text-sage-300 stroke-[1.5] mb-2" />
+              <h3 className="text-sm font-bold text-charcoal-900">No execution runs recorded yet</h3>
               <p className="text-xs text-slate-500 mt-1">
                 Runs are automatically recorded when event triggers fire or when manually executed.
               </p>
@@ -696,36 +696,36 @@ export default function ClientWorkflowsPage() {
 
       {/* Workflow Builder Modal */}
       {isBuilderOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 bg-charcoal-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-soft-xl border border-sage-200 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
             {/* Modal Header */}
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <div className="p-5 border-b border-sage-100 flex items-center justify-between bg-sage-50/50">
               <div>
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-charcoal-900">
                   {editingWorkflow ? 'Edit Workflow Automation' : 'Create Workflow Automation'}
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-sage-500 mt-0.5">
                   Configure the trigger, conditions, and automated operational actions.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsBuilderOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/50"
+                className="p-1.5 text-sage-400 hover:text-charcoal-700 rounded-lg hover:bg-sage-100 transition"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Step Navigation Bar */}
-            <div className="flex border-b border-slate-100 text-xs font-semibold">
+            <div className="flex border-b border-sage-100 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setBuilderStep(1)}
                 className={`flex-1 py-3 text-center border-b-2 transition-colors ${
                   builderStep === 1
-                    ? 'border-brand-600 text-brand-600 bg-brand-50/20'
-                    : 'border-transparent text-slate-500'
+                    ? 'border-brand-800 text-brand-800 bg-brand-50/30'
+                    : 'border-transparent text-sage-500'
                 }`}
               >
                 1. General Info & Trigger
@@ -735,8 +735,8 @@ export default function ClientWorkflowsPage() {
                 onClick={() => setBuilderStep(2)}
                 className={`flex-1 py-3 text-center border-b-2 transition-colors ${
                   builderStep === 2
-                    ? 'border-brand-600 text-brand-600 bg-brand-50/20'
-                    : 'border-transparent text-slate-500'
+                    ? 'border-brand-800 text-brand-800 bg-brand-50/30'
+                    : 'border-transparent text-sage-500'
                 }`}
               >
                 2. Conditions ({formData.conditions.length})
@@ -746,8 +746,8 @@ export default function ClientWorkflowsPage() {
                 onClick={() => setBuilderStep(3)}
                 className={`flex-1 py-3 text-center border-b-2 transition-colors ${
                   builderStep === 3
-                    ? 'border-brand-600 text-brand-600 bg-brand-50/20'
-                    : 'border-transparent text-slate-500'
+                    ? 'border-brand-800 text-brand-800 bg-brand-50/30'
+                    : 'border-transparent text-sage-500'
                 }`}
               >
                 3. Automated Actions ({formData.actions.length})
@@ -766,7 +766,7 @@ export default function ClientWorkflowsPage() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Instant High-Value Lead Follow-up"
-                      className="w-full p-2 rounded-lg border border-slate-300 text-slate-800 focus:ring-1 focus:ring-brand-600"
+                      className="w-full p-2.5 rounded-xl border border-sage-200 text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                     />
                   </div>
 
@@ -776,54 +776,60 @@ export default function ClientWorkflowsPage() {
                       rows={2}
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Optional details regarding the objective of this automation..."
-                      className="w-full p-2 rounded-lg border border-slate-300 text-slate-800 focus:ring-1 focus:ring-brand-600"
+                      placeholder="Explain what this automation accomplishes..."
+                      className="w-full p-2.5 rounded-xl border border-sage-200 text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block font-semibold text-slate-700 mb-1">Trigger Event *</label>
+                      <label className="block font-semibold text-slate-700 mb-1">Status</label>
                       <select
-                        value={formData.trigger.eventType}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            trigger: { ...formData.trigger, eventType: e.target.value },
-                          })
-                        }
-                        className="w-full p-2 rounded-lg border border-slate-300 text-slate-800 focus:ring-1 focus:ring-brand-600 bg-white"
+                        value={formData.status}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        className="w-full p-2.5 rounded-xl border border-sage-200 bg-white text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                       >
-                        <option value="lead.created">lead.created (New lead arrives)</option>
-                        <option value="lead.stage_changed">lead.stage_changed (Pipeline stage changed)</option>
-                        <option value="lead.updated">lead.updated (Lead details updated)</option>
-                        <option value="form.submitted">form.submitted (Website form submitted)</option>
-                        <option value="task.created">task.created (Task created)</option>
-                        <option value="task.completed">task.completed (Task completed)</option>
-                        <option value="task.sla_breached">task.sla_breached (SLA deadline breached)</option>
-                        <option value="task.overdue">task.overdue (Task passed due date)</option>
-                        <option value="conversation.received">conversation.received (Inbound customer message)</option>
-                        <option value="conversation.replied">conversation.replied (Outbound staff reply)</option>
-                        <option value="manual.trigger">manual.trigger (On-demand test trigger)</option>
+                        <option value="draft">Draft (Inactive)</option>
+                        <option value="active">Active (Listening)</option>
+                        <option value="paused">Paused</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block font-semibold text-slate-700 mb-1">Max Executions Per Hour</label>
-                      <input
-                        type="number"
-                        min={1}
-                        max={1000}
-                        value={formData.maxExecutionsPerHour}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            maxExecutionsPerHour: Number(e.target.value),
-                          })
-                        }
-                        className="w-full p-2 rounded-lg border border-slate-300 text-slate-800 focus:ring-1 focus:ring-brand-600"
-                      />
+                      <label className="block font-semibold text-slate-700 mb-1">Execution Mode</label>
+                      <select
+                        value={formData.executionMode}
+                        onChange={(e) => setFormData({ ...formData, executionMode: e.target.value })}
+                        className="w-full p-2.5 rounded-xl border border-sage-200 bg-white text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
+                      >
+                        <option value="immediate">Immediate (Real-time)</option>
+                        <option value="delayed">Delayed (Schedule)</option>
+                        <option value="batched">Batched Interval</option>
+                      </select>
                     </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-sage-100">
+                    <label className="block font-bold text-charcoal-900 mb-1">Event Trigger *</label>
+                    <p className="text-sage-500 text-[11px] mb-2">
+                      Select which event will automatically kick off this workflow.
+                    </p>
+                    <select
+                      value={formData.trigger.eventType}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          trigger: { ...formData.trigger, eventType: e.target.value },
+                        })
+                      }
+                      className="w-full p-2.5 rounded-xl border border-sage-200 bg-white font-mono text-xs text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
+                    >
+                      <option value="lead.created">lead.created (New lead captured via Form / Webhook)</option>
+                      <option value="lead.stage_changed">lead.stage_changed (Pipeline stage changed)</option>
+                      <option value="lead.score_updated">lead.score_updated (Lead score updated)</option>
+                      <option value="conversation.inbound_message">conversation.inbound_message (New incoming message)</option>
+                      <option value="task.overdue">task.overdue (Follow-up SLA task overdue)</option>
+                    </select>
                   </div>
                 </div>
               )}
@@ -832,188 +838,155 @@ export default function ClientWorkflowsPage() {
               {builderStep === 2 && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">
-                      Specify criteria that must match for the workflow to fire. If no conditions are defined, all triggered events proceed.
-                    </span>
+                    <div>
+                      <h4 className="font-bold text-charcoal-900 text-sm">Execution Conditions</h4>
+                      <p className="text-sage-500 text-[11px]">
+                        Optional gatekeepers. All conditions must pass for actions to run.
+                      </p>
+                    </div>
                     <button
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
+                        const newCond = {
+                          field: 'lead.leadScore',
+                          operator: 'greater_than',
+                          value: 50,
+                        };
                         setFormData({
                           ...formData,
-                          conditions: [
-                            ...formData.conditions,
-                            { field: 'lead.leadScore', operator: 'greater_than', value: '50', logicalOperator: 'and' },
-                          ],
-                        })
-                      }
-                      className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded text-xs flex items-center gap-1"
+                          conditions: [...formData.conditions, newCond],
+                        });
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-forest-50 text-forest-800 border border-forest-200 font-semibold text-xs inline-flex items-center gap-1 hover:bg-forest-100 transition"
                     >
-                      <Plus className="h-3 w-3" /> Add Condition
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Add Condition</span>
                     </button>
                   </div>
 
                   {formData.conditions.length === 0 ? (
-                    <div className="p-6 text-center border border-dashed border-slate-200 rounded-lg text-slate-400">
-                      No conditions set. This workflow will run for every{' '}
-                      <span className="font-mono text-slate-600 font-bold">{formData.trigger.eventType}</span> event.
+                    <div className="p-8 text-center bg-sage-50/50 rounded-2xl border border-dashed border-sage-200 text-sage-500">
+                      No conditions configured. Workflow will trigger for <strong>every</strong> event occurrence.
                     </div>
                   ) : (
-                    formData.conditions.map((cond: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2 relative"
-                      >
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          <div>
-                            <label className="block text-[10px] uppercase font-semibold text-slate-500 mb-0.5">
-                              Field (Allowlisted)
-                            </label>
-                            <input
-                              type="text"
-                              value={cond.field}
-                              onChange={(e) => {
-                                const copy = [...formData.conditions];
-                                copy[idx].field = e.target.value;
-                                setFormData({ ...formData, conditions: copy });
-                              }}
-                              placeholder="e.g. lead.stage or lead.leadScore"
-                              className="w-full p-1.5 border border-slate-300 rounded bg-white"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-[10px] uppercase font-semibold text-slate-500 mb-0.5">
-                              Operator
-                            </label>
-                            <select
-                              value={cond.operator}
-                              onChange={(e) => {
-                                const copy = [...formData.conditions];
-                                copy[idx].operator = e.target.value;
-                                setFormData({ ...formData, conditions: copy });
-                              }}
-                              className="w-full p-1.5 border border-slate-300 rounded bg-white"
-                            >
-                              <option value="equals">equals</option>
-                              <option value="not_equals">not equals</option>
-                              <option value="contains">contains</option>
-                              <option value="starts_with">starts with</option>
-                              <option value="greater_than">greater than</option>
-                              <option value="less_than">less than</option>
-                              <option value="in_list">in list (comma separated)</option>
-                              <option value="exists">exists</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className="block text-[10px] uppercase font-semibold text-slate-500 mb-0.5">
-                              Value
-                            </label>
-                            <input
-                              type="text"
-                              value={cond.value || ''}
-                              onChange={(e) => {
-                                const copy = [...formData.conditions];
-                                copy[idx].value = e.target.value;
-                                setFormData({ ...formData, conditions: copy });
-                              }}
-                              placeholder="Value to compare"
-                              className="w-full p-1.5 border border-slate-300 rounded bg-white"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-1">
-                          <span className="text-[10px] text-slate-400">Rule #{idx + 1}</span>
+                    <div className="space-y-2">
+                      {formData.conditions.map((cond: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-2 p-3 bg-sage-50/50 rounded-xl border border-sage-200/80"
+                        >
+                          <span className="font-mono text-xs text-sage-500 font-bold">#{idx + 1}</span>
+                          <input
+                            type="text"
+                            value={cond.field}
+                            onChange={(e) => {
+                              const copy = [...formData.conditions];
+                              copy[idx].field = e.target.value;
+                              setFormData({ ...formData, conditions: copy });
+                            }}
+                            placeholder="e.g. lead.leadScore"
+                            className="p-1.5 rounded-lg border border-sage-200 text-xs font-mono bg-white flex-1"
+                          />
+                          <select
+                            value={cond.operator}
+                            onChange={(e) => {
+                              const copy = [...formData.conditions];
+                              copy[idx].operator = e.target.value;
+                              setFormData({ ...formData, conditions: copy });
+                            }}
+                            className="p-1.5 rounded-lg border border-sage-200 text-xs bg-white"
+                          >
+                            <option value="equals">equals</option>
+                            <option value="not_equals">not_equals</option>
+                            <option value="greater_than">greater_than</option>
+                            <option value="less_than">less_than</option>
+                            <option value="contains">contains</option>
+                            <option value="in">in list</option>
+                          </select>
+                          <input
+                            type="text"
+                            value={cond.value}
+                            onChange={(e) => {
+                              const copy = [...formData.conditions];
+                              copy[idx].value = e.target.value;
+                              setFormData({ ...formData, conditions: copy });
+                            }}
+                            placeholder="value..."
+                            className="p-1.5 rounded-lg border border-sage-200 text-xs bg-white flex-1"
+                          />
                           <button
                             type="button"
                             onClick={() => {
                               const copy = formData.conditions.filter((_: any, i: number) => i !== idx);
                               setFormData({ ...formData, conditions: copy });
                             }}
-                            className="text-red-600 hover:text-red-700 text-[11px] font-medium"
+                            className="p-1.5 text-sage-400 hover:text-rose-600 rounded-lg"
                           >
-                            Remove
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
-                      </div>
-                    ))
+                      ))}
+                    </div>
                   )}
                 </div>
               )}
 
-              {/* Step 3: Actions */}
+              {/* Step 3: Automated Actions */}
               {builderStep === 3 && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">
-                      Sequential actions dispatched automatically when this workflow executes.
-                    </span>
+                    <div>
+                      <h4 className="font-bold text-charcoal-900 text-sm">Automated Actions</h4>
+                      <p className="text-sage-500 text-[11px]">
+                        Actions execute sequentially when trigger and conditions match.
+                      </p>
+                    </div>
                     <button
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
+                        const newAct = {
+                          id: `act_${Date.now()}`,
+                          type: 'create_task',
+                          payload: { title: 'New Task', priority: 'medium', dueInHours: 24 },
+                          order: formData.actions.length,
+                        };
                         setFormData({
                           ...formData,
-                          actions: [
-                            ...formData.actions,
-                            {
-                              id: `act_${formData.actions.length + 1}`,
-                              type: 'create_notification',
-                              payload: { title: 'Workflow Alert', message: 'Lead requires follow-up' },
-                              order: formData.actions.length,
-                            },
-                          ],
-                        })
-                      }
-                      className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded text-xs flex items-center gap-1"
+                          actions: [...formData.actions, newAct],
+                        });
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-forest-50 text-forest-800 border border-forest-200 font-semibold text-xs inline-flex items-center gap-1 hover:bg-forest-100 transition"
                     >
-                      <Plus className="h-3 w-3" /> Add Action
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Add Action</span>
                     </button>
                   </div>
 
-                  {formData.actions.map((act: any, idx: number) => (
-                    <div key={act.id || idx} className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="h-5 w-5 rounded-full bg-brand-600 text-white font-bold text-[10px] flex items-center justify-center">
-                            {idx + 1}
-                          </span>
-                          <span className="font-semibold text-slate-800">Action Step</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const copy = formData.actions.filter((_: any, i: number) => i !== idx);
-                            setFormData({ ...formData, actions: copy });
-                          }}
-                          className="text-red-600 hover:text-red-700 text-xs font-medium"
-                        >
-                          Remove
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[10px] uppercase font-semibold text-slate-500 mb-0.5">
-                            Action Type
-                          </label>
-                          <select
-                            value={act.type}
-                            onChange={(e) => {
-                              const copy = [...formData.actions];
-                              copy[idx].type = e.target.value;
+                  <div className="space-y-3">
+                    {formData.actions.map((act: any, idx: number) => (
+                      <div
+                        key={act.id || idx}
+                        className="p-4 bg-sage-50/50 rounded-2xl border border-sage-200/80 space-y-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-brand-800 text-white text-[10px] font-bold flex items-center justify-center">
+                              {idx + 1}
+                            </span>
+                            <span className="font-bold text-charcoal-900 capitalize">
+                              {act.type.replace(/_/g, ' ')}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const copy = formData.actions.filter((_: any, i: number) => i !== idx);
                               setFormData({ ...formData, actions: copy });
                             }}
-                            className="w-full p-1.5 border border-slate-300 rounded bg-white font-medium"
+                            className="text-sage-400 hover:text-rose-600 p-1 rounded-lg transition-colors"
                           >
-                            <option value="create_task">Create Follow-up Task</option>
-                            <option value="update_lead_stage">Update Lead Pipeline Stage</option>
-                            <option value="add_crm_note">Add CRM Note to Timeline</option>
-                            <option value="add_tag">Add Lead Tag</option>
-                            <option value="create_notification">Dispatch In-App Notification</option>
-                            <option value="send_email">Send Email (Mock Provider)</option>
-                            <option value="pause_workflow">Pause Workflow Execution</option>
-                          </select>
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
 
                         {/* Action Specific Fields */}
@@ -1117,8 +1090,8 @@ export default function ClientWorkflowsPage() {
                           </div>
                         )}
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -1157,7 +1130,7 @@ export default function ClientWorkflowsPage() {
                 <button
                   type="button"
                   onClick={handleSaveWorkflow}
-                  className="px-4 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-sm"
+                  className="px-4 py-2 rounded-xl bg-brand-800 hover:bg-brand-900 text-white font-semibold text-xs shadow-forest-sm transition"
                 >
                   {editingWorkflow ? 'Save Changes' : 'Create Automation'}
                 </button>
@@ -1169,21 +1142,21 @@ export default function ClientWorkflowsPage() {
 
       {/* Test & Manual Run Drawer */}
       {testModalWorkflow && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 bg-charcoal-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-soft-xl border border-sage-200 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="p-4 border-b border-sage-100 flex items-center justify-between bg-sage-50/50">
               <div>
-                <h3 className="font-bold text-sm text-slate-800">
+                <h3 className="font-bold text-sm text-charcoal-900">
                   Test & Run: {testModalWorkflow.name}
                 </h3>
-                <span className="text-[11px] font-mono text-slate-500">
+                <span className="text-[11px] font-mono text-sage-500">
                   Trigger: {testModalWorkflow.trigger.eventType}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setTestModalWorkflow(null)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded"
+                className="p-1.5 text-sage-400 hover:text-charcoal-700 rounded-lg"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -1191,14 +1164,14 @@ export default function ClientWorkflowsPage() {
 
             <div className="p-5 overflow-y-auto flex-1 space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-charcoal-800 mb-1">
                   Sample Event Payload (JSON)
                 </label>
                 <textarea
                   rows={6}
                   value={testPayloadText}
                   onChange={(e) => setTestPayloadText(e.target.value)}
-                  className="w-full font-mono text-[11px] p-2.5 rounded-lg border border-slate-300 bg-slate-900 text-slate-100 focus:ring-1 focus:ring-brand-600"
+                  className="w-full font-mono text-[11px] p-3 rounded-xl border border-sage-200 bg-charcoal-900 text-forest-300 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                 />
               </div>
 
@@ -1208,7 +1181,7 @@ export default function ClientWorkflowsPage() {
                   type="button"
                   disabled={executingTest}
                   onClick={handleTestConditions}
-                  className="flex-1 py-2 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 font-semibold text-slate-800 transition-colors"
+                  className="flex-1 py-2 rounded-xl border border-sage-200 bg-white hover:bg-sage-50 font-semibold text-charcoal-800 transition-colors shadow-soft-xs"
                 >
                   Evaluate Conditions Only
                 </button>
@@ -1216,7 +1189,7 @@ export default function ClientWorkflowsPage() {
                   type="button"
                   disabled={executingTest}
                   onClick={handleExecuteManual}
-                  className="flex-1 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2 rounded-xl bg-brand-800 hover:bg-brand-900 text-white font-semibold shadow-forest-sm transition-colors flex items-center justify-center gap-1.5"
                 >
                   {executingTest && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                   <span>Execute Actions</span>

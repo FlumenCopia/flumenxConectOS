@@ -477,21 +477,21 @@ export default function BroadcastPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 rounded-2xl border border-indigo-900/40 shadow-xl text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-[#14532D] via-[#166534] to-[#0F3D21] p-6 rounded-3xl border border-forest-700/60 shadow-xl text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
         <div className="space-y-1 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
               <Send className="w-5 h-5 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
                 Broadcast Campaign Blast
-                <Badge variant="outline" className="bg-indigo-500/20 text-indigo-300 border-indigo-400/30 text-xs px-2 py-0.5">
+                <Badge variant="outline" className="bg-forest-900/50 text-emerald-200 border-emerald-400/30 text-xs px-2 py-0.5">
                   Multi-Channel
                 </Badge>
               </h1>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-emerald-100/80">
                 Upload contact sheets (Excel / CSV), attach rich media (Images, PDFs, Brochures), and blast personalized messages at scale.
               </p>
             </div>
@@ -505,19 +505,19 @@ export default function BroadcastPage() {
             variant="outline"
             size="sm"
             onClick={downloadSampleExcel}
-            className="border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 gap-2 text-xs"
+            className="border-emerald-600/60 bg-white/10 hover:bg-white/20 text-white gap-2 text-xs rounded-xl backdrop-blur-sm"
           >
             <Download className="w-3.5 h-3.5" />
             Sample Excel
           </Button>
 
-          <div className="bg-slate-800/90 p-1 rounded-xl border border-slate-700/80 flex">
+          <div className="bg-forest-950/60 p-1 rounded-xl border border-forest-700/60 flex backdrop-blur-sm">
             <button
               onClick={() => setActiveTab('compose')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'compose'
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-emerald-600 text-white shadow-sm font-semibold'
+                  : 'text-emerald-200 hover:text-white'
               }`}
             >
               New Blast
@@ -526,8 +526,8 @@ export default function BroadcastPage() {
               onClick={() => setActiveTab('history')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'history'
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-emerald-600 text-white shadow-sm font-semibold'
+                  : 'text-emerald-200 hover:text-white'
               }`}
             >
               Campaign History
@@ -542,18 +542,18 @@ export default function BroadcastPage() {
           {/* Left / Main Section (8 cols) */}
           <div className="lg:col-span-7 space-y-6">
             {/* Step 1: Upload Excel/CSV */}
-            <Card className="border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-5 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">
+            <Card className="border-sage-200/90 shadow-soft-xs rounded-2xl overflow-hidden bg-white">
+              <div className="p-5 border-b border-sage-100 bg-sage-50/60 flex justify-between items-center">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-6 h-6 rounded-full bg-forest-100 text-forest-800 font-bold text-xs flex items-center justify-center border border-forest-200">
                     1
                   </span>
-                  <h2 className="text-base font-semibold text-slate-800">
+                  <h2 className="text-base font-semibold text-charcoal-900">
                     Upload Mobile Numbers (Excel or CSV)
                   </h2>
                 </div>
                 {uploadedFileName && (
-                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
+                  <Badge variant="outline" className="bg-forest-50 text-forest-800 border-forest-200 text-xs">
                     <CheckCircle2 className="w-3 h-3 mr-1" />
                     {uploadedFileName}
                   </Badge>
@@ -571,32 +571,32 @@ export default function BroadcastPage() {
                 />
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/30 hover:bg-indigo-50/60 rounded-xl p-6 text-center cursor-pointer transition-all duration-200 group"
+                  className="border-2 border-dashed border-forest-200 hover:border-forest-400 bg-forest-50/20 hover:bg-forest-50/40 rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 group"
                 >
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-indigo-100 group-hover:bg-indigo-200 text-indigo-600 flex items-center justify-center transition-all">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-forest-100 group-hover:bg-forest-200 text-forest-800 flex items-center justify-center transition-all">
                     <FileSpreadsheet className="w-6 h-6" />
                   </div>
-                  <p className="text-sm font-semibold text-slate-800 mb-1">
+                  <p className="text-sm font-semibold text-charcoal-900 mb-1">
                     Click to browse or drag & drop contact spreadsheet
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-sage-500">
                     Supports Microsoft Excel (.xlsx, .xls) and Comma-Separated Values (.csv)
                   </p>
                 </div>
 
                 {/* Column Mapping Selector */}
                 {sheetColumns.length > 0 && (
-                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                  <div className="p-4 bg-sage-50/60 rounded-2xl border border-sage-200/90 space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      <span className="text-xs font-semibold text-charcoal-800 uppercase tracking-wider">
                         Column Mapping
                       </span>
-                      <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer select-none">
+                      <label className="flex items-center gap-2 text-xs text-charcoal-700 cursor-pointer select-none">
                         <input
                           type="checkbox"
                           checked={deduplicate}
                           onChange={(e) => setDeduplicate(e.target.checked)}
-                          className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                          className="rounded text-forest-800 focus:ring-forest-800/20 w-4 h-4"
                         />
                         <span>Auto-remove duplicate phone numbers</span>
                       </label>
@@ -799,13 +799,13 @@ export default function BroadcastPage() {
             </Card>
 
             {/* Step 2: Channel & Message Content */}
-            <Card className="border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-5 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">
+            <Card className="border-sage-200/90 shadow-soft-xs rounded-2xl overflow-hidden bg-white">
+              <div className="p-5 border-b border-sage-100 bg-sage-50/60 flex justify-between items-center">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-6 h-6 rounded-full bg-forest-100 text-forest-800 font-bold text-xs flex items-center justify-center border border-forest-200">
                     2
                   </span>
-                  <h2 className="text-base font-semibold text-slate-800">
+                  <h2 className="text-base font-semibold text-charcoal-900">
                     Delivery Channel & Message Blast
                   </h2>
                 </div>
@@ -814,7 +814,7 @@ export default function BroadcastPage() {
               <CardContent className="p-5 space-y-5">
                 {/* Campaign Name */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-semibold text-charcoal-800 mb-1.5">
                     Campaign Blast Name *
                   </label>
                   <input
@@ -822,7 +822,7 @@ export default function BroadcastPage() {
                     value={campaignName}
                     onChange={(e) => setCampaignName(e.target.value)}
                     placeholder="e.g. Diwali Offer & Catalog Blast 2026"
-                    className="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full text-xs border border-sage-200 rounded-xl px-3.5 py-2.5 bg-sage-50/40 focus:bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
                   />
                 </div>
 

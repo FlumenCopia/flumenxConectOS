@@ -32,33 +32,33 @@ function PortalShell({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/portal/reset-password');
 
   if (isAuthPage) {
-    return <div className="min-h-screen bg-slate-950 text-slate-50">{children}</div>;
+    return <div className="min-h-screen bg-[#F7F8F5] text-sage-900">{children}</div>;
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-200">
-        <Loader2 className="w-10 h-10 animate-spin text-indigo-500 mb-4" />
-        <p className="text-sm tracking-wide text-slate-400">Verifying secure portal session...</p>
+      <div className="min-h-screen bg-[#F7F8F5] flex flex-col items-center justify-center text-sage-600">
+        <Loader2 className="w-9 h-9 animate-spin text-brand-700 mb-3" />
+        <p className="text-xs font-semibold text-sage-500">Verifying customer portal session...</p>
       </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-100">
-        <div className="max-w-md w-full p-8 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl">
-          <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-            <Shield className="w-7 h-7" />
+      <div className="min-h-screen bg-[#F7F8F5] flex flex-col items-center justify-center p-6 text-center text-sage-900">
+        <div className="max-w-md w-full p-8 rounded-2xl bg-white border border-sage-200/90 shadow-soft-lg">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-brand-50 border border-brand-200 flex items-center justify-center text-brand-800">
+            <Shield className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight mb-2">Customer Portal Authentication</h2>
-          <p className="text-slate-400 text-sm mb-6">
+          <h2 className="text-xl font-bold tracking-tight mb-2">Customer Portal Authentication</h2>
+          <p className="text-sage-500 text-xs mb-6">
             Please log in with your customer portal credentials to access your account, support tickets, and documents.
           </p>
           <Link
             id="portal-login-redirect-btn"
             href="/portal/login"
-            className="inline-flex items-center justify-center w-full px-5 py-3 text-sm font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/25"
+            className="inline-flex items-center justify-center w-full px-5 py-2.5 text-xs font-bold rounded-lg bg-brand-800 hover:bg-brand-700 text-white transition-all shadow-forest-sm"
           >
             Go to Customer Login
           </Link>
@@ -77,58 +77,58 @@ function PortalShell({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[#F7F8F5] text-sage-900 flex flex-col lg:flex-row">
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between px-5 py-4 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
+      <div className="lg:hidden flex items-center justify-between px-4 py-3.5 bg-white border-b border-sage-200/90 sticky top-0 z-40 shadow-soft-xs">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-7 h-7 rounded-lg bg-brand-800 flex items-center justify-center text-white font-bold text-xs shadow-forest-sm">
             FX
           </div>
           <div>
-            <span className="font-semibold text-sm tracking-tight block">Customer Portal</span>
-            <span className="text-xs text-slate-400 block truncate max-w-[160px]">{user?.clientName || 'Workspace'}</span>
+            <span className="font-bold text-xs tracking-tight block">Customer Portal</span>
+            <span className="text-[10px] text-sage-500 block truncate max-w-[150px]">{user?.clientName || 'Workspace'}</span>
           </div>
         </div>
         <button
           id="mobile-nav-toggle-btn"
           onClick={() => setMobileNavOpen(!mobileNavOpen)}
-          className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+          className="p-1.5 rounded-lg bg-sage-50 border border-sage-200 text-sage-600 hover:text-sage-900"
         >
-          {mobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
         </button>
       </div>
 
       {/* Sidebar Desktop */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 p-6 flex flex-col justify-between transition-transform duration-200 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-sage-200/90 p-5 flex flex-col justify-between transition-transform duration-200 shadow-soft-xs lg:static lg:translate-x-0 ${
           mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div>
           {/* Brand header */}
-          <div className="flex items-center space-x-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 flex items-center justify-center text-white font-bold text-base shadow-lg shadow-indigo-600/30">
+          <div className="flex items-center space-x-2.5 mb-6">
+            <div className="w-8 h-8 rounded-lg bg-brand-800 flex items-center justify-center text-white font-bold text-sm shadow-forest-sm">
               FX
             </div>
             <div>
-              <h1 className="font-bold text-base tracking-tight text-white flex items-center space-x-1.5">
+              <h1 className="font-bold text-sm tracking-tight text-sage-900 flex items-center space-x-1.5">
                 <span>flumenxConect</span>
-                <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-50 text-brand-800 border border-brand-200">
                   Portal
                 </span>
               </h1>
-              <p className="text-xs text-slate-400 truncate max-w-[180px]">{user?.clientName || 'Customer Portal'}</p>
+              <p className="text-[10px] text-sage-500 truncate max-w-[150px]">{user?.clientName || 'Customer Portal'}</p>
             </div>
           </div>
 
           {/* User badge */}
-          <div className="mb-6 p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold text-sm">
+          <div className="mb-5 p-3 rounded-xl bg-sage-50/70 border border-sage-200/80 flex items-center space-x-2.5 shadow-soft-xs">
+            <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-800 border border-brand-200 flex items-center justify-center font-bold text-xs">
               {user?.name?.charAt(0) || 'C'}
             </div>
-            <div className="overflow-hidden flex-1">
-              <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
-              <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+            <div className="overflow-hidden flex-1 leading-tight">
+              <p className="text-xs font-bold text-sage-900 truncate">{user?.name}</p>
+              <p className="text-[10px] text-sage-500 truncate">{user?.email}</p>
             </div>
           </div>
 
@@ -143,13 +143,13 @@ function PortalShell({ children }: { children: React.ReactNode }) {
                   id={`portal-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                   href={item.href}
                   onClick={() => setMobileNavOpen(false)}
-                  className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                     active
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25'
-                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                      ? 'bg-brand-50 text-brand-800 font-semibold shadow-soft-xs'
+                      : 'text-sage-600 hover:text-sage-900 hover:bg-sage-100/70'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${active ? 'text-brand-800 stroke-[2.2]' : 'text-sage-400'}`} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -158,11 +158,11 @@ function PortalShell({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Bottom controls */}
-        <div className="pt-4 border-t border-slate-800/80">
+        <div className="pt-3 border-t border-sage-100">
           <button
             id="portal-logout-btn"
             onClick={logout}
-            className="flex items-center space-x-3 w-full px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+            className="flex items-center space-x-2.5 w-full px-3 py-2 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>
@@ -185,3 +185,4 @@ export default function CustomerPortalLayout({ children }: { children: React.Rea
     </PortalAuthProvider>
   );
 }
+

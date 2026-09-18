@@ -141,17 +141,17 @@ export default function PortalRequestsPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-sage-200/80 pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Service & Support Requests</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">Service & Support Requests</h1>
+          <p className="text-xs text-sage-500 mt-1">
             Submit new tickets, track existing inquiries, and collaborate with support staff
           </p>
         </div>
         <button
           id="open-new-request-modal-btn"
           onClick={() => setModalOpen(true)}
-          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/30"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-brand-800 hover:bg-brand-900 text-white font-semibold text-xs transition-all shadow-forest-sm"
         >
           <PlusCircle className="w-4 h-4" />
           <span>New Request</span>
@@ -159,16 +159,16 @@ export default function PortalRequestsPage() {
       </div>
 
       {/* Filters Bar */}
-      <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+      <div className="p-4 rounded-2xl bg-white border border-sage-200/90 shadow-soft-xs flex flex-col md:flex-row items-stretch md:items-center gap-4">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-sage-400 absolute left-3.5 top-3" />
           <input
             id="requests-search-input"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by request number, title, or keywords..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-white border border-sage-200 text-charcoal-900 placeholder-sage-400 text-xs focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
           />
         </div>
 
@@ -177,7 +177,7 @@ export default function PortalRequestsPage() {
             id="requests-status-filter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            className="px-3.5 py-2 rounded-xl bg-white border border-sage-200 text-charcoal-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
           >
             <option value="all">All Statuses</option>
             <option value="submitted">Submitted</option>
@@ -191,7 +191,7 @@ export default function PortalRequestsPage() {
             id="requests-category-filter"
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            className="px-3.5 py-2 rounded-xl bg-white border border-sage-200 text-charcoal-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
           >
             <option value="all">All Categories</option>
             <option value="support">Support</option>
@@ -206,15 +206,15 @@ export default function PortalRequestsPage() {
 
       {/* Requests List */}
       {loading ? (
-        <div className="py-24 text-center text-slate-400">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mx-auto mb-3" />
-          <p className="text-sm">Loading your requests...</p>
+        <div className="py-24 text-center text-sage-400">
+          <Loader2 className="w-8 h-8 animate-spin text-brand-800 mx-auto mb-3" />
+          <p className="text-xs font-semibold text-sage-600">Loading your requests...</p>
         </div>
       ) : filteredRequests.length === 0 ? (
-        <div className="p-12 rounded-2xl bg-slate-900/40 border border-slate-800 text-center">
-          <FileText className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-base font-semibold text-white">No requests found</h3>
-          <p className="text-xs text-slate-400 mt-1">
+        <div className="p-12 rounded-2xl bg-white border border-sage-200/90 text-center shadow-soft-xs space-y-2">
+          <FileText className="w-12 h-12 text-sage-300 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-charcoal-900">No requests found</h3>
+          <p className="text-xs text-sage-500">
             {searchQuery || statusFilter !== 'all' || categoryFilter !== 'all'
               ? 'Try adjusting your search or filters'
               : 'You have not submitted any service or support requests yet.'}
@@ -227,55 +227,57 @@ export default function PortalRequestsPage() {
               key={req._id}
               id={`request-item-${req.requestNumber}`}
               href={`/portal/requests/${req._id}`}
-              className="block p-5 rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/40 transition-all shadow-md group"
+              className="block p-5 rounded-2xl bg-white hover:bg-forest-50/40 border border-sage-200/90 hover:border-brand-800/30 transition-all shadow-soft-xs group"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1.5 flex-1 min-w-0">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-xs font-mono font-bold text-indigo-400">{req.requestNumber}</span>
-                    <span className="text-[11px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="text-xs font-mono font-bold text-brand-800 bg-forest-50 px-2.5 py-0.5 rounded-full border border-forest-100">
+                      {req.requestNumber}
+                    </span>
+                    <span className="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full bg-sage-50 text-sage-700 border border-sage-200">
                       {req.category.replace('_', ' ')}
                     </span>
                     {req.priority === 'urgent' && (
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
                         Urgent
                       </span>
                     )}
                   </div>
-                  <h3 className="text-base font-semibold text-white group-hover:text-indigo-400 transition-colors truncate">
+                  <h3 className="text-sm font-bold text-charcoal-900 group-hover:text-brand-800 transition-colors truncate">
                     {req.subject}
                   </h3>
-                  <p className="text-xs text-slate-400 line-clamp-2">{req.description}</p>
+                  <p className="text-xs text-sage-500 line-clamp-2">{req.description}</p>
                 </div>
 
                 <div className="flex items-center sm:flex-col sm:items-end justify-between gap-3 flex-shrink-0">
                   <span
-                    className={`text-xs font-semibold px-3 py-1 rounded-xl capitalize ${
+                    className={`text-xs font-semibold px-3 py-0.5 rounded-full capitalize ${
                       req.status === 'completed'
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        ? 'bg-forest-50 text-forest-800 border border-forest-200'
                         : req.status === 'in_progress'
-                        ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                        ? 'bg-blue-50 text-blue-800 border border-blue-200'
                         : req.status === 'under_review'
-                        ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                        ? 'bg-purple-50 text-purple-800 border border-purple-200'
                         : req.status === 'closed'
-                        ? 'bg-slate-800 text-slate-400 border border-slate-700'
-                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        ? 'bg-sage-100 text-sage-600 border border-sage-200'
+                        : 'bg-amber-50 text-amber-800 border border-amber-200'
                     }`}
                   >
                     {req.status.replace('_', ' ')}
                   </span>
-                  <div className="flex items-center space-x-3 text-xs text-slate-500">
+                  <div className="flex items-center space-x-3 text-xs text-sage-500">
                     {req.attachments?.length > 0 && (
                       <span className="flex items-center space-x-1">
-                        <Paperclip className="w-3.5 h-3.5" />
+                        <Paperclip className="w-3.5 h-3.5 text-sage-400" />
                         <span>{req.attachments.length}</span>
                       </span>
                     )}
                     <span className="flex items-center space-x-1">
-                      <Clock className="w-3.5 h-3.5" />
+                      <Clock className="w-3.5 h-3.5 text-sage-400" />
                       <span>{new Date(req.createdAt).toLocaleDateString()}</span>
                     </span>
-                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 transition-transform" />
+                    <ChevronRight className="w-4 h-4 text-sage-400 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
               </div>
@@ -286,19 +288,19 @@ export default function PortalRequestsPage() {
 
       {/* Modal: Create Customer Request */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-2xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 bg-charcoal-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="max-w-2xl w-full bg-white border border-sage-200/90 rounded-3xl p-6 sm:p-8 shadow-soft-xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-sage-100">
               <div>
-                <h3 className="text-lg font-bold text-white">Create New Request</h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <h3 className="text-base font-bold text-charcoal-900">Create New Request</h3>
+                <p className="text-xs text-sage-500 mt-0.5">
                   Describe what you need help with. Our staff will respond to your ticket promptly.
                 </p>
               </div>
               <button
                 id="close-create-request-modal"
                 onClick={() => setModalOpen(false)}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1.5 rounded-xl text-sage-400 hover:text-charcoal-900 hover:bg-sage-50"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -307,16 +309,16 @@ export default function PortalRequestsPage() {
             {formError && (
               <div
                 id="create-request-error"
-                className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center space-x-3"
+                className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center space-x-2.5"
               >
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{formError}</span>
               </div>
             )}
 
             <form onSubmit={handleCreateRequest} className="space-y-5">
               <div>
-                <label htmlFor="request-subject-input" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label htmlFor="request-subject-input" className="block text-xs font-semibold text-charcoal-900 mb-1.5">
                   Subject / Summary *
                 </label>
                 <input
@@ -326,20 +328,20 @@ export default function PortalRequestsPage() {
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="e.g. Question regarding onboarding invoice #104"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sage-200 text-charcoal-900 placeholder-sage-400 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-xs"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="request-category-select" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  <label htmlFor="request-category-select" className="block text-xs font-semibold text-charcoal-900 mb-1.5">
                     Category *
                   </label>
                   <select
                     id="request-category-select"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3 py-2.5 rounded-xl bg-white border border-sage-200 text-charcoal-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                   >
                     <option value="support">General Support</option>
                     <option value="billing">Billing & Invoicing</option>
@@ -351,14 +353,14 @@ export default function PortalRequestsPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="request-priority-select" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  <label htmlFor="request-priority-select" className="block text-xs font-semibold text-charcoal-900 mb-1.5">
                     Priority
                   </label>
                   <select
                     id="request-priority-select"
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3 py-2.5 rounded-xl bg-white border border-sage-200 text-charcoal-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
                   >
                     <option value="low">Low</option>
                     <option value="normal">Normal</option>
@@ -369,7 +371,7 @@ export default function PortalRequestsPage() {
               </div>
 
               <div>
-                <label htmlFor="request-description-textarea" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label htmlFor="request-description-textarea" className="block text-xs font-semibold text-charcoal-900 mb-1.5">
                   Detailed Description *
                 </label>
                 <textarea
@@ -379,16 +381,16 @@ export default function PortalRequestsPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Provide complete details about your request or issue..."
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sage-200 text-charcoal-900 placeholder-sage-400 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-xs resize-none"
                 />
               </div>
 
               {/* Attachments (Max 5 files, 10MB limit) */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold text-charcoal-900 mb-1.5">
                   Attachments (Max 5 files, up to 10MB each)
                 </label>
-                <div className="border-2 border-dashed border-slate-700 hover:border-slate-600 rounded-2xl p-4 text-center cursor-pointer relative bg-slate-800/30">
+                <div className="border-2 border-dashed border-sage-200 hover:border-brand-800/40 rounded-2xl p-4 text-center cursor-pointer relative bg-surface/50 transition-colors">
                   <input
                     id="request-file-upload-input"
                     type="file"
@@ -396,9 +398,9 @@ export default function PortalRequestsPage() {
                     onChange={handleFileUpload}
                     className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                   />
-                  <UploadCloud className="w-8 h-8 text-slate-400 mx-auto mb-1" />
-                  <p className="text-xs text-slate-300 font-medium">Click to upload documents or screenshots</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">PDF, DOCX, PNG, JPG, CSV (Executables & SVG prohibited)</p>
+                  <UploadCloud className="w-8 h-8 text-brand-800 mx-auto mb-1" />
+                  <p className="text-xs text-charcoal-900 font-medium">Click to upload documents or screenshots</p>
+                  <p className="text-[11px] text-sage-400 mt-0.5">PDF, DOCX, PNG, JPG, CSV (Executables & SVG prohibited)</p>
                 </div>
 
                 {attachments.length > 0 && (
@@ -406,17 +408,17 @@ export default function PortalRequestsPage() {
                     {attachments.map((file) => (
                       <div
                         key={file.id}
-                        className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs"
+                        className="flex items-center justify-between p-2.5 rounded-xl bg-surface border border-sage-200 text-xs"
                       >
                         <div className="flex items-center space-x-2 truncate">
-                          <Paperclip className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                          <span className="text-slate-200 truncate">{file.name}</span>
-                          <span className="text-slate-500 flex-shrink-0">({(file.size / 1024).toFixed(1)} KB)</span>
+                          <Paperclip className="w-4 h-4 text-sage-500 flex-shrink-0" />
+                          <span className="text-charcoal-900 font-medium truncate">{file.name}</span>
+                          <span className="text-sage-400 flex-shrink-0">({(file.size / 1024).toFixed(1)} KB)</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => removeAttachment(file.id)}
-                          className="p-1 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+                          className="p-1 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -426,11 +428,11 @@ export default function PortalRequestsPage() {
                 )}
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end space-x-2.5 pt-4 border-t border-sage-100">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 text-sm font-medium"
+                  className="px-4 py-2 rounded-xl text-sage-600 hover:text-charcoal-900 text-xs font-semibold"
                 >
                   Cancel
                 </button>
@@ -438,7 +440,7 @@ export default function PortalRequestsPage() {
                   id="submit-request-form-btn"
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/25 flex items-center space-x-2"
+                  className="px-5 py-2.5 rounded-xl bg-brand-800 hover:bg-brand-900 disabled:opacity-50 text-white font-semibold text-xs transition-all shadow-forest-sm flex items-center space-x-2"
                 >
                   {submitting ? (
                     <>

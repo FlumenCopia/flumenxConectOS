@@ -115,9 +115,9 @@ export default function PortalRequestDetailPage() {
 
   if (loading) {
     return (
-      <div className="py-24 text-center text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mx-auto mb-3" />
-        <p className="text-sm">Loading request details...</p>
+      <div className="py-24 text-center text-sage-400">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-800 mx-auto mb-3" />
+        <p className="text-xs font-semibold text-sage-600">Loading request details...</p>
       </div>
     );
   }
@@ -126,13 +126,13 @@ export default function PortalRequestDetailPage() {
     return (
       <div className="max-w-3xl mx-auto py-16 text-center space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500 mx-auto" />
-        <h2 className="text-xl font-bold text-white">Request Not Found</h2>
-        <p className="text-sm text-slate-400">
+        <h2 className="text-lg font-bold text-charcoal-900">Request Not Found</h2>
+        <p className="text-xs text-sage-500">
           The requested ticket does not exist or you do not have permission to access it.
         </p>
         <Link
           href="/portal/requests"
-          className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-800 text-slate-200 text-sm hover:bg-slate-700"
+          className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-white border border-sage-200 text-charcoal-900 text-xs font-semibold hover:bg-sage-50 shadow-soft-xs"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Requests</span>
@@ -148,7 +148,7 @@ export default function PortalRequestDetailPage() {
         <Link
           id="back-to-requests-link"
           href="/portal/requests"
-          className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors"
+          className="inline-flex items-center space-x-2 text-xs font-semibold text-sage-500 hover:text-charcoal-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to all requests</span>
@@ -156,31 +156,33 @@ export default function PortalRequestDetailPage() {
       </div>
 
       {/* Header Card */}
-      <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 shadow-xl">
+      <div className="p-6 rounded-2xl bg-white border border-sage-200/90 space-y-4 shadow-soft-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center space-x-3">
-              <span className="text-sm font-mono font-bold text-indigo-400">{request.requestNumber}</span>
-              <span className="text-xs uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-2.5">
+              <span className="text-xs font-mono font-bold text-brand-800 bg-forest-50 px-2.5 py-0.5 rounded-full border border-forest-100">
+                {request.requestNumber}
+              </span>
+              <span className="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full bg-sage-50 text-sage-700 border border-sage-200">
                 {request.category.replace('_', ' ')}
               </span>
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize bg-forest-50 text-forest-800 border border-forest-200">
                 Priority: {request.priority}
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">{request.subject}</h1>
+            <h1 className="text-xl font-bold text-charcoal-900">{request.subject}</h1>
           </div>
 
           <span
             id="request-status-badge"
-            className={`self-start sm:self-center text-xs font-semibold px-3 py-1.5 rounded-xl capitalize ${
+            className={`self-start sm:self-center text-xs font-semibold px-3 py-1 rounded-full capitalize ${
               request.status === 'completed'
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                ? 'bg-forest-50 text-forest-800 border border-forest-200'
                 : request.status === 'in_progress'
-                ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                ? 'bg-blue-50 text-blue-800 border border-blue-200'
                 : request.status === 'closed'
-                ? 'bg-slate-800 text-slate-400 border border-slate-700'
-                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                ? 'bg-sage-100 text-sage-600 border border-sage-200'
+                : 'bg-amber-50 text-amber-800 border border-amber-200'
             }`}
           >
             {request.status.replace('_', ' ')}
@@ -188,13 +190,13 @@ export default function PortalRequestDetailPage() {
         </div>
 
         {/* Initial Description */}
-        <div className="pt-4 border-t border-slate-800/80">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Original Request</h3>
-          <p className="text-sm text-slate-200 whitespace-pre-line leading-relaxed">{request.description}</p>
+        <div className="pt-4 border-t border-sage-100">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-sage-500 mb-2">Original Request</h3>
+          <p className="text-xs text-charcoal-900 whitespace-pre-line leading-relaxed">{request.description}</p>
 
           {request.attachments?.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-slate-800/60">
-              <h4 className="text-xs font-medium text-slate-400 mb-2">Request Attachments:</h4>
+            <div className="mt-4 pt-3 border-t border-sage-100">
+              <h4 className="text-[11px] font-semibold text-sage-500 mb-2">Request Attachments:</h4>
               <div className="flex flex-wrap gap-2">
                 {request.attachments.map((att) => (
                   <a
@@ -202,11 +204,11 @@ export default function PortalRequestDetailPage() {
                     href={att.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-indigo-300 hover:text-indigo-200 hover:bg-slate-700 transition-colors"
+                    className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-surface border border-sage-200 text-xs font-medium text-brand-800 hover:bg-forest-50 transition-colors"
                   >
                     <Paperclip className="w-3.5 h-3.5" />
                     <span>{att.name}</span>
-                    <Download className="w-3 h-3 text-slate-400" />
+                    <Download className="w-3 h-3 text-sage-400" />
                   </a>
                 ))}
               </div>
@@ -217,10 +219,10 @@ export default function PortalRequestDetailPage() {
 
       {/* Messages Thread */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold text-white tracking-tight">Conversation Thread</h2>
+        <h2 className="text-base font-bold text-charcoal-900 tracking-tight">Conversation Thread</h2>
 
         {request.messages.length === 0 ? (
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 text-center text-slate-400 text-xs">
+          <div className="p-8 rounded-2xl bg-white border border-sage-200/90 text-center text-sage-500 text-xs shadow-soft-xs">
             No follow-up messages yet. A support agent will respond here shortly.
           </div>
         ) : (
@@ -230,33 +232,33 @@ export default function PortalRequestDetailPage() {
               return (
                 <div
                   key={msg.id}
-                  className={`p-5 rounded-2xl border ${
+                  className={`p-5 rounded-2xl border shadow-soft-xs ${
                     isCustomer
-                      ? 'bg-slate-900/90 border-slate-800 ml-4 sm:ml-12'
-                      : 'bg-indigo-950/20 border-indigo-500/20 mr-4 sm:mr-12'
+                      ? 'bg-white border-sage-200/90 ml-4 sm:ml-12'
+                      : 'bg-forest-50/50 border-forest-200/80 mr-4 sm:mr-12'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       <div
-                        className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${
+                        className={`w-7 h-7 rounded-xl flex items-center justify-center font-bold text-xs ${
                           isCustomer
-                            ? 'bg-slate-800 text-slate-300'
-                            : 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                            ? 'bg-surface border border-sage-200 text-charcoal-900'
+                            : 'bg-forest-100 text-brand-800 border border-forest-200'
                         }`}
                       >
                         {isCustomer ? 'You' : 'Staff'}
                       </div>
-                      <span className="text-xs font-semibold text-white">
+                      <span className="text-xs font-bold text-charcoal-900">
                         {isCustomer ? 'You' : msg.authorName || 'Support Representative'}
                       </span>
                     </div>
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-sage-400">
                       {new Date(msg.createdAt).toLocaleString()}
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-200 whitespace-pre-line leading-relaxed pl-9">
+                  <p className="text-xs text-charcoal-900 whitespace-pre-line leading-relaxed pl-9">
                     {msg.body}
                   </p>
 
@@ -268,9 +270,9 @@ export default function PortalRequestDetailPage() {
                           href={att.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-indigo-300 hover:text-indigo-200"
+                          className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-white border border-sage-200 text-xs text-brand-800 hover:bg-forest-50"
                         >
-                          <Paperclip className="w-3 h-3" />
+                          <Paperclip className="w-3 h-3 text-sage-400" />
                           <span>{att.name}</span>
                         </a>
                       ))}
@@ -285,23 +287,23 @@ export default function PortalRequestDetailPage() {
 
       {/* Reply Box */}
       {request.status === 'closed' ? (
-        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs text-slate-400">
+        <div className="p-5 rounded-2xl bg-white border border-sage-200 text-center text-xs text-sage-500 shadow-soft-xs">
           This ticket is closed. If you still need help, please submit a new request.
         </div>
       ) : (
-        <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Add a Reply</h3>
+        <div className="p-6 rounded-2xl bg-white border border-sage-200/90 shadow-soft-xs space-y-4">
+          <h3 className="text-sm font-bold text-charcoal-900">Add a Reply</h3>
 
           {error && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2">
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center space-x-2">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            <div className="p-3.5 rounded-xl bg-forest-50 border border-forest-200 text-forest-800 text-xs flex items-center space-x-2">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-forest-600" />
               <span>{success}</span>
             </div>
           )}
@@ -314,13 +316,13 @@ export default function PortalRequestDetailPage() {
               value={replyBody}
               onChange={(e) => setReplyBody(e.target.value)}
               placeholder="Type your reply or additional information here..."
-              className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm resize-none"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-sage-200 text-charcoal-900 placeholder-sage-400 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 text-xs resize-none"
             />
 
             {/* Attachments for reply */}
             <div>
               <div className="flex items-center justify-between">
-                <label className="inline-flex items-center space-x-2 text-xs text-indigo-400 hover:text-indigo-300 cursor-pointer">
+                <label className="inline-flex items-center space-x-2 text-xs font-semibold text-brand-800 hover:text-brand-900 cursor-pointer">
                   <UploadCloud className="w-4 h-4" />
                   <span>Attach files (up to 5, max 10MB each)</span>
                   <input
@@ -338,14 +340,14 @@ export default function PortalRequestDetailPage() {
                   {attachments.map((file) => (
                     <span
                       key={file.id}
-                      className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs text-slate-300"
+                      className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-surface border border-sage-200 text-xs text-charcoal-900"
                     >
-                      <Paperclip className="w-3 h-3 text-slate-400" />
+                      <Paperclip className="w-3 h-3 text-sage-400" />
                       <span className="truncate max-w-[150px]">{file.name}</span>
                       <button
                         type="button"
                         onClick={() => removeAttachment(file.id)}
-                        className="text-rose-400 hover:text-rose-300 ml-1"
+                        className="text-rose-600 hover:bg-rose-50 rounded p-0.5 ml-1"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -360,7 +362,7 @@ export default function PortalRequestDetailPage() {
                 id="send-reply-btn"
                 type="submit"
                 disabled={sending || !replyBody.trim()}
-                className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/25 flex items-center space-x-2"
+                className="px-5 py-2.5 rounded-xl bg-brand-800 hover:bg-brand-900 disabled:opacity-50 text-white font-semibold text-xs transition-all shadow-forest-sm flex items-center space-x-2"
               >
                 {sending ? (
                   <>

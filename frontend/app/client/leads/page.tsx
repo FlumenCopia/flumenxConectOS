@@ -31,6 +31,7 @@ import {
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { StatCard } from '@/components/ui/StatCard';
 import {
   getLeadsApi,
   createLeadApi,
@@ -345,27 +346,27 @@ export default function ClientLeadsPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-sage-200/90">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Leads CRM</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-sage-900">Leads CRM</h1>
+          <p className="text-xs text-sage-500 mt-1 font-normal">
             Capture, track, score, and progress incoming client prospects through pipeline stages.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {/* View Switcher */}
-          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+          <div className="inline-flex rounded-lg border border-sage-200 bg-white p-1 shadow-soft-xs">
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-800 text-white shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-800 text-white shadow-soft-xs"
             >
               <Users className="w-3.5 h-3.5" />
               Directory
             </button>
             <Link
               href="/client/leads/pipeline"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-sage-600 hover:text-sage-900 hover:bg-sage-50 transition-colors"
             >
               <Kanban className="w-3.5 h-3.5" />
               Pipeline Board
@@ -373,11 +374,11 @@ export default function ClientLeadsPage() {
           </div>
 
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={handleExport}
             isLoading={isExporting}
-            className="text-slate-700 bg-white border-slate-300"
+            className="text-sage-700 bg-white border-sage-300"
           >
             <Download className="w-4 h-4 mr-1.5" />
             Export CSV
@@ -387,7 +388,7 @@ export default function ClientLeadsPage() {
             variant="primary"
             size="sm"
             onClick={() => setIsCreateOpen(true)}
-            className="bg-brand-800 hover:bg-brand-700 text-white"
+            className="shadow-forest-sm"
           >
             <Plus className="w-4 h-4 mr-1.5" />
             New Lead
@@ -396,54 +397,43 @@ export default function ClientLeadsPage() {
       </div>
 
       {/* KPI Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white border-slate-200 shadow-xs">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Leads</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{totalCount}</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Users className="w-5 h-5" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-slate-200 shadow-xs">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Hot Opportunities</p>
-              <p className="text-2xl font-bold text-rose-600 mt-1">{hotCount}</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center">
-              <Flame className="w-5 h-5" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-slate-200 shadow-xs">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Follow-Ups Due</p>
-              <p className="text-2xl font-bold text-amber-600 mt-1">{overdueCount}</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Clock className="w-5 h-5" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-slate-200 shadow-xs">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Pipeline Flow</p>
-              <p className="text-2xl font-bold text-emerald-600 mt-1">7 Stages</p>
-            </div>
-            <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <StatCard
+          label="Total Prospects"
+          value={totalCount}
+          change="In active pipeline"
+          isPositive={true}
+          icon={Users}
+          iconBgColor="bg-emerald-50"
+          iconColor="text-emerald-700"
+        />
+        <StatCard
+          label="Hot Opportunities"
+          value={hotCount}
+          change="High buying intent"
+          isPositive={true}
+          icon={Flame}
+          iconBgColor="bg-rose-50"
+          iconColor="text-rose-600"
+        />
+        <StatCard
+          label="Follow-Ups Due"
+          value={overdueCount}
+          change={overdueCount > 0 ? "Action required" : "Zero overdue"}
+          isPositive={overdueCount === 0}
+          icon={Clock}
+          iconBgColor="bg-amber-50"
+          iconColor="text-amber-700"
+        />
+        <StatCard
+          label="Pipeline Funnel"
+          value="7 Stages"
+          change="From new to won"
+          isPositive={true}
+          icon={CheckCircle2}
+          iconBgColor="bg-teal-50"
+          iconColor="text-teal-700"
+        />
       </div>
 
       {/* Filter and Search Bar */}
@@ -459,7 +449,7 @@ export default function ClientLeadsPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500"
+              className="w-full pl-9 pr-3 py-2 text-xs bg-sage-50/60 border border-sage-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 text-sage-900 transition-colors shadow-soft-xs"
             />
           </div>
 
@@ -471,7 +461,7 @@ export default function ClientLeadsPage() {
                 setStageFilter(e.target.value as any);
                 setPage(1);
               }}
-              className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs"
             >
               <option value="all">All Stages</option>
               {STAGE_OPTIONS.map((opt) => (
@@ -488,9 +478,9 @@ export default function ClientLeadsPage() {
                 setSourceFilter(e.target.value as any);
                 setPage(1);
               }}
-              className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs"
             >
-              <option value="all">All Acquisition Sources</option>
+              <option value="all">All Sources</option>
               {SOURCE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -505,7 +495,7 @@ export default function ClientLeadsPage() {
                 setScoreTierFilter(e.target.value as any);
                 setPage(1);
               }}
-              className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs"
             >
               <option value="all">All Priority Tiers</option>
               <option value="hot">🔥 Hot Priority (75+)</option>
@@ -520,7 +510,7 @@ export default function ClientLeadsPage() {
                 setFollowUpFilter(e.target.value as any);
                 setPage(1);
               }}
-              className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs"
             >
               <option value="all">All Schedules</option>
               <option value="overdue">⚠️ Overdue Follow-ups</option>
@@ -538,7 +528,7 @@ export default function ClientLeadsPage() {
                   setFollowUpFilter('all');
                   setPage(1);
                 }}
-                className="text-xs text-brand-700 hover:text-brand-900 font-medium px-2 py-1"
+                className="text-xs text-brand-800 hover:text-brand-900 font-semibold px-2 py-1"
               >
                 Clear Filters
               </button>
@@ -548,7 +538,7 @@ export default function ClientLeadsPage() {
       </Card>
 
       {/* Leads Table Card */}
-      <Card className="bg-white border-slate-200 shadow-xs overflow-hidden">
+      <Card className="bg-white border-sage-200/90 shadow-soft-xs rounded-xl overflow-hidden">
         {error ? (
           <div className="p-8 text-center">
             <AlertCircle className="w-8 h-8 text-rose-500 mx-auto mb-2" />
@@ -581,8 +571,8 @@ export default function ClientLeadsPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-600">
-              <thead className="bg-slate-50/80 text-slate-500 border-b border-slate-200 font-medium uppercase tracking-wider">
+            <table className="w-full text-left text-xs text-sage-600">
+              <thead className="bg-sage-50/70 text-sage-500 border-b border-sage-200/80 font-bold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="py-3 px-4">Contact</th>
                   <th className="py-3 px-4">Stage</th>
@@ -593,42 +583,49 @@ export default function ClientLeadsPage() {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-sage-100">
                 {leads.map((lead) => {
                   const fullName = `${lead.firstName} ${lead.lastName || ''}`.trim();
                   const isOverdue = lead.followUpDate && new Date(lead.followUpDate) < new Date();
 
                   return (
-                    <tr key={lead._id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={lead._id} className="hover:bg-sage-50/60 transition-colors group">
                       {/* Contact Info */}
                       <td className="py-3.5 px-4">
-                        <Link
-                          href={`/client/leads/${lead._id}`}
-                          className="font-semibold text-slate-900 hover:text-brand-700 flex items-center gap-1.5 group"
-                        >
-                          <span>{fullName}</span>
-                          <ExternalLink className="w-3 h-3 text-slate-300 group-hover:text-brand-600 transition-colors" />
-                        </Link>
-                        <div className="flex flex-col gap-0.5 mt-0.5 text-[11px] text-slate-500">
-                          {lead.company && (
-                            <span className="flex items-center gap-1 truncate max-w-[200px]">
-                              <Building className="w-3 h-3 text-slate-400 shrink-0" />
-                              {lead.company} {lead.title ? `• ${lead.title}` : ''}
-                            </span>
-                          )}
-                          <div className="flex items-center gap-3">
-                            {lead.email && (
-                              <span className="flex items-center gap-1 text-slate-600">
-                                <Mail className="w-3 h-3 text-slate-400 shrink-0" />
-                                {lead.email}
-                              </span>
-                            )}
-                            {lead.phone && (
-                              <span className="flex items-center gap-1 text-slate-600">
-                                <Phone className="w-3 h-3 text-slate-400 shrink-0" />
-                                {lead.phone}
-                              </span>
-                            )}
+                        <div className="flex items-start gap-2.5">
+                          <div className="h-8 w-8 rounded-full bg-brand-100 text-brand-800 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5 border border-white shadow-soft-xs">
+                            {fullName.charAt(0) || 'U'}
+                          </div>
+                          <div>
+                            <Link
+                              href={`/client/leads/${lead._id}`}
+                              className="font-bold text-sage-900 hover:text-brand-800 flex items-center gap-1.5 transition-colors"
+                            >
+                              <span>{fullName}</span>
+                              <ExternalLink className="w-3 h-3 text-sage-300 group-hover:text-brand-600 transition-colors" />
+                            </Link>
+                            <div className="flex flex-col gap-0.5 mt-0.5 text-[11px] text-sage-500">
+                              {lead.company && (
+                                <span className="flex items-center gap-1 truncate max-w-[200px]">
+                                  <Building className="w-3 h-3 text-sage-400 shrink-0" />
+                                  {lead.company} {lead.title ? `• ${lead.title}` : ''}
+                                </span>
+                              )}
+                              <div className="flex items-center gap-3">
+                                {lead.email && (
+                                  <span className="flex items-center gap-1 text-sage-600">
+                                    <Mail className="w-3 h-3 text-sage-400 shrink-0" />
+                                    {lead.email}
+                                  </span>
+                                )}
+                                {lead.phone && (
+                                  <span className="flex items-center gap-1 text-sage-600">
+                                    <Phone className="w-3 h-3 text-sage-400 shrink-0" />
+                                    {lead.phone}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -638,14 +635,14 @@ export default function ClientLeadsPage() {
                         <select
                           value={lead.stage}
                           onChange={(e) => handleStageChange(lead._id, e.target.value as LeadStage)}
-                          className={`text-xs font-semibold rounded px-2 py-1 border transition-colors focus:outline-none focus:ring-1 ${
+                          className={`text-xs font-semibold rounded-lg px-2.5 py-1 border transition-colors focus:outline-none focus:ring-2 focus:ring-brand-700/20 shadow-soft-xs cursor-pointer ${
                             lead.stage === 'won'
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                              ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
                               : lead.stage === 'lost'
                               ? 'bg-rose-50 text-rose-800 border-rose-300'
                               : lead.stage === 'new'
-                              ? 'bg-blue-50 text-blue-800 border-blue-300'
-                              : 'bg-slate-50 text-slate-800 border-slate-300'
+                              ? 'bg-blue-50 text-blue-800 border-blue-200'
+                              : 'bg-sage-50/80 text-sage-800 border-sage-200'
                           }`}
                         >
                           {STAGE_OPTIONS.map((opt) => (

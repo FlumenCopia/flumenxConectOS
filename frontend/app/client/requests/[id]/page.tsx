@@ -185,8 +185,8 @@ export default function ClientRequestDetailPage() {
 
   if (loading) {
     return (
-      <div className="py-24 flex flex-col items-center justify-center text-slate-400 gap-2">
-        <RefreshCw className="h-6 w-6 animate-spin text-brand-600" />
+      <div className="py-24 flex flex-col items-center justify-center text-sage-500 gap-2">
+        <RefreshCw className="h-6 w-6 animate-spin text-brand-800" />
         <span className="text-xs">Loading customer request thread...</span>
       </div>
     );
@@ -194,12 +194,12 @@ export default function ClientRequestDetailPage() {
 
   if (!request) {
     return (
-      <div className="py-16 text-center space-y-4">
-        <AlertCircle className="h-10 w-10 text-slate-300 mx-auto" />
-        <h2 className="text-base font-semibold text-slate-900">Request Not Found</h2>
-        <p className="text-xs text-slate-500">{error || 'The requested ticket does not exist or has been removed.'}</p>
+      <div className="py-16 text-center space-y-4 max-w-md mx-auto">
+        <AlertCircle className="h-10 w-10 text-sage-300 mx-auto" />
+        <h2 className="text-base font-semibold text-charcoal-900">Request Not Found</h2>
+        <p className="text-xs text-sage-500">{error || 'The requested ticket does not exist or has been removed.'}</p>
         <Link href="/client/requests">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700">
             Back to Customer Requests
           </Button>
         </Link>
@@ -222,37 +222,39 @@ export default function ClientRequestDetailPage() {
       : '—';
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto">
       {/* Top Breadcrumb & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage-200/90 pb-4">
         <div className="flex items-center gap-3">
           <Link
             href="/client/requests"
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+            className="p-2 rounded-xl border border-sage-200 hover:bg-sage-50 text-charcoal-700 transition-colors shadow-soft-xs"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold text-brand-700">{request.requestNumber}</span>
-              <span className="text-slate-300">•</span>
-              <h1 className="text-lg font-bold text-slate-900">{request.subject}</h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-mono text-xs font-bold text-forest-800 bg-forest-50 border border-forest-200/80 px-2 py-0.5 rounded-lg">
+                {request.requestNumber}
+              </span>
+              <span className="text-sage-300">•</span>
+              <h1 className="text-lg font-bold text-charcoal-900">{request.subject}</h1>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Submitted on {new Date(request.createdAt).toLocaleString()} by {customerName}
+            <p className="text-xs text-sage-500 mt-0.5">
+              Submitted on {new Date(request.createdAt).toLocaleString()} by <span className="font-medium text-charcoal-800">{customerName}</span>
             </p>
           </div>
         </div>
 
         {/* Status / Priority Control Dropdowns */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-slate-500">Status:</span>
+            <span className="text-[11px] font-semibold text-sage-500">Status:</span>
             <select
               value={request.status}
               disabled={updatingStatus}
               onChange={(e) => handleStatusChange(e.target.value as RequestStatus)}
-              className="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="text-xs bg-white border border-sage-200 rounded-xl px-3 py-1.5 font-medium text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 shadow-soft-xs transition"
             >
               <option value="submitted">Submitted</option>
               <option value="under_review">Under Review</option>
@@ -263,12 +265,12 @@ export default function ClientRequestDetailPage() {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-slate-500">Priority:</span>
+            <span className="text-[11px] font-semibold text-sage-500">Priority:</span>
             <select
               value={request.priority}
               disabled={updatingStatus}
               onChange={(e) => handlePriorityChange(e.target.value as RequestPriority)}
-              className="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="text-xs bg-white border border-sage-200 rounded-xl px-3 py-1.5 font-medium text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 shadow-soft-xs transition"
             >
               <option value="low">Low</option>
               <option value="normal">Normal</option>
@@ -281,14 +283,14 @@ export default function ClientRequestDetailPage() {
 
       {/* Notifications */}
       {success && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+        <div className="p-3.5 bg-forest-50/80 border border-forest-200 rounded-xl text-xs text-forest-900 flex items-center gap-2">
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-forest-600" />
           <span>{success}</span>
         </div>
       )}
 
       {error && (
-        <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800 flex items-center gap-2">
+        <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
           <span>{error}</span>
         </div>
@@ -299,44 +301,44 @@ export default function ClientRequestDetailPage() {
         {/* Left 2 Cols: Description & Message Thread */}
         <div className="lg:col-span-2 space-y-6">
           {/* Original Request Details */}
-          <Card className="border-slate-200 shadow-sm bg-white">
+          <Card className="border-sage-200/90 shadow-soft-xs bg-white rounded-2xl">
             <CardContent className="p-5 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center justify-between border-b border-sage-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="h-8 w-8 rounded-full bg-brand-100 text-brand-800 flex items-center justify-center font-bold text-xs">
+                  <div className="h-8 w-8 rounded-full bg-forest-100 text-forest-800 flex items-center justify-center font-bold text-xs border border-forest-200">
                     {customerName.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-slate-900">{customerName}</p>
-                    <p className="text-[10px] text-slate-400">Customer Initial Request</p>
+                    <p className="text-xs font-semibold text-charcoal-900">{customerName}</p>
+                    <p className="text-[10px] text-sage-400">Customer Initial Request</p>
                   </div>
                 </div>
-                <span className="text-[11px] text-slate-400 font-mono">
+                <span className="text-[11px] text-sage-400 font-mono">
                   {new Date(request.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
 
-              <div className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+              <div className="text-xs text-charcoal-800 leading-relaxed whitespace-pre-wrap">
                 {request.description}
               </div>
 
               {/* Initial Attachments */}
               {request.attachments && request.attachments.length > 0 && (
-                <div className="pt-3 border-t border-slate-100">
-                  <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                <div className="pt-3 border-t border-sage-100">
+                  <p className="text-[11px] font-semibold text-sage-500 uppercase tracking-wider mb-2">
                     Attached Files ({request.attachments.length})
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {request.attachments.map((att) => (
                       <div
                         key={att.id}
-                        className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-slate-50/60 text-xs"
+                        className="flex items-center justify-between p-2.5 rounded-xl border border-sage-200/90 bg-sage-50/40 text-xs"
                       >
                         <div className="flex items-center gap-2 min-w-0">
-                          <Paperclip className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          <Paperclip className="h-3.5 w-3.5 text-sage-400 shrink-0" />
                           <div className="truncate">
-                            <p className="font-medium text-slate-800 truncate">{att.name}</p>
-                            <p className="text-[10px] text-slate-400">{(att.size / 1024).toFixed(1)} KB</p>
+                            <p className="font-medium text-charcoal-900 truncate">{att.name}</p>
+                            <p className="text-[10px] text-sage-400">{(att.size / 1024).toFixed(1)} KB</p>
                           </div>
                         </div>
 
@@ -346,7 +348,7 @@ export default function ClientRequestDetailPage() {
                               type="button"
                               onClick={() => handleDownloadAttachment(att)}
                               disabled={downloadingId === att.id}
-                              className="p-1 rounded text-brand-600 hover:bg-brand-50"
+                              className="p-1.5 rounded-lg text-forest-800 hover:bg-forest-100 transition-colors"
                               title="Download clean file"
                             >
                               <Download className="h-3.5 w-3.5" />
@@ -371,68 +373,68 @@ export default function ClientRequestDetailPage() {
 
           {/* Conversation Timeline */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-sage-500 flex items-center gap-1.5">
               <MessageSquare className="h-3.5 w-3.5" />
               Conversation Trail ({request.messages?.length || 0})
             </h3>
 
             {request.messages && request.messages.length > 0 ? (
               request.messages.map((msg) => {
-                const isInternalNote = !msg.isCustomerVisible || msg.authorType === 'staff' && !msg.isCustomerVisible;
+                const isInternalNote = !msg.isCustomerVisible || (msg.authorType === 'staff' && !msg.isCustomerVisible);
                 const isStaffReply = msg.authorType === 'staff' && msg.isCustomerVisible;
 
                 return (
                   <div
                     key={msg.id}
-                    className={`rounded-xl border p-4 text-xs transition-all ${
+                    className={`rounded-2xl border p-4.5 text-xs transition-all ${
                       isInternalNote
-                        ? 'bg-amber-50/60 border-amber-200'
+                        ? 'bg-amber-50/70 border-amber-200/80 shadow-soft-xs'
                         : isStaffReply
-                        ? 'bg-brand-50/40 border-brand-200'
-                        : 'bg-white border-slate-200 shadow-sm'
+                        ? 'bg-forest-50/50 border-forest-200/80 shadow-soft-xs'
+                        : 'bg-white border-sage-200/90 shadow-soft-xs'
                     }`}
                   >
-                    <div className="flex items-center justify-between border-b pb-2 mb-2 border-slate-200/60">
+                    <div className="flex items-center justify-between border-b pb-2.5 mb-2.5 border-sage-200/60">
                       <div className="flex items-center gap-2">
                         {isInternalNote ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-200/80 text-amber-900 font-bold text-[10px] uppercase tracking-wider">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-amber-200/90 text-amber-900 font-bold text-[10px] uppercase tracking-wider">
                             <Lock className="h-3 w-3" />
                             Internal Staff Note
                           </span>
                         ) : isStaffReply ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-brand-200/80 text-brand-900 font-semibold text-[10px]">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-forest-100 text-forest-900 font-semibold text-[10px]">
                             <UserCheck className="h-3 w-3" />
                             Staff Response (Customer Visible)
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-semibold text-[10px]">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-sage-100 text-charcoal-800 font-semibold text-[10px]">
                             <User className="h-3 w-3" />
                             Customer Reply
                           </span>
                         )}
-                        <span className="font-semibold text-slate-800">{msg.authorName}</span>
+                        <span className="font-semibold text-charcoal-900">{msg.authorName}</span>
                       </div>
 
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-sage-400">
                         {new Date(msg.createdAt).toLocaleString()}
                       </span>
                     </div>
 
-                    <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{msg.body}</p>
+                    <p className="text-charcoal-800 whitespace-pre-wrap leading-relaxed">{msg.body}</p>
 
                     {/* Message Attachments */}
                     {msg.attachments && msg.attachments.length > 0 && (
-                      <div className="mt-3 pt-2 border-t border-slate-200/60 flex flex-wrap gap-2">
+                      <div className="mt-3 pt-2.5 border-t border-sage-200/60 flex flex-wrap gap-2">
                         {msg.attachments.map((att) => (
                           <button
                             key={att.id}
                             type="button"
                             onClick={() => handleDownloadAttachment(att)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-[11px]"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-sage-200 text-charcoal-800 hover:bg-sage-50 text-[11px] shadow-soft-xs transition"
                           >
-                            <Paperclip className="h-3 w-3 text-slate-400" />
+                            <Paperclip className="h-3 w-3 text-sage-400" />
                             <span>{att.name}</span>
-                            <Download className="h-3 w-3 ml-1 text-slate-400" />
+                            <Download className="h-3 w-3 ml-1 text-sage-400" />
                           </button>
                         ))}
                       </div>
@@ -441,27 +443,27 @@ export default function ClientRequestDetailPage() {
                 );
               })
             ) : (
-              <div className="py-8 text-center text-slate-400 text-xs border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+              <div className="py-8 text-center text-sage-400 text-xs border border-dashed border-sage-200 rounded-2xl bg-sage-50/40">
                 No replies posted yet. Use the composer below to reply to the customer or leave an internal note.
               </div>
             )}
           </div>
 
           {/* Reply / Internal Note Composer */}
-          <Card className="border-slate-200 shadow-sm bg-white">
+          <Card className="border-sage-200/90 shadow-soft-xs bg-white rounded-2xl">
             <CardContent className="p-5">
               <form onSubmit={handleSendMessage} className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-3 text-xs">
-                    <span className="font-bold text-slate-700">Compose Message:</span>
-                    <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-100 text-xs">
+                    <span className="font-bold text-charcoal-800">Compose Message:</span>
+                    <div className="inline-flex rounded-xl border border-sage-200 p-0.5 bg-sage-50 text-xs">
                       <button
                         type="button"
                         onClick={() => setIsCustomerVisible(true)}
-                        className={`px-3 py-1 rounded-md font-medium transition-all flex items-center gap-1.5 ${
+                        className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
                           isCustomerVisible
-                            ? 'bg-white text-brand-700 shadow-sm font-semibold'
-                            : 'text-slate-600 hover:text-slate-900'
+                            ? 'bg-brand-800 text-white shadow-soft-xs font-semibold'
+                            : 'text-sage-600 hover:text-charcoal-900'
                         }`}
                       >
                         <Eye className="h-3.5 w-3.5" />
@@ -471,10 +473,10 @@ export default function ClientRequestDetailPage() {
                       <button
                         type="button"
                         onClick={() => setIsCustomerVisible(false)}
-                        className={`px-3 py-1 rounded-md font-medium transition-all flex items-center gap-1.5 ${
+                        className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
                           !isCustomerVisible
-                            ? 'bg-amber-100 text-amber-900 shadow-sm font-semibold'
-                            : 'text-slate-600 hover:text-slate-900'
+                            ? 'bg-amber-600 text-white shadow-soft-xs font-semibold'
+                            : 'text-sage-600 hover:text-charcoal-900'
                         }`}
                       >
                         <Lock className="h-3.5 w-3.5" />
@@ -484,7 +486,7 @@ export default function ClientRequestDetailPage() {
                   </div>
 
                   {!isCustomerVisible && (
-                    <span className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-medium">
+                    <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-full font-medium">
                       Hidden from Customer Portal
                     </span>
                   )}
@@ -499,11 +501,11 @@ export default function ClientRequestDetailPage() {
                       ? 'Type your response to the customer...'
                       : 'Record internal operational notes, tasks, or remarks...'
                   }
-                  className="w-full text-xs p-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full text-xs p-3.5 rounded-xl border border-sage-200 bg-sage-50/40 focus:bg-white text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition"
                 />
 
-                <div className="flex items-center justify-between pt-2">
-                  <p className="text-[11px] text-slate-400">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                  <p className="text-[11px] text-sage-500">
                     {isCustomerVisible
                       ? 'Customer will be notified and can view this message in their portal.'
                       : 'Internal notes are strictly excluded from customer portal API queries.'}
@@ -515,8 +517,8 @@ export default function ClientRequestDetailPage() {
                     disabled={sendingMessage || !messageBody.trim()}
                     className={
                       isCustomerVisible
-                        ? 'bg-brand-600 hover:bg-brand-700 text-white flex items-center gap-1.5'
-                        : 'bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1.5'
+                        ? 'bg-brand-800 hover:bg-brand-900 text-white flex items-center gap-1.5 rounded-xl shadow-soft-xs px-4'
+                        : 'bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1.5 rounded-xl shadow-soft-xs px-4'
                     }
                   >
                     <Send className="h-3.5 w-3.5" />
@@ -535,55 +537,55 @@ export default function ClientRequestDetailPage() {
         {/* Right Col: Ticket & Customer Metadata */}
         <div className="space-y-6">
           {/* Customer Profile Card */}
-          <Card className="border-slate-200 shadow-sm bg-white">
+          <Card className="border-sage-200/90 shadow-soft-xs bg-white rounded-2xl">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-sage-500">
                 Customer Information
               </h3>
 
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm">
+                <div className="h-10 w-10 rounded-xl bg-forest-50 border border-forest-200 text-forest-800 flex items-center justify-center font-bold text-sm">
                   {customerName.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900 text-xs">{customerName}</p>
-                  <p className="text-[11px] text-slate-400">{customerEmail}</p>
+                  <p className="font-semibold text-charcoal-900 text-xs">{customerName}</p>
+                  <p className="text-[11px] text-sage-500">{customerEmail}</p>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Portal Account:</span>
+              <div className="pt-3 border-t border-sage-100 space-y-2 text-xs">
+                <div className="flex justify-between items-center">
+                  <span className="text-sage-500">Portal Account:</span>
                   <Badge variant="success">Active</Badge>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Category:</span>
-                  <span className="capitalize font-medium text-slate-700">
+                <div className="flex justify-between items-center">
+                  <span className="text-sage-500">Category:</span>
+                  <span className="capitalize font-medium text-charcoal-800">
                     {request.category.replace('_', ' ')}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Current Priority:</span>
-                  <span className="capitalize font-semibold text-slate-800">{request.priority}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-sage-500">Current Priority:</span>
+                  <span className="capitalize font-semibold text-charcoal-900">{request.priority}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Security & Malware Defense Status */}
-          <Card className="border-slate-200 shadow-sm bg-white">
+          <Card className="border-sage-200/90 shadow-soft-xs bg-white rounded-2xl">
             <CardContent className="p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-brand-600" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                <ShieldCheck className="h-4 w-4 text-forest-700" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-charcoal-800">
                   Malware Gating & Security
                 </h3>
               </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
+              <p className="text-[11px] text-sage-500 leading-relaxed">
                 All attachments are ingested into isolated quarantine storage and evaluated against ClamAV malware signatures.
                 Staff downloads issue 15-minute expiring HMAC tokens.
               </p>
-              <div className="text-[11px] bg-slate-50 p-2.5 rounded-lg border border-slate-100 font-mono text-slate-600">
+              <div className="text-[11px] bg-forest-50/60 p-2.5 rounded-xl border border-forest-100 font-mono text-forest-800">
                 Gate: Enforced (423 Locked / 403 Blocked)
               </div>
             </CardContent>

@@ -351,58 +351,58 @@ export default function ClientTasksPage() {
   return (
     <div className="space-y-6 pb-16">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-sage-200/90">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Tasks & Lead Follow-ups</h1>
-            <Badge variant="brand">Release 8</Badge>
+            <h1 className="text-xl sm:text-2xl font-bold text-sage-900">Tasks & Lead Follow-ups</h1>
+            <Badge variant="brand">SLA Operations</Badge>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs text-sage-500 mt-1 font-normal">
             Enforce fast follow-ups with SLA response timers, team assignments, and outcome dispositions.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={handleRefresh}
             isLoading={refreshing}
-            className="text-slate-600"
+            className="text-sage-700 bg-white border-sage-300"
           >
-            <RefreshCw className="w-4 h-4 mr-1.5" /> Refresh
+            <RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh
           </Button>
           <Button
             variant="primary"
             size="sm"
             onClick={() => setShowCreateModal(true)}
-            className="shadow-sm"
+            className="shadow-forest-sm"
           >
-            <Plus className="w-4 h-4 mr-1.5" /> Create Task
+            <Plus className="w-3.5 h-3.5 mr-1" /> Create Task
           </Button>
         </div>
       </div>
 
       {/* Notifications */}
       {errorMsg && (
-        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md flex items-center justify-between">
+        <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl flex items-center justify-between shadow-soft-xs">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-rose-600" />
             <span>{errorMsg}</span>
           </div>
-          <button onClick={() => setErrorMsg(null)} className="text-red-400 hover:text-red-600">
+          <button onClick={() => setErrorMsg(null)} className="text-rose-400 hover:text-rose-600">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {successMsg && (
-        <div className="p-3 bg-green-50 border border-green-200 text-green-800 text-sm rounded-md flex items-center justify-between">
+        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center justify-between shadow-soft-xs">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" />
             <span>{successMsg}</span>
           </div>
-          <button onClick={() => setSuccessMsg(null)} className="text-green-600 hover:text-green-800">
+          <button onClick={() => setSuccessMsg(null)} className="text-emerald-600 hover:text-emerald-800">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -410,44 +410,44 @@ export default function ClientTasksPage() {
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-white border-sage-200/90 rounded-xl shadow-soft-xs">
           <CardContent className="p-4">
-            <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Open Tasks</div>
+            <div className="text-[11px] font-bold text-sage-500 uppercase tracking-wider">Open Tasks</div>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-slate-900">{kpis?.openTasks ?? 0}</span>
-              <CheckSquare className="w-5 h-5 text-slate-400" />
+              <span className="text-2xl font-bold text-sage-900">{kpis?.openTasks ?? 0}</span>
+              <CheckSquare className="w-4 h-4 text-sage-400" />
             </div>
-            <p className="text-xs text-slate-500 mt-1">{kpis?.inProgressTasks ?? 0} currently in progress</p>
+            <p className="text-[11px] text-sage-500 mt-1">{kpis?.inProgressTasks ?? 0} in progress</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-white border-sage-200/90 rounded-xl shadow-soft-xs">
           <CardContent className="p-4">
-            <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Due Today</div>
+            <div className="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Due Today</div>
             <div className="mt-2 flex items-baseline justify-between">
               <span className="text-2xl font-bold text-blue-700">{kpis?.dueToday ?? 0}</span>
-              <Calendar className="w-5 h-5 text-blue-500" />
+              <Calendar className="w-4 h-4 text-blue-500" />
             </div>
-            <p className="text-xs text-blue-600 mt-1">Pending today&apos;s close</p>
+            <p className="text-[11px] text-blue-600 mt-1">Pending close</p>
           </CardContent>
         </Card>
 
-        <Card className={`border ${kpis && kpis.overdueTasks > 0 ? 'bg-amber-50/50 border-amber-200' : 'bg-white border-slate-200'}`}>
+        <Card className={`border rounded-xl shadow-soft-xs ${kpis && kpis.overdueTasks > 0 ? 'bg-amber-50/50 border-amber-200' : 'bg-white border-sage-200/90'}`}>
           <CardContent className="p-4">
-            <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Overdue</div>
+            <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Overdue</div>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className={`text-2xl font-bold ${kpis && kpis.overdueTasks > 0 ? 'text-amber-700' : 'text-slate-900'}`}>
+              <span className={`text-2xl font-bold ${kpis && kpis.overdueTasks > 0 ? 'text-amber-700' : 'text-sage-900'}`}>
                 {kpis?.overdueTasks ?? 0}
               </span>
-              <Clock className={`w-5 h-5 ${kpis && kpis.overdueTasks > 0 ? 'text-amber-500' : 'text-slate-400'}`} />
+              <Clock className={`w-4 h-4 ${kpis && kpis.overdueTasks > 0 ? 'text-amber-500' : 'text-sage-400'}`} />
             </div>
-            <p className="text-xs text-slate-500 mt-1">Past due deadline</p>
+            <p className="text-[11px] text-sage-500 mt-1">Past deadline</p>
           </CardContent>
         </Card>
 
-        <Card className={`border ${kpis && kpis.slaBreachedTasks > 0 ? 'bg-red-50/60 border-red-200' : 'bg-white border-slate-200'}`}>
+        <Card className={`border rounded-xl shadow-soft-xs ${kpis && kpis.slaBreachedTasks > 0 ? 'bg-rose-50/60 border-rose-200' : 'bg-white border-sage-200/90'}`}>
           <CardContent className="p-4">
-            <div className="text-xs font-medium text-red-600 uppercase tracking-wider">SLA Breached</div>
+            <div className="text-[11px] font-bold text-rose-700 uppercase tracking-wider">SLA Breached</div>
             <div className="mt-2 flex items-baseline justify-between">
               <span className="text-2xl font-bold text-red-700">{kpis?.slaBreachedTasks ?? 0}</span>
               <ShieldAlert className="w-5 h-5 text-red-500" />

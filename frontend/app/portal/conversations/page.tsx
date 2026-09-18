@@ -115,26 +115,26 @@ export default function PortalConversationsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">Conversations</h1>
-        <p className="text-sm text-slate-400 mt-1">
+      <div className="border-b border-sage-200/80 pb-5">
+        <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">Conversations</h1>
+        <p className="text-xs text-sage-500 mt-1">
           Direct communication history with the team across email, SMS, and messaging
         </p>
       </div>
 
       {conversations.length === 0 ? (
-        <div className="p-12 rounded-2xl bg-slate-900/50 border border-slate-800 text-center">
-          <Inbox className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-base font-semibold text-white">No active conversations</h3>
-          <p className="text-xs text-slate-400 mt-1">
+        <div className="p-12 rounded-2xl bg-white border border-sage-200/90 text-center shadow-soft-xs space-y-2">
+          <Inbox className="w-12 h-12 text-sage-300 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-charcoal-900">No active conversations</h3>
+          <p className="text-xs text-sage-500">
             When our team reaches out or you reply to an inquiry, message threads will appear here.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[720px]">
           {/* Left Panel: Conversation List */}
-          <div className="lg:col-span-1 rounded-2xl bg-slate-900/80 border border-slate-800 p-3 overflow-y-auto space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-3 py-2">
+          <div className="lg:col-span-1 rounded-2xl bg-white border border-sage-200/90 shadow-soft-xs p-3 overflow-y-auto space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-sage-500 px-3 py-2">
               All Threads ({conversations.length})
             </p>
             {conversations.map((conv) => {
@@ -146,21 +146,21 @@ export default function PortalConversationsPage() {
                   onClick={() => setSelectedConvId(conv._id)}
                   className={`w-full text-left p-3.5 rounded-xl transition-all ${
                     active
-                      ? 'bg-indigo-600/20 border border-indigo-500/40 text-white shadow-md'
-                      : 'bg-slate-800/40 hover:bg-slate-800/80 border border-slate-800 text-slate-300'
+                      ? 'bg-forest-50 border border-brand-800/30 text-charcoal-900 shadow-soft-xs ring-1 ring-brand-800/20'
+                      : 'bg-surface/50 hover:bg-surface border border-sage-200/60 text-charcoal-900'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-800">
                       {conv.channel}
                     </span>
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-[10px] text-sage-400 font-medium">
                       {conv.lastMessageAt ? new Date(conv.lastMessageAt).toLocaleDateString() : ''}
                     </span>
                   </div>
-                  <h4 className="text-sm font-semibold truncate text-white">{conv.subject || 'Conversation'}</h4>
+                  <h4 className="text-xs font-bold truncate text-charcoal-900">{conv.subject || 'Conversation'}</h4>
                   {conv.lastMessageSnippet && (
-                    <p className="text-xs text-slate-400 truncate mt-1">{conv.lastMessageSnippet}</p>
+                    <p className="text-xs text-sage-500 truncate mt-1">{conv.lastMessageSnippet}</p>
                   )}
                 </button>
               );
@@ -168,34 +168,34 @@ export default function PortalConversationsPage() {
           </div>
 
           {/* Right Panel: Messages View */}
-          <div className="lg:col-span-2 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between overflow-hidden">
+          <div className="lg:col-span-2 rounded-2xl bg-white border border-sage-200/90 shadow-soft-xs flex flex-col justify-between overflow-hidden">
             {/* Thread Header */}
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+            <div className="px-6 py-4 border-b border-sage-100 flex items-center justify-between bg-surface/50">
               <div>
-                <h3 className="text-base font-bold text-white truncate max-w-md">
+                <h3 className="text-sm font-bold text-charcoal-900 truncate max-w-md">
                   {selectedConv?.subject || 'Direct Support Conversation'}
                 </h3>
-                <div className="flex items-center space-x-2 text-xs text-slate-400 mt-0.5">
+                <div className="flex items-center space-x-2 text-xs text-sage-500 mt-0.5">
                   <span className="capitalize">Channel: {selectedConv?.channel || 'Web'}</span>
                   <span>•</span>
                   <span className="capitalize">Status: {selectedConv?.status || 'Open'}</span>
                 </div>
               </div>
-              <div className="flex items-center space-x-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                <ShieldCheck className="w-3.5 h-3.5" />
+              <div className="flex items-center space-x-1.5 text-xs text-forest-800 bg-forest-50 px-2.5 py-1 rounded-full border border-forest-200 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-forest-600" />
                 <span>Customer Visible</span>
               </div>
             </div>
 
             {/* Messages Scroll Area */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-4">
+            <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-[#FAFBF9]/40">
               {loadingMessages ? (
-                <div className="h-full flex items-center justify-center text-slate-400">
-                  <Loader2 className="w-6 h-6 animate-spin text-indigo-500 mr-2" />
-                  <span className="text-sm">Loading message history...</span>
+                <div className="h-full flex items-center justify-center text-sage-400">
+                  <Loader2 className="w-6 h-6 animate-spin text-brand-800 mr-2" />
+                  <span className="text-xs font-medium">Loading message history...</span>
                 </div>
               ) : messages.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-slate-500 text-xs text-center">
+                <div className="h-full flex items-center justify-center text-sage-400 text-xs text-center">
                   No visible customer messages in this thread yet.
                 </div>
               ) : (
@@ -207,15 +207,15 @@ export default function PortalConversationsPage() {
                       className={`flex flex-col ${isCustomer ? 'items-end' : 'items-start'}`}
                     >
                       <div
-                        className={`max-w-lg p-4 rounded-2xl text-sm leading-relaxed ${
+                        className={`max-w-lg p-4 rounded-2xl text-xs leading-relaxed ${
                           isCustomer
-                            ? 'bg-indigo-600 text-white rounded-br-none shadow-md shadow-indigo-600/20'
-                            : 'bg-slate-800 border border-slate-700/80 text-slate-200 rounded-bl-none'
+                            ? 'bg-brand-800 text-white rounded-br-none shadow-forest-sm'
+                            : 'bg-white border border-sage-200 text-charcoal-900 rounded-bl-none shadow-soft-xs'
                         }`}
                       >
                         <p className="whitespace-pre-line">{msg.body}</p>
                       </div>
-                      <span className="text-[10px] text-slate-500 mt-1 px-1">
+                      <span className="text-[10px] text-sage-400 mt-1 px-1">
                         {isCustomer ? 'You' : msg.senderName || 'Staff'} •{' '}
                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
@@ -226,7 +226,7 @@ export default function PortalConversationsPage() {
             </div>
 
             {/* Send Message Input Box */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-800 bg-slate-900/90 flex items-center space-x-3">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-sage-100 bg-white flex items-center space-x-3">
               <input
                 id="conversation-reply-input"
                 type="text"
@@ -234,13 +234,13 @@ export default function PortalConversationsPage() {
                 onChange={(e) => setReplyText(e.target.value)}
                 placeholder="Type a message..."
                 disabled={sending}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="flex-1 px-4 py-2 rounded-xl bg-white border border-sage-200 text-charcoal-900 placeholder-sage-400 text-xs focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800"
               />
               <button
                 id="conversation-send-btn"
                 type="submit"
                 disabled={sending || !replyText.trim()}
-                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold text-sm transition-all shadow-md shadow-indigo-600/25 flex items-center space-x-2"
+                className="px-4 py-2 rounded-xl bg-brand-800 hover:bg-brand-900 disabled:opacity-50 text-white font-semibold text-xs transition-all shadow-forest-sm flex items-center space-x-1.5"
               >
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 <span className="hidden sm:inline">Send</span>

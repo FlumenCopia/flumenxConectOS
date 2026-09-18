@@ -238,20 +238,20 @@ export default function LeadDetailPage() {
   if (isLoading) {
     return (
       <div className="p-16 text-center">
-        <div className="w-6 h-6 border-2 border-brand-800 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-xs text-slate-500">Loading lead details...</p>
+        <div className="w-8 h-8 border-2 border-brand-800 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-xs text-sage-500 font-medium">Loading lead details...</p>
       </div>
     );
   }
 
   if (error || !lead) {
     return (
-      <div className="p-12 text-center bg-white rounded-xl border border-slate-200">
+      <div className="p-12 text-center bg-white rounded-2xl border border-sage-200/90 shadow-soft-xs">
         <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-2" />
-        <h3 className="text-base font-semibold text-slate-900">Lead Not Found</h3>
-        <p className="text-xs text-slate-500 mt-1">{error || 'This lead may have been deleted or archived.'}</p>
+        <h3 className="text-base font-semibold text-charcoal-900">Lead Not Found</h3>
+        <p className="text-xs text-sage-500 mt-1">{error || 'This lead may have been deleted or archived.'}</p>
         <Link href="/client/leads" className="inline-block mt-4">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="border-sage-200 hover:bg-sage-50 text-charcoal-800">
             <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Leads
           </Button>
         </Link>
@@ -268,20 +268,20 @@ export default function LeadDetailPage() {
       <div>
         <Link
           href="/client/leads"
-          className="inline-flex items-center text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center text-xs font-semibold text-sage-600 hover:text-brand-900 transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5 mr-1" />
+          <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
           Back to Leads Directory
         </Link>
       </div>
 
       {/* Hero Header Card */}
-      <Card className="bg-white border-slate-200 shadow-xs">
+      <Card className="bg-white border-sage-200/90 shadow-soft-xs rounded-2xl">
         <CardContent className="p-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">{fullName}</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">{fullName}</h1>
                 <Badge
                   variant={
                     lead.stage === 'won'
@@ -292,48 +292,48 @@ export default function LeadDetailPage() {
                       ? 'info'
                       : 'brand'
                   }
-                  className="capitalize font-semibold text-xs px-2.5 py-0.5"
+                  className="capitalize font-semibold text-xs px-3 py-1 rounded-full"
                 >
                   {lead.stage}
                 </Badge>
                 {lead.scoreTier === 'hot' && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                     <Flame className="w-3 h-3 text-rose-500 fill-rose-500" />
                     Hot Lead ({lead.score} pts)
                   </span>
                 )}
                 {lead.scoreTier === 'warm' && (
-                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                     Warm ({lead.score} pts)
                   </span>
                 )}
-                <span className="px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-sage-100 text-charcoal-700 border border-sage-200/60">
                   Via {lead.source.replace('_', ' ')}
                 </span>
               </div>
 
-              <div className="flex items-center gap-4 mt-2 text-xs text-slate-500 flex-wrap">
+              <div className="flex items-center gap-4 mt-2.5 text-xs text-sage-600 flex-wrap">
                 {lead.company && (
-                  <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                    <Building className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="flex items-center gap-1.5 font-medium text-charcoal-800">
+                    <Building className="w-3.5 h-3.5 text-sage-400" />
                     {lead.company} {lead.title ? `(${lead.title})` : ''}
                   </span>
                 )}
                 {lead.email && (
                   <a
                     href={`mailto:${lead.email}`}
-                    className="flex items-center gap-1.5 hover:text-brand-700 hover:underline"
+                    className="flex items-center gap-1.5 hover:text-brand-800 hover:underline font-medium text-charcoal-800"
                   >
-                    <Mail className="w-3.5 h-3.5 text-slate-400" />
+                    <Mail className="w-3.5 h-3.5 text-sage-400" />
                     {lead.email}
                   </a>
                 )}
                 {lead.phone && (
                   <a
                     href={`tel:${lead.phone}`}
-                    className="flex items-center gap-1.5 hover:text-brand-700 hover:underline"
+                    className="flex items-center gap-1.5 hover:text-brand-800 hover:underline font-medium text-charcoal-800"
                   >
-                    <Phone className="w-3.5 h-3.5 text-slate-400" />
+                    <Phone className="w-3.5 h-3.5 text-sage-400" />
                     {lead.phone}
                   </a>
                 )}
@@ -344,11 +344,11 @@ export default function LeadDetailPage() {
             <div className="flex items-center gap-2.5 flex-wrap">
               {/* Stage selector */}
               <div className="flex items-center gap-1.5">
-                <span className="text-xs text-slate-400 font-medium">Stage:</span>
+                <span className="text-xs text-sage-500 font-medium">Stage:</span>
                 <select
                   value={lead.stage}
                   onChange={(e) => handleStageChange(e.target.value as LeadStage)}
-                  className="text-xs bg-slate-50 border border-slate-300 rounded-md px-2.5 py-1.5 font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="text-xs bg-sage-50/60 border border-sage-200 rounded-xl px-3 py-1.5 font-semibold text-charcoal-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition-all"
                 >
                   <option value="new">New</option>
                   <option value="contacted">Contacted</option>
@@ -362,11 +362,11 @@ export default function LeadDetailPage() {
 
               {/* Assignment selector */}
               <div className="flex items-center gap-1.5">
-                <span className="text-xs text-slate-400 font-medium">Assign:</span>
+                <span className="text-xs text-sage-500 font-medium">Assign:</span>
                 <select
                   value={lead.assignedTo?._id || ''}
                   onChange={(e) => handleAssignChange(e.target.value)}
-                  className="text-xs bg-slate-50 border border-slate-300 rounded-md px-2.5 py-1.5 font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="text-xs bg-sage-50/60 border border-sage-200 rounded-xl px-3 py-1.5 font-medium text-charcoal-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition-all"
                 >
                   <option value="">Unassigned</option>
                   {teamMembers.map((m) => (
@@ -384,7 +384,7 @@ export default function LeadDetailPage() {
                   setMessageBody(`Hi ${lead.firstName}, `);
                   setMessageSuccess(null);
                 }}
-                className="bg-brand-800 hover:bg-brand-700 text-white text-xs shadow-xs flex items-center gap-1.5"
+                className="bg-brand-800 hover:bg-brand-900 text-white text-xs shadow-forest-sm rounded-xl flex items-center gap-1.5 transition-all"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
                 Message Lead
@@ -394,7 +394,7 @@ export default function LeadDetailPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsFollowUpOpen(true)}
-                className="text-xs border-slate-300"
+                className="text-xs border-sage-200 text-charcoal-700 hover:bg-sage-50 rounded-xl"
               >
                 <Calendar className="w-3.5 h-3.5 mr-1" />
                 Schedule
@@ -404,7 +404,7 @@ export default function LeadDetailPage() {
                 type="button"
                 onClick={handleArchiveLead}
                 title="Archive Lead"
-                className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                className="p-2 text-sage-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -413,7 +413,7 @@ export default function LeadDetailPage() {
 
           {/* Lost alert banner if lost */}
           {lead.stage === 'lost' && lead.lostReason && (
-            <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-md text-xs text-rose-800 flex items-start gap-2">
+            <div className="mt-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
               <div>
                 <strong>Marked as Lost:</strong> {lead.lostReason}
@@ -422,9 +422,9 @@ export default function LeadDetailPage() {
           )}
 
           {/* Visual Pipeline Stepper */}
-          <div className="mt-6 pt-6 border-t border-slate-100">
+          <div className="mt-6 pt-6 border-t border-sage-100">
             <div className="flex items-center justify-between relative">
-              <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-slate-200 -z-0" />
+              <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-sage-200/80 -z-0" />
               {STAGE_STEPS.map((s, idx) => {
                 const isCurrent = lead.stage === s.key;
                 const isPassed =
@@ -438,23 +438,23 @@ export default function LeadDetailPage() {
                     className="relative z-10 flex flex-col items-center group focus:outline-none"
                   >
                     <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
                         isCurrent
-                          ? 'bg-brand-800 border-brand-800 text-white ring-4 ring-brand-100'
+                          ? 'bg-brand-800 border-brand-800 text-white ring-4 ring-brand-100 shadow-forest-sm'
                           : isPassed
-                          ? 'bg-emerald-600 border-emerald-600 text-white'
-                          : 'bg-white border-slate-300 text-slate-400 group-hover:border-slate-400'
+                          ? 'bg-forest-600 border-forest-600 text-white'
+                          : 'bg-white border-sage-300 text-sage-400 group-hover:border-sage-400'
                       }`}
                     >
                       {isPassed ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
                     </div>
                     <span
-                      className={`mt-1.5 text-[11px] font-semibold ${
+                      className={`mt-2 text-[11px] font-semibold tracking-tight ${
                         isCurrent
                           ? 'text-brand-900'
                           : isPassed
-                          ? 'text-slate-800'
-                          : 'text-slate-400'
+                          ? 'text-charcoal-800'
+                          : 'text-sage-400'
                       }`}
                     >
                       {s.label}
@@ -472,15 +472,15 @@ export default function LeadDetailPage() {
         {/* Left Column (Details, Attribution, Follow-up) */}
         <div className="space-y-6 lg:col-span-1">
           {/* Follow-Up Card */}
-          <Card className="bg-white border-slate-200 shadow-xs">
-            <CardHeader className="py-3 px-4 border-b border-slate-100 flex items-center justify-between">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <Card className="bg-white border-sage-200/90 shadow-soft-xs rounded-2xl">
+            <CardHeader className="py-3.5 px-4 border-b border-sage-100 flex items-center justify-between">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-sage-600">
                 Follow-Up SLA Status
               </CardTitle>
               <button
                 type="button"
                 onClick={() => setIsFollowUpOpen(true)}
-                className="text-xs text-brand-700 font-semibold hover:underline"
+                className="text-xs text-brand-800 font-semibold hover:underline"
               >
                 Reschedule
               </button>
@@ -489,8 +489,8 @@ export default function LeadDetailPage() {
               {lead.followUpDate ? (
                 <div>
                   <div className="flex items-center gap-2">
-                    <Clock className={`w-4 h-4 ${isOverdue ? 'text-rose-600' : 'text-slate-500'}`} />
-                    <span className={`font-semibold ${isOverdue ? 'text-rose-600' : 'text-slate-800'}`}>
+                    <Clock className={`w-4 h-4 ${isOverdue ? 'text-rose-600' : 'text-sage-500'}`} />
+                    <span className={`font-semibold ${isOverdue ? 'text-rose-600' : 'text-charcoal-900'}`}>
                       {new Date(lead.followUpDate).toLocaleString(undefined, {
                         dateStyle: 'medium',
                         timeStyle: 'short',
@@ -498,20 +498,20 @@ export default function LeadDetailPage() {
                     </span>
                   </div>
                   {isOverdue && (
-                    <p className="mt-1 text-[11px] text-rose-600 font-semibold flex items-center gap-1">
+                    <p className="mt-1.5 text-[11px] text-rose-600 font-semibold flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> SLA Follow-up Overdue
                     </p>
                   )}
                 </div>
               ) : (
-                <div className="text-slate-500 italic">No follow-up currently scheduled.</div>
+                <div className="text-sage-400 italic">No follow-up currently scheduled.</div>
               )}
 
-              <div className="pt-2 border-t border-slate-100 flex gap-2">
+              <div className="pt-2 border-t border-sage-100 flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 text-[11px] h-7"
+                  className="flex-1 text-[11px] h-7 border-sage-200 text-charcoal-700 hover:bg-sage-50 rounded-lg"
                   onClick={() => {
                     const tomorrow = new Date();
                     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -523,7 +523,7 @@ export default function LeadDetailPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 text-[11px] h-7"
+                  className="flex-1 text-[11px] h-7 border-sage-200 text-charcoal-700 hover:bg-sage-50 rounded-lg"
                   onClick={() => {
                     const nextWeek = new Date();
                     nextWeek.setDate(nextWeek.getDate() + 7);
@@ -536,7 +536,7 @@ export default function LeadDetailPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-[11px] h-7 text-slate-500 hover:text-rose-600"
+                    className="text-[11px] h-7 text-sage-500 hover:text-rose-600 rounded-lg"
                     onClick={() => handleSaveFollowUp(null)}
                   >
                     Clear
@@ -547,62 +547,62 @@ export default function LeadDetailPage() {
           </Card>
 
           {/* Marketing Attribution Card */}
-          <Card className="bg-white border-slate-200 shadow-xs">
-            <CardHeader className="py-3 px-4 border-b border-slate-100">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <Card className="bg-white border-sage-200/90 shadow-soft-xs rounded-2xl">
+            <CardHeader className="py-3.5 px-4 border-b border-sage-100">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-sage-600">
                 Marketing Attribution
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-2.5 text-xs">
-              <div className="flex justify-between py-1 border-b border-slate-50">
-                <span className="text-slate-400">Intake Method</span>
-                <span className="font-semibold text-slate-800 capitalize">{lead.intakeMethod}</span>
+              <div className="flex justify-between py-1 border-b border-sage-50">
+                <span className="text-sage-500">Intake Method</span>
+                <span className="font-semibold text-charcoal-900 capitalize">{lead.intakeMethod}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
-                <span className="text-slate-400">Source</span>
-                <span className="font-semibold text-slate-800">{lead.source}</span>
+              <div className="flex justify-between py-1 border-b border-sage-50">
+                <span className="text-sage-500">Source</span>
+                <span className="font-semibold text-charcoal-900">{lead.source}</span>
               </div>
               {lead.attribution?.utmCampaign && (
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-slate-400">UTM Campaign</span>
-                  <span className="font-semibold text-slate-800">{lead.attribution.utmCampaign}</span>
+                <div className="flex justify-between py-1 border-b border-sage-50">
+                  <span className="text-sage-500">UTM Campaign</span>
+                  <span className="font-semibold text-charcoal-900">{lead.attribution.utmCampaign}</span>
                 </div>
               )}
               {lead.attribution?.utmSource && (
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-slate-400">UTM Source</span>
-                  <span className="font-semibold text-slate-800">{lead.attribution.utmSource}</span>
+                <div className="flex justify-between py-1 border-b border-sage-50">
+                  <span className="text-sage-500">UTM Source</span>
+                  <span className="font-semibold text-charcoal-900">{lead.attribution.utmSource}</span>
                 </div>
               )}
               {lead.attribution?.utmMedium && (
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-slate-400">UTM Medium</span>
-                  <span className="font-semibold text-slate-800">{lead.attribution.utmMedium}</span>
+                <div className="flex justify-between py-1 border-b border-sage-50">
+                  <span className="text-sage-500">UTM Medium</span>
+                  <span className="font-semibold text-charcoal-900">{lead.attribution.utmMedium}</span>
                 </div>
               )}
               {lead.attribution?.adId && (
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-slate-400">Ad Identifier</span>
-                  <span className="font-mono text-slate-800">{lead.attribution.adId}</span>
+                <div className="flex justify-between py-1 border-b border-sage-50">
+                  <span className="text-sage-500">Ad Identifier</span>
+                  <span className="font-mono text-charcoal-900">{lead.attribution.adId}</span>
                 </div>
               )}
               {lead.attribution?.formId && (
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-slate-400">Form ID</span>
-                  <span className="font-mono text-slate-800">{lead.attribution.formId}</span>
+                <div className="flex justify-between py-1 border-b border-sage-50">
+                  <span className="text-sage-500">Form ID</span>
+                  <span className="font-mono text-charcoal-900">{lead.attribution.formId}</span>
                 </div>
               )}
               {lead.attribution?.landingPage && (
-                <div className="flex justify-between py-1 border-b border-slate-50">
-                  <span className="text-slate-400">Landing Page</span>
-                  <span className="font-mono text-[11px] text-slate-700 truncate max-w-[150px]" title={lead.attribution.landingPage}>
+                <div className="flex justify-between py-1 border-b border-sage-50">
+                  <span className="text-sage-500">Landing Page</span>
+                  <span className="font-mono text-[11px] text-charcoal-700 truncate max-w-[150px]" title={lead.attribution.landingPage}>
                     {lead.attribution.landingPage}
                   </span>
                 </div>
               )}
               <div className="flex justify-between py-1">
-                <span className="text-slate-400">First Captured</span>
-                <span className="text-slate-700">
+                <span className="text-sage-500">First Captured</span>
+                <span className="text-charcoal-700 font-medium">
                   {new Date(lead.createdAt).toLocaleDateString()}
                 </span>
               </div>
@@ -611,28 +611,28 @@ export default function LeadDetailPage() {
 
           {/* Webhook Payload Debugger (if intakeMethod === webhook) */}
           {lead.intakePayloadSnapshot && Object.keys(lead.intakePayloadSnapshot).length > 0 && (
-            <Card className="bg-white border-slate-200 shadow-xs">
+            <Card className="bg-white border-sage-200/90 shadow-soft-xs rounded-2xl overflow-hidden">
               <CardHeader
-                className="py-3 px-4 border-b border-slate-100 cursor-pointer hover:bg-slate-50"
+                className="py-3.5 px-4 border-b border-sage-100 cursor-pointer hover:bg-sage-50/50 transition-colors"
                 onClick={() => setShowRawPayload(!showRawPayload)}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-1.5">
-                    <Code className="w-3.5 h-3.5 text-slate-500" />
-                    <CardTitle className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <Code className="w-3.5 h-3.5 text-sage-500" />
+                    <CardTitle className="text-xs font-bold uppercase tracking-wider text-sage-600">
                       Webhook Payload Snapshot
                     </CardTitle>
                   </div>
                   {showRawPayload ? (
-                    <ChevronUp className="w-4 h-4 text-slate-400" />
+                    <ChevronUp className="w-4 h-4 text-sage-400" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                    <ChevronDown className="w-4 h-4 text-sage-400" />
                   )}
                 </div>
               </CardHeader>
               {showRawPayload && (
-                <CardContent className="p-3 bg-slate-900 rounded-b-lg">
-                  <pre className="text-[11px] text-emerald-400 font-mono overflow-x-auto max-h-60 p-2">
+                <CardContent className="p-3 bg-charcoal-900 rounded-b-xl">
+                  <pre className="text-[11px] text-forest-400 font-mono overflow-x-auto max-h-60 p-2">
                     {JSON.stringify(lead.intakePayloadSnapshot, null, 2)}
                   </pre>
                 </CardContent>
@@ -644,9 +644,9 @@ export default function LeadDetailPage() {
         {/* Right Column (Activity Timeline & Notes) */}
         <div className="space-y-6 lg:col-span-2">
           {/* Post Note Card */}
-          <Card className="bg-white border-slate-200 shadow-xs">
-            <CardHeader className="py-3 px-5 border-b border-slate-100">
-              <CardTitle className="text-sm font-semibold text-slate-900">
+          <Card className="bg-white border-sage-200/90 shadow-soft-xs rounded-2xl">
+            <CardHeader className="py-3.5 px-5 border-b border-sage-100">
+              <CardTitle className="text-sm font-bold text-charcoal-900">
                 Log Activity / Note
               </CardTitle>
             </CardHeader>
@@ -658,7 +658,7 @@ export default function LeadDetailPage() {
                   value={noteInput}
                   onChange={(e) => setNoteInput(e.target.value)}
                   placeholder="Record call summary, client feedback, next steps, or internal note..."
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full text-xs px-3.5 py-2.5 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition-all placeholder:text-sage-400"
                 />
                 <div className="flex justify-end">
                   <Button
@@ -666,7 +666,7 @@ export default function LeadDetailPage() {
                     variant="primary"
                     size="sm"
                     isLoading={isPostingNote}
-                    className="bg-brand-800 hover:bg-brand-700 text-white text-xs"
+                    className="bg-brand-800 hover:bg-brand-900 text-white text-xs rounded-xl shadow-forest-sm"
                   >
                     <Send className="w-3.5 h-3.5 mr-1" />
                     Post Activity Note
@@ -677,28 +677,28 @@ export default function LeadDetailPage() {
           </Card>
 
           {/* Activity Timeline Card */}
-          <Card className="bg-white border-slate-200 shadow-xs">
-            <CardHeader className="py-3 px-5 border-b border-slate-100">
-              <CardTitle className="text-sm font-semibold text-slate-900">
+          <Card className="bg-white border-sage-200/90 shadow-soft-xs rounded-2xl">
+            <CardHeader className="py-3.5 px-5 border-b border-sage-100">
+              <CardTitle className="text-sm font-bold text-charcoal-900">
                 Interaction History & Audit Trail ({activities.length})
               </CardTitle>
             </CardHeader>
             <CardContent className="p-5">
               {activities.length === 0 ? (
-                <div className="p-8 text-center text-xs text-slate-400 italic">
+                <div className="p-8 text-center text-xs text-sage-400 italic">
                   No activity entries recorded yet for this lead.
                 </div>
               ) : (
-                <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-sage-200">
                   {activities.map((act) => (
                     <div key={act._id} className="relative group">
                       {/* Timeline dot */}
-                      <div className="absolute -left-6 top-1 w-3 h-3 rounded-full bg-brand-700 border-2 border-white ring-1 ring-slate-200" />
+                      <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-brand-800 border-2 border-white ring-2 ring-brand-100 shadow-2xs" />
 
                       <div className="flex flex-col gap-0.5">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-slate-900">{act.title}</span>
-                          <span className="text-[11px] text-slate-400">
+                          <span className="font-semibold text-charcoal-900">{act.title}</span>
+                          <span className="text-[11px] text-sage-400">
                             {new Date(act.createdAt).toLocaleString(undefined, {
                               dateStyle: 'medium',
                               timeStyle: 'short',
@@ -707,16 +707,16 @@ export default function LeadDetailPage() {
                         </div>
 
                         {act.description && (
-                          <p className="text-xs text-slate-600 mt-1 whitespace-pre-line bg-slate-50 p-2.5 rounded border border-slate-100">
+                          <p className="text-xs text-charcoal-700 mt-1.5 whitespace-pre-line bg-sage-50/60 p-3 rounded-xl border border-sage-100">
                             {act.description}
                           </p>
                         )}
 
-                        <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400">
+                        <div className="flex items-center gap-2 mt-1.5 text-[11px] text-sage-500">
                           {act.userId ? (
                             <span>By: {act.userId.name}</span>
                           ) : (
-                            <span>System Automation</span>
+                            <span className="text-brand-800 font-medium">System Automation</span>
                           )}
                         </div>
                       </div>
@@ -729,41 +729,42 @@ export default function LeadDetailPage() {
         </div>
       </div>
 
+
       {/* Schedule Follow-up Modal */}
       {isFollowUpOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal-900/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl shadow-soft-xl border border-sage-200 max-w-md w-full p-6 space-y-4">
             <div>
-              <h3 className="text-base font-semibold text-slate-900">Schedule Lead Follow-Up</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Set a calendar target date and note for sales follow-up</p>
+              <h3 className="text-base font-bold text-charcoal-900">Schedule Lead Follow-Up</h3>
+              <p className="text-xs text-sage-500 mt-0.5">Set a calendar target date and note for sales follow-up</p>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Target Date *</label>
+                <label className="block text-xs font-semibold text-charcoal-700 mb-1">Target Date *</label>
                 <input
                   type="date"
                   required
                   value={newFollowUpDate}
                   onChange={(e) => setNewFollowUpDate(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full text-xs px-3.5 py-2.5 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Follow-Up Note</label>
+                <label className="block text-xs font-semibold text-charcoal-700 mb-1">Follow-Up Note</label>
                 <textarea
                   rows={2}
                   value={followUpNotes}
                   onChange={(e) => setFollowUpNotes(e.target.value)}
                   placeholder="Call about pricing proposal review..."
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full text-xs px-3.5 py-2.5 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition-all placeholder:text-sage-400"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-              <Button variant="outline" size="sm" onClick={() => setIsFollowUpOpen(false)}>
+            <div className="flex justify-end gap-2 pt-2 border-t border-sage-100">
+              <Button variant="outline" size="sm" onClick={() => setIsFollowUpOpen(false)} className="rounded-xl border-sage-200">
                 Cancel
               </Button>
               <Button
@@ -777,7 +778,7 @@ export default function LeadDetailPage() {
                   }
                   handleSaveFollowUp(new Date(newFollowUpDate).toISOString(), followUpNotes);
                 }}
-                className="bg-brand-800 text-white"
+                className="bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-forest-sm"
               >
                 Save Schedule
               </Button>
@@ -788,27 +789,27 @@ export default function LeadDetailPage() {
 
       {/* Lost Reason Modal */}
       {isLostModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal-900/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl shadow-soft-xl border border-sage-200 max-w-md w-full p-6 space-y-4">
             <div>
-              <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+              <h3 className="text-base font-bold text-charcoal-900 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-rose-500" />
                 Mark Lead as Lost
               </h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-sage-500 mt-1">
                 A reason must be recorded when moving a lead to Lost for marketing and pipeline reporting.
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Reason for Lost *</label>
+              <label className="block text-xs font-semibold text-charcoal-700 mb-1">Reason for Lost *</label>
               <textarea
                 rows={3}
                 required
                 value={lostReasonInput}
                 onChange={(e) => setLostReasonInput(e.target.value)}
                 placeholder="e.g. Budget constraints, opted for competitor, timing postponed..."
-                className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="w-full text-xs px-3.5 py-2.5 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 transition-all placeholder:text-sage-400"
               />
             </div>
 
@@ -818,6 +819,7 @@ export default function LeadDetailPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsLostModalOpen(false)}
+                className="rounded-xl border-sage-200"
               >
                 Cancel
               </Button>
@@ -827,6 +829,7 @@ export default function LeadDetailPage() {
                 size="sm"
                 isLoading={isSavingLost}
                 onClick={confirmLostReason}
+                className="rounded-xl shadow-2xs"
               >
                 Confirm Lost
               </Button>
@@ -837,18 +840,18 @@ export default function LeadDetailPage() {
 
       {/* Message Lead Modal */}
       {isMessageModalOpen && lead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full overflow-hidden p-6 space-y-4 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal-900/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl shadow-soft-xl border border-sage-200 max-w-lg w-full overflow-hidden p-6 space-y-4 animate-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-sage-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
+                <div className="w-9 h-9 rounded-xl bg-forest-50 text-forest-700 flex items-center justify-center border border-forest-100">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">
+                  <h3 className="text-sm font-bold text-charcoal-900">
                     Message {lead.firstName} {lead.lastName || ''}
                   </h3>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-sage-400">
                     {lead.company ? `${lead.company} • ` : ''}
                     {lead.phone || lead.email || 'No direct phone/email'}
                   </p>
@@ -857,7 +860,7 @@ export default function LeadDetailPage() {
               <button
                 type="button"
                 onClick={() => setIsMessageModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-sage-400 hover:text-charcoal-700 p-1.5 rounded-lg transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -870,7 +873,7 @@ export default function LeadDetailPage() {
                   href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 transition-colors"
                 >
                   <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
                   WhatsApp Web
@@ -880,7 +883,7 @@ export default function LeadDetailPage() {
               {lead.email && (
                 <a
                   href={`mailto:${lead.email}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200 transition-colors"
                 >
                   <Mail className="w-3.5 h-3.5 text-blue-600" />
                   Mail App
@@ -890,7 +893,7 @@ export default function LeadDetailPage() {
               {lead.phone && (
                 <a
                   href={`tel:${lead.phone}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5 text-amber-600" />
                   Call / Cellular
@@ -902,9 +905,9 @@ export default function LeadDetailPage() {
                 )}&phone=${encodeURIComponent(lead.phone || '')}&email=${encodeURIComponent(
                   lead.email || ''
                 )}&channel=${messageChannel}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-50 text-brand-800 hover:bg-brand-100 border border-brand-200 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-brand-50 text-brand-900 hover:bg-brand-100 border border-brand-200 transition-colors"
               >
-                <MessageSquare className="w-3.5 h-3.5 text-brand-700" />
+                <MessageSquare className="w-3.5 h-3.5 text-brand-800" />
                 Open in Unified Inbox
               </Link>
             </div>
@@ -912,17 +915,17 @@ export default function LeadDetailPage() {
             {/* Quick Send Form */}
             <form onSubmit={handleSendMessageSubmit} className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-slate-700">Dispatch Outbound Message:</label>
+                <label className="block text-xs font-semibold text-charcoal-700">Dispatch Outbound Message:</label>
                 <div className="flex items-center gap-1">
                   {(['whatsapp', 'email', 'sms'] as ConversationChannel[]).map((ch) => (
                     <button
                       key={ch}
                       type="button"
                       onClick={() => setMessageChannel(ch)}
-                      className={`px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider transition-all ${
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all ${
                         messageChannel === ch
-                          ? 'bg-brand-800 text-white shadow-2xs'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          ? 'bg-brand-800 text-white shadow-forest-sm'
+                          : 'bg-sage-100 text-charcoal-700 hover:bg-sage-200'
                       }`}
                     >
                       {ch}
@@ -937,20 +940,20 @@ export default function LeadDetailPage() {
                 value={messageBody}
                 onChange={(e) => setMessageBody(e.target.value)}
                 placeholder={`Type message to dispatch via ${messageChannel.toUpperCase()}...`}
-                className="w-full text-xs p-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-500 leading-relaxed"
+                className="w-full text-xs p-3.5 border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 leading-relaxed placeholder:text-sage-400 transition-all"
               />
 
               {messageSuccess && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="font-medium">{messageSuccess}</span>
+                  <span className="font-semibold">{messageSuccess}</span>
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-between pt-2 border-t border-sage-100">
                 <Link
                   href="/client/integrations?tab=messaging"
-                  className="text-[11px] text-slate-400 hover:text-brand-700 underline flex items-center gap-1"
+                  className="text-[11px] text-sage-500 hover:text-brand-800 underline flex items-center gap-1"
                 >
                   <span>Configure API tokens</span>
                 </Link>
@@ -960,6 +963,7 @@ export default function LeadDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setIsMessageModalOpen(false)}
+                    className="rounded-xl border-sage-200"
                   >
                     Close
                   </Button>
@@ -967,7 +971,7 @@ export default function LeadDetailPage() {
                     type="submit"
                     size="sm"
                     disabled={isSendingMessage || !messageBody.trim()}
-                    className="bg-brand-800 hover:bg-brand-700 text-white flex items-center gap-1.5"
+                    className="bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-forest-sm flex items-center gap-1.5"
                   >
                     <Send className="w-3.5 h-3.5" />
                     {isSendingMessage ? 'Dispatching...' : `Send ${messageChannel.toUpperCase()}`}

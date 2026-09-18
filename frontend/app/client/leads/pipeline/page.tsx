@@ -249,27 +249,27 @@ export default function PipelinePage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-sage-200/90">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Lead Pipeline Board</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-sage-900">Lead Pipeline Board</h1>
+          <p className="text-xs text-sage-500 mt-1 font-normal">
             Visualize client deal flow, drag prospects across stages, and maintain sales velocity.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {/* View Switcher */}
-          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+          <div className="inline-flex rounded-lg border border-sage-200 bg-white p-1 shadow-soft-xs">
             <Link
               href="/client/leads"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-sage-600 hover:text-sage-900 hover:bg-sage-50 transition-colors"
             >
               <Users className="w-3.5 h-3.5" />
               Directory
             </Link>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-800 text-white shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-800 text-white shadow-soft-xs"
             >
               <Kanban className="w-3.5 h-3.5" />
               Pipeline Board
@@ -280,7 +280,7 @@ export default function PipelinePage() {
             variant="primary"
             size="sm"
             onClick={() => handleOpenCreateForStage('new')}
-            className="bg-brand-800 hover:bg-brand-700 text-white"
+            className="shadow-forest-sm"
           >
             <Plus className="w-4 h-4 mr-1.5" />
             Add Lead
