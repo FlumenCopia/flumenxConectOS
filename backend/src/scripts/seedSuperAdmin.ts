@@ -242,45 +242,54 @@ export const seedDatabase = async () => {
 
     logger.info('[✓] Seeded system roles: super_admin, client_admin, client_staff');
 
-    // 3. Seed Initial Super Admin (Idempotent)
-    const adminEmail = env.INITIAL_ADMIN_EMAIL.toLowerCase().trim();
-    let superAdmin = await User.findOne({ email: adminEmail }).select('+passwordHash');
+    // 3. Seed Initial Super Admin (Idempotent for both .com and .in domains)
+    const adminEmails = Array.from(
+      new Set([
+        env.INITIAL_ADMIN_EMAIL.toLowerCase().trim(),
+        'admin@flumenx.com',
+        'admin@flumenx.in',
+      ])
+    );
 
-    if (!superAdmin) {
-      const passwordHash = await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 10);
-      superAdmin = await User.create({
-        name: env.INITIAL_ADMIN_NAME,
-        email: adminEmail,
-        passwordHash,
-        isSuperAdmin: true,
-        status: 'active',
-        mustChangePassword: true,
-      });
+    const passwordHash = await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 10);
 
-      await AuditService.log({
-        userId: superAdmin._id,
-        userEmail: superAdmin.email,
-        action: 'auth.bootstrap.super_admin_created',
-        resourceType: 'user',
-        resourceId: superAdmin._id.toString(),
-        success: true,
-        metadata: { email: adminEmail },
-      });
+    for (const email of adminEmails) {
+      let admin = await User.findOne({ email }).select('+passwordHash');
+      if (!admin) {
+        admin = await User.create({
+          name: env.INITIAL_ADMIN_NAME,
+          email,
+          passwordHash,
+          isSuperAdmin: true,
+          status: 'active',
+          mustChangePassword: false,
+        });
 
-      logger.info(`[✓] Created Initial Super Admin: ${adminEmail} (password rotation required)`);
-    } else {
-      // Update password hash to rotated initial admin password
-      superAdmin.passwordHash = await bcrypt.hash(env.INITIAL_ADMIN_PASSWORD, 10);
-      superAdmin.isSuperAdmin = true;
-      superAdmin.status = 'active';
-      superAdmin.mustChangePassword = true;
-      await superAdmin.save();
-      logger.info(`[i] Super Admin verified & credentials synchronized: ${adminEmail}`);
+        await AuditService.log({
+          userId: admin._id,
+          userEmail: admin.email,
+          action: 'auth.bootstrap.super_admin_created',
+          resourceType: 'user',
+          resourceId: admin._id.toString(),
+          success: true,
+          metadata: { email },
+        });
+
+        logger.info(`[✓] Created Super Admin: ${email}`);
+      } else {
+        admin.passwordHash = passwordHash;
+        admin.isSuperAdmin = true;
+        admin.status = 'active';
+        admin.mustChangePassword = false;
+        await admin.save();
+        logger.info(`[i] Super Admin credentials synchronized: ${email}`);
+      }
     }
 
     logger.info('==================================================');
     logger.info('flumenxConectOS bootstrap completed successfully!');
-    logger.info(`Super Admin account active: ${adminEmail} (Credentials configured in environment)`);
+    logger.info(`Super Admin accounts active: ${adminEmails.join(', ')}`);
+    logger.info(`Password set to configured: ${env.INITIAL_ADMIN_PASSWORD}`);
     logger.info('Only Super Admin and essential system roles/permissions seeded.');
     logger.info('==================================================');
   } catch (error) {
