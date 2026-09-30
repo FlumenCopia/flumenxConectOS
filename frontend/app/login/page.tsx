@@ -51,32 +51,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#F7F8F5] flex items-center justify-center p-0 lg:p-6 select-none">
       <div className="w-full max-w-6xl min-h-[660px] bg-white lg:border border-sage-200/90 lg:rounded-2xl lg:shadow-soft-lg flex flex-col lg:flex-row overflow-hidden">
         
-        {/* Left Brand Showcase Banner (Desktop Only - matches reference design) */}
+        {/* Left Brand Showcase Banner */}
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#14532D] via-[#166534] to-[#0E3A20] text-white p-10 xl:p-12 flex-col justify-between relative overflow-hidden">
-          {/* Subtle Abstract Wave Motif Graphic */}
-          <div className="absolute inset-0 pointer-events-none opacity-20">
-            <svg className="w-full h-full" viewBox="0 0 500 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M-50,300 C150,150 250,550 550,200 L550,650 L-50,650 Z"
-                fill="url(#grad1)"
-              />
-              <path
-                d="M-50,450 C200,300 300,580 550,350 L550,650 L-50,650 Z"
-                fill="url(#grad2)"
-                opacity="0.6"
-              />
-              <defs>
-                <linearGradient id="grad1" x1="0" y1="0" x2="500" y2="600" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#4ADE80" />
-                  <stop offset="1" stopColor="#052E16" />
-                </linearGradient>
-                <linearGradient id="grad2" x1="0" y1="0" x2="500" y2="600" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#2DD4BF" />
-                  <stop offset="1" stopColor="#14532D" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
 
           {/* Top Brand Header */}
           <div className="relative z-10">

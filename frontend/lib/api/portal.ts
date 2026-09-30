@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ApiResponse } from '@/lib/api';
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5040/api/v1';
 
 // Dedicated Axios instance for customer portal with credentials and CSRF support
 export const portalApi = axios.create({
