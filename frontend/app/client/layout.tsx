@@ -52,12 +52,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               onClick={() => setMobileDrawerOpen(false)}
             />
             {/* Drawer */}
-            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-soft-lg z-50">
-              <div className="absolute top-3.5 right-3.5">
+            <div className="relative flex-1 flex flex-col max-w-[270px] w-full bg-[#051009] shadow-2xl z-50 animate-in slide-in-from-left duration-200">
+              <div className="absolute top-5 right-3.5 z-40">
                 <button
                   type="button"
                   onClick={() => setMobileDrawerOpen(false)}
-                  className="p-1.5 rounded-lg text-sage-400 hover:text-sage-700 hover:bg-sage-100"
+                  className="p-1.5 rounded-lg text-[#4E775C] hover:text-white hover:bg-white/10 transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>

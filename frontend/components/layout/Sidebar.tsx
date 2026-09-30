@@ -160,7 +160,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mode, clientName, onNavigate }
   const sections = mode === 'admin' ? adminSections : clientSections;
 
   return (
-    <aside className="w-64 bg-[#051009] text-white flex flex-col shrink-0 h-screen sticky top-0 border-r border-[#13271A] select-none z-30 shadow-2xl">
+    <aside className="w-full md:w-64 bg-[#051009] text-white flex flex-col shrink-0 h-full md:h-screen md:sticky top-0 md:border-r border-[#13271A] select-none z-30">
       {/* Brand Header */}
       <div className="h-20 flex flex-col justify-center px-5 border-b border-[#13271A] bg-[#040C07]">
         <Link
