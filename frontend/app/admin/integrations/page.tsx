@@ -102,7 +102,6 @@ export default function AdminIntegrationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-slate-500 uppercase">Meta Marketing API</span>
-              <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
             </div>
             <div className="mt-2 text-xl font-bold text-slate-900">Operational</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Avg Ingest Latency: 84ms</div>
@@ -113,7 +112,6 @@ export default function AdminIntegrationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-slate-500 uppercase">Google Ads API</span>
-              <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
             </div>
             <div className="mt-2 text-xl font-bold text-slate-900">Operational</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Avg Ingest Latency: 112ms</div>
@@ -124,7 +122,6 @@ export default function AdminIntegrationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-slate-500 uppercase">WhatsApp Cloud API</span>
-              <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
             </div>
             <div className="mt-2 text-xl font-bold text-slate-900">Operational</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Webhook Handshake: 200 OK</div>
@@ -135,7 +132,6 @@ export default function AdminIntegrationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-slate-500 uppercase">Dead-Letter Queue</span>
-              <span className={`h-2 w-2 rounded-full ${deadLetters.length > 0 ? 'bg-amber-500 ring-4 ring-amber-100' : 'bg-emerald-500'}`} />
             </div>
             <div className="mt-2 text-xl font-bold text-slate-900">{deadLetters.length} Events</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Requires manual re-drive</div>
