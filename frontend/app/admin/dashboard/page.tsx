@@ -136,7 +136,7 @@ export default function AdminDashboardPage() {
               <Building2 className="h-9 w-9 text-sage-300 mx-auto" />
               <p className="text-xs font-semibold text-charcoal-900">No client accounts created yet</p>
               <Link href="/admin/clients" className="inline-block mt-1">
-                <Button size="sm" className="text-xs bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-forest-sm">
+                <Button size="sm" className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm">
                   <Plus className="w-3.5 h-3.5 mr-1.5" /> Create First Client
                 </Button>
               </Link>
