@@ -218,7 +218,7 @@ export default function AdminClientsPage() {
         </div>
         <Button
           onClick={() => setIsCreateModalOpen(true)}
-          className="gap-2 h-9 text-xs font-semibold shrink-0 bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-forest-sm"
+          className="gap-2 h-9 text-xs font-semibold shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm"
         >
           <Plus className="h-4 w-4" />
           Provision Client

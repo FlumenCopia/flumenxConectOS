@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
               <span>Refresh</span>
             </Button>
             <Link href="/admin/clients">
-              <Button size="sm" className="text-xs bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-forest-sm font-semibold">
+              <Button size="sm" className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm font-semibold">
                 <Plus className="h-3.5 w-3.5 mr-1.5" />
                 <span>New Client Account</span>
               </Button>
