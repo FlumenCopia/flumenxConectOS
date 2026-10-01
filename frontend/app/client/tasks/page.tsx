@@ -482,10 +482,10 @@ export default function ClientTasksPage() {
       </div>
 
       {/* View Tabs */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar gap-1 sm:gap-2">
         <button
           onClick={() => setActiveTab('list')}
-          className={`pb-3 px-4 text-sm font-medium border-b-2 flex items-center gap-2 transition-colors ${
+          className={`shrink-0 pb-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 flex items-center gap-1.5 sm:gap-2 transition-colors whitespace-nowrap ${
             activeTab === 'list'
               ? 'border-brand-800 text-brand-800 font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -495,7 +495,7 @@ export default function ClientTasksPage() {
         </button>
         <button
           onClick={() => setActiveTab('agenda')}
-          className={`pb-3 px-4 text-sm font-medium border-b-2 flex items-center gap-2 transition-colors ${
+          className={`shrink-0 pb-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 flex items-center gap-1.5 sm:gap-2 transition-colors whitespace-nowrap ${
             activeTab === 'agenda'
               ? 'border-brand-800 text-brand-800 font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -505,7 +505,7 @@ export default function ClientTasksPage() {
         </button>
         <button
           onClick={() => setActiveTab('sla')}
-          className={`pb-3 px-4 text-sm font-medium border-b-2 flex items-center gap-2 transition-colors ${
+          className={`shrink-0 pb-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 flex items-center gap-1.5 sm:gap-2 transition-colors whitespace-nowrap ${
             activeTab === 'sla'
               ? 'border-brand-800 text-brand-800 font-semibold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -519,29 +519,29 @@ export default function ClientTasksPage() {
       {activeTab === 'list' && (
         <div className="space-y-4">
           {/* Filter Bar */}
-          <div className="bg-white p-3 rounded-lg border border-slate-200 flex flex-wrap gap-3 items-center justify-between">
-            <div className="flex flex-1 min-w-[240px] items-center bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5">
-              <Search className="w-4 h-4 text-slate-400 mr-2" />
+          <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-col md:flex-row gap-2.5 sm:gap-3 items-stretch md:items-center justify-between shadow-2xs">
+            <div className="flex w-full md:w-72 lg:w-80 items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+              <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
               <input
                 type="text"
                 placeholder="Search tasks, descriptions..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="bg-transparent border-none text-sm text-slate-800 focus:outline-none w-full"
+                className="bg-transparent border-none text-xs text-slate-800 focus:outline-none w-full"
               />
               {search && (
-                <button onClick={() => setSearch('')} className="text-slate-400 hover:text-slate-600">
+                <button onClick={() => setSearch('')} className="text-slate-400 hover:text-slate-600 ml-1">
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full md:w-auto">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
                 aria-label="Filter tasks by status"
-                className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 focus:outline-none"
+                className="w-full sm:w-auto text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 font-medium focus:outline-none truncate shadow-2xs"
               >
                 <option value="all">All Statuses</option>
                 <option value="open">Open</option>
@@ -555,7 +555,7 @@ export default function ClientTasksPage() {
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value as any)}
                 aria-label="Filter tasks by priority"
-                className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 focus:outline-none"
+                className="w-full sm:w-auto text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 font-medium focus:outline-none truncate shadow-2xs"
               >
                 <option value="all">All Priorities</option>
                 <option value="urgent">Urgent</option>
@@ -568,7 +568,7 @@ export default function ClientTasksPage() {
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as any)}
                 aria-label="Filter tasks by type"
-                className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 focus:outline-none"
+                className="w-full sm:w-auto text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 font-medium focus:outline-none truncate shadow-2xs"
               >
                 <option value="all">All Types</option>
                 <option value="call">Call</option>
@@ -583,7 +583,7 @@ export default function ClientTasksPage() {
                 value={slaBreachedFilter}
                 onChange={(e) => setSlaBreachedFilter(e.target.value as any)}
                 aria-label="Filter tasks by SLA breach status"
-                className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 focus:outline-none"
+                className="w-full sm:w-auto text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 font-medium focus:outline-none truncate shadow-2xs"
               >
                 <option value="all">SLA: All</option>
                 <option value="true">SLA: Breached Only</option>
@@ -594,7 +594,7 @@ export default function ClientTasksPage() {
                 value={assignedFilter}
                 onChange={(e) => setAssignedFilter(e.target.value)}
                 aria-label="Filter tasks by assigned team member"
-                className="text-xs bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 focus:outline-none"
+                className="w-full sm:w-auto text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 font-medium focus:outline-none truncate shadow-2xs"
               >
                 <option value="all">Assignee: All</option>
                 {teamMembers.map((m) => (
@@ -608,8 +608,8 @@ export default function ClientTasksPage() {
 
           {/* Tasks Table */}
           <Card className="bg-white border-slate-200 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-600">
+            <div className="overflow-x-auto scroll-smooth">
+              <table className="w-full min-w-[760px] text-left text-sm text-slate-600">
                 <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   <tr>
                     <th className="py-3 px-4">Task & Subject</th>
