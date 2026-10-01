@@ -477,21 +477,21 @@ export default function BroadcastPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-[#14532D] via-[#166534] to-[#0F3D21] p-6 rounded-3xl border border-forest-700/60 shadow-xl text-white relative overflow-hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-[#14532D] via-[#166534] to-[#0F3D21] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-forest-700/60 shadow-xl text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="space-y-1 relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-              <Send className="w-5 h-5 text-white" />
+        <div className="space-y-1 relative z-10 w-full sm:w-auto">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25 shrink-0">
+              <Send className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                Broadcast Campaign Blast
-                <Badge variant="outline" className="bg-forest-900/50 text-emerald-200 border-emerald-400/30 text-xs px-2 py-0.5">
+              <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex flex-wrap items-center gap-2">
+                <span>Broadcast Campaign Blast</span>
+                <Badge variant="outline" className="bg-forest-900/50 text-emerald-200 border-emerald-400/30 text-[11px] px-2 py-0.5">
                   Multi-Channel
                 </Badge>
               </h1>
-              <p className="text-sm text-emerald-100/80">
+              <p className="text-xs sm:text-sm text-emerald-100/80 mt-0.5">
                 Upload contact sheets (Excel / CSV), attach rich media (Images, PDFs, Brochures), and blast personalized messages at scale.
               </p>
             </div>
@@ -499,20 +499,21 @@ export default function BroadcastPage() {
         </div>
 
         {/* Action Tabs & Sample Download */}
-        <div className="flex items-center gap-2 relative z-10">
+        <div className="flex flex-wrap items-center gap-2 relative z-10 w-full sm:w-auto justify-between sm:justify-end">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={downloadSampleExcel}
-            className="border-emerald-600/60 bg-white/10 hover:bg-white/20 text-white gap-2 text-xs rounded-xl backdrop-blur-sm"
+            className="border-emerald-600/60 bg-white/10 hover:bg-white/20 text-white gap-1.5 text-xs rounded-xl backdrop-blur-sm shrink-0"
           >
             <Download className="w-3.5 h-3.5" />
-            Sample Excel
+            <span>Sample Excel</span>
           </Button>
 
-          <div className="bg-forest-950/60 p-1 rounded-xl border border-forest-700/60 flex backdrop-blur-sm">
+          <div className="bg-forest-950/60 p-1 rounded-xl border border-forest-700/60 flex backdrop-blur-sm shrink-0">
             <button
+              type="button"
               onClick={() => setActiveTab('compose')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'compose'
@@ -523,6 +524,7 @@ export default function BroadcastPage() {
               New Blast
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('history')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 activeTab === 'history'
@@ -662,8 +664,8 @@ export default function BroadcastPage() {
                 {/* Recipient Stats Counter & Preview Table */}
                 {parsedContacts.length > 0 && (
                   <div className="space-y-3 pt-1">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-3 text-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                      <div className="flex items-center gap-3 flex-wrap">
                         <span className="font-semibold text-slate-700">
                           Total: <strong className="text-indigo-600">{parsedContacts.length}</strong>
                         </span>
@@ -677,8 +679,8 @@ export default function BroadcastPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <div className="relative">
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="relative flex-1 sm:flex-none">
                           <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
                           <input
                             type="text"
@@ -688,13 +690,13 @@ export default function BroadcastPage() {
                               setSearchFilter(e.target.value);
                               setPreviewPage(1);
                             }}
-                            className="text-xs pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg w-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="text-xs pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                           />
                         </div>
                         <button
                           type="button"
                           onClick={() => setFilterValidOnly(!filterValidOnly)}
-                          className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors shrink-0 ${
                             filterValidOnly
                               ? 'bg-emerald-50 border-emerald-200 text-emerald-700 font-medium'
                               : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -707,8 +709,8 @@ export default function BroadcastPage() {
 
                     {/* Table */}
                     <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-xs">
-                      <div className="max-h-56 overflow-y-auto">
-                        <table className="w-full text-xs text-left">
+                      <div className="max-h-56 overflow-y-auto overflow-x-auto">
+                        <table className="w-full min-w-[500px] text-xs text-left">
                           <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200 sticky top-0">
                             <tr>
                               <th className="py-2.5 px-3">Status</th>
@@ -905,12 +907,12 @@ export default function BroadcastPage() {
 
                 {/* Variable chips */}
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                     <label className="text-xs font-semibold text-slate-700">
                       Message Body *
                     </label>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[11px] text-slate-400 mr-1">Insert dynamic tag:</span>
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className="text-[11px] text-slate-400 mr-1">Insert tag:</span>
                       <button
                         type="button"
                         onClick={() => insertVariable('Name')}
@@ -999,8 +1001,8 @@ export default function BroadcastPage() {
 
                   {/* Attached Media Card Preview */}
                   {attachment && !isUploadingMedia && (
-                    <div className="p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/40 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
+                    <div className="p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         {attachment.fileType === 'image' && attachmentLocalPreview ? (
                           <div className="w-12 h-12 rounded-lg overflow-hidden border border-slate-200 bg-white shrink-0">
                             <img
@@ -1020,12 +1022,12 @@ export default function BroadcastPage() {
                           </div>
                         )}
 
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <p className="text-xs font-semibold text-slate-800 truncate max-w-xs">
+                        <div className="space-y-0.5 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-xs font-semibold text-slate-800 truncate max-w-[180px] sm:max-w-xs">
                               {attachment.name}
                             </p>
-                            <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-200 text-[10px] px-1.5 py-0">
+                            <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-200 text-[10px] px-1.5 py-0 shrink-0">
                               {attachment.fileType === 'image'
                                 ? 'Image'
                                 : attachment.name.endsWith('.pdf')
@@ -1041,7 +1043,7 @@ export default function BroadcastPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                         <button
                           type="button"
                           onClick={() => mediaInputRef.current?.click()}
@@ -1070,7 +1072,7 @@ export default function BroadcastPage() {
                 </div>
 
                 {/* Launch Button */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="text-xs text-slate-500">
                     Ready to blast: <strong className="text-slate-800">{validContacts.length}</strong>{' '}
                     recipients via{' '}
@@ -1082,7 +1084,7 @@ export default function BroadcastPage() {
                     size="lg"
                     onClick={handleLaunchBroadcast}
                     disabled={isDispatching || validContacts.length === 0}
-                    className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/25 px-6 font-semibold"
+                    className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/25 px-6 font-semibold"
                   >
                     {isDispatching ? (
                       <>

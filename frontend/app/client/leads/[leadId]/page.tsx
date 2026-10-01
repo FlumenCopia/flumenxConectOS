@@ -422,9 +422,9 @@ export default function LeadDetailPage() {
           )}
 
           {/* Visual Pipeline Stepper */}
-          <div className="mt-6 pt-6 border-t border-sage-100">
-            <div className="flex items-center justify-between relative">
-              <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-sage-200/80 -z-0" />
+          <div className="mt-6 pt-6 border-t border-sage-100 overflow-x-auto no-scrollbar">
+            <div className="flex items-center justify-between relative min-w-[420px] py-1">
+              <div className="absolute left-4 right-4 top-4 h-0.5 bg-sage-200/80 -z-0" />
               {STAGE_STEPS.map((s, idx) => {
                 const isCurrent = lead.stage === s.key;
                 const isPassed =
