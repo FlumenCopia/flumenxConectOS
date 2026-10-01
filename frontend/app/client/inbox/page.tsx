@@ -25,6 +25,7 @@ import {
   Activity,
   X,
   ChevronRight,
+  ChevronLeft,
   MoreVertical,
   Paperclip,
   CheckCircle2,
@@ -68,6 +69,9 @@ function UnifiedInboxContent() {
   const [activities, setActivities] = useState<ConversationActivityItem[]>([]);
   const [teamMembers, setTeamMembers] = useState<ClientMemberItem[]>([]);
   const [contacts, setContacts] = useState<ContactItem[]>([]);
+
+  // Mobile view state ('list' or 'thread')
+  const [mobileView, setMobileView] = useState<'list' | 'thread'>('list');
 
   // Loading states
   const [isLoadingList, setIsLoadingList] = useState(true);
@@ -427,11 +431,11 @@ function UnifiedInboxContent() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] overflow-hidden bg-white border border-sage-200/90 rounded-2xl shadow-soft-xs">
+    <div className="-m-4 sm:m-0 flex h-[calc(100vh-8.5rem)] md:h-[calc(100vh-6rem)] overflow-hidden bg-white border-y sm:border border-sage-200/90 rounded-none sm:rounded-2xl shadow-none sm:shadow-soft-xs relative">
       {/* ------------------------------------------------------------- */}
-      {/* PANE 1: Quick Folders & Channel Filter (200px) */}
+      {/* PANE 1: Quick Folders & Channel Filter (Hidden on < lg, 208px on lg+) */}
       {/* ------------------------------------------------------------- */}
-      <div className="w-52 border-r border-sage-200/90 bg-sage-50/50 flex flex-col shrink-0">
+      <div className="hidden lg:flex w-52 border-r border-sage-200/90 bg-sage-50/50 flex-col shrink-0">
         <div className="p-3 border-b border-sage-100 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-sage-500">Inbox Hub</span>
           <Button
@@ -612,20 +616,97 @@ function UnifiedInboxContent() {
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* PANE 2: Conversation Thread List (320px) */}
+      {/* PANE 2: Conversation Thread List (Full width on mobile, 320px on desktop) */}
       {/* ------------------------------------------------------------- */}
-      <div className="w-80 border-r border-slate-200 flex flex-col shrink-0 bg-white">
-        {/* Search Header */}
-        <div className="p-3 border-b border-slate-200">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search conversations..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500"
-            />
+      <div className={`w-full md:w-80 lg:w-80 border-r border-sage-200/90 flex flex-col shrink-0 bg-white ${mobileView === 'thread' ? 'hidden md:flex' : 'flex'}`}>
+        {/* Search Header & Mobile Folder Scroller */}
+        <div className="p-3 border-b border-sage-200/90 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search conversations..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500 shadow-2xs"
+              />
+            </div>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => setIsNewModalOpen(true)}
+              className="h-8 px-2.5 text-xs shadow-forest-sm shrink-0"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" /> New
+            </Button>
+          </div>
+
+          {/* Mobile/Tablet quick folder & channel pill scroller */}
+          <div className="lg:hidden flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter('all');
+                setUnreadOnly(false);
+              }}
+              className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                statusFilter === 'all' && !unreadOnly
+                  ? 'bg-brand-800 text-white shadow-2xs'
+                  : 'bg-sage-100 text-sage-700 hover:bg-sage-200'
+              }`}
+            >
+              All ({counts.all})
+            </button>
+            <button
+              type="button"
+              onClick={() => setUnreadOnly(!unreadOnly)}
+              className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                unreadOnly
+                  ? 'bg-brand-800 text-white shadow-2xs'
+                  : 'bg-sage-100 text-sage-700 hover:bg-sage-200'
+              }`}
+            >
+              🔴 Unread {counts.unread > 0 ? `(${counts.unread})` : ''}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter('open');
+                setUnreadOnly(false);
+              }}
+              className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                statusFilter === 'open' && !unreadOnly
+                  ? 'bg-brand-800 text-white shadow-2xs'
+                  : 'bg-sage-100 text-sage-700 hover:bg-sage-200'
+              }`}
+            >
+              Open ({counts.open})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter('resolved');
+                setUnreadOnly(false);
+              }}
+              className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                statusFilter === 'resolved' && !unreadOnly
+                  ? 'bg-brand-800 text-white shadow-2xs'
+                  : 'bg-sage-100 text-sage-700 hover:bg-sage-200'
+              }`}
+            >
+              Resolved ({counts.resolved})
+            </button>
+            <select
+              value={channelFilter}
+              onChange={(e) => setChannelFilter(e.target.value as any)}
+              className="shrink-0 text-xs bg-sage-100 border-none rounded-full px-2 py-1 font-semibold text-sage-700 cursor-pointer"
+            >
+              <option value="all">All Channels</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="email">Email</option>
+              <option value="sms">SMS</option>
+            </select>
           </div>
         </div>
 
@@ -648,7 +729,10 @@ function UnifiedInboxContent() {
               return (
                 <div
                   key={conv._id}
-                  onClick={() => setActiveConversationId(conv._id)}
+                  onClick={() => {
+                    setActiveConversationId(conv._id);
+                    setMobileView('thread');
+                  }}
                   className={`p-3.5 cursor-pointer transition-colors border-l-3 select-none ${
                     isSelected
                       ? 'bg-brand-50/50 border-brand-800'
@@ -704,20 +788,28 @@ function UnifiedInboxContent() {
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* PANE 3: Active Thread View & Composer (Flex 1) */}
+      {/* PANE 3: Active Thread View & Composer (Flex 1, toggles on mobile) */}
       {/* ------------------------------------------------------------- */}
-      <div className="flex-1 flex flex-col bg-slate-50/40 min-w-0">
+      <div className={`flex-1 flex flex-col bg-slate-50/40 min-w-0 ${mobileView === 'list' ? 'hidden md:flex' : 'flex'}`}>
         {activeConversation ? (
           <>
             {/* Thread Header */}
-            <div className="px-6 py-3 bg-white border-b border-slate-200 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-brand-100 text-brand-800 flex items-center justify-center font-bold text-xs">
+            <div className="px-3 sm:px-6 py-2.5 sm:py-3 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setMobileView('list')}
+                  className="md:hidden p-1.5 -ml-1 rounded-lg text-sage-700 hover:bg-sage-100 transition-colors"
+                  title="Back to conversation list"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-brand-100 text-brand-800 flex items-center justify-center font-bold text-xs shrink-0">
                   {activeConversation.contactId?.name?.slice(0, 2).toUpperCase() || 'CU'}
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold text-slate-900 leading-tight">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h2 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight truncate max-w-[140px] sm:max-w-none">
                       {activeConversation.contactId?.name}
                     </h2>
                     {getChannelBadge(activeConversation.channel)}
@@ -730,54 +822,43 @@ function UnifiedInboxContent() {
                       </Link>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 mt-0.5 text-[11px] text-slate-500">
-                    {activeConversation.contactId?.email && (
-                      <span className="flex items-center gap-1">
-                        <Mail className="w-3 h-3 text-slate-400" />
-                        {activeConversation.contactId.email}
-                      </span>
-                    )}
-                    {activeConversation.contactId?.phone && (
-                      <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-slate-400" />
-                        {activeConversation.contactId.phone}
-                      </span>
-                    )}
+                  <div className="flex items-center gap-2 mt-0.5 text-[10px] sm:text-[11px] text-slate-500 truncate">
+                    {activeConversation.contactId?.phone || activeConversation.contactId?.email || 'Customer'}
                   </div>
                 </div>
               </div>
 
               {/* Thread Action Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 ml-auto">
                 {/* Status selector */}
                 <select
                   value={activeConversation.status}
                   onChange={(e) => handleStatusChange(e.target.value as any)}
-                  className="text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1 font-semibold text-slate-800"
+                  className="text-[11px] sm:text-xs bg-slate-50 border border-slate-200 rounded px-1.5 sm:px-2 py-1 font-semibold text-slate-800"
                 >
-                  <option value="open">Status: Open</option>
-                  <option value="pending">Status: Pending</option>
-                  <option value="resolved">Status: Resolved</option>
-                  <option value="archived">Status: Archived</option>
+                  <option value="open">Open</option>
+                  <option value="pending">Pending</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="archived">Archived</option>
                 </select>
 
-                {/* Priority selector */}
+                {/* Priority selector (hidden on very small screens) */}
                 <select
                   value={activeConversation.priority}
                   onChange={(e) => handlePriorityChange(e.target.value as any)}
-                  className="text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1 font-medium text-slate-800"
+                  className="hidden sm:inline-block text-[11px] sm:text-xs bg-slate-50 border border-slate-200 rounded px-1.5 sm:px-2 py-1 font-medium text-slate-800"
                 >
-                  <option value="low">Priority: Low</option>
-                  <option value="medium">Priority: Medium</option>
-                  <option value="high">Priority: High</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
                   <option value="urgent">🔥 Urgent</option>
                 </select>
 
-                {/* Assignment selector */}
+                {/* Assignment selector (hidden on mobile) */}
                 <select
                   value={activeConversation.assignedTo?._id || ''}
                   onChange={(e) => handleAssignChange(e.target.value)}
-                  className="text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1 font-medium text-slate-800"
+                  className="hidden lg:inline-block text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1 font-medium text-slate-800 max-w-[110px] truncate"
                 >
                   <option value="">Unassigned</option>
                   {teamMembers.map((m) => (
@@ -816,7 +897,7 @@ function UnifiedInboxContent() {
             {/* Main Chat Area with Activity Drawer */}
             <div className="flex-1 flex overflow-hidden">
               {/* Message Bubbles Container */}
-              <div className="flex-1 p-6 overflow-y-auto space-y-4">
+              <div className="flex-1 p-3 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4">
                 {isLoadingThread ? (
                   <div className="p-8 text-center text-xs text-slate-500">Loading messages...</div>
                 ) : messages.length === 0 ? (
@@ -954,7 +1035,7 @@ function UnifiedInboxContent() {
             </div>
 
             {/* Message Composer Bar */}
-            <div className="p-4 bg-white border-t border-slate-200">
+            <div className="p-2.5 sm:p-4 bg-white border-t border-slate-200">
               <form onSubmit={handleSendMessage} className="space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
