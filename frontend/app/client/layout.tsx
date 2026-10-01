@@ -113,10 +113,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </main>
 
           {/* Mobile Floating Action Button (FAB + - matches reference mobile design) */}
-          <div className="md:hidden fixed bottom-18 right-4 z-30">
+          <div className="md:hidden fixed bottom-20 right-4 z-40">
             <Link
               href="/client/leads"
-              className="h-12 w-12 rounded-full bg-brand-800 hover:bg-brand-700 text-white shadow-forest-md flex items-center justify-center transition-transform active:scale-95"
+              className="h-12 w-12 rounded-full bg-brand-800 hover:bg-brand-700 text-white shadow-forest-md flex items-center justify-center transition-transform active:scale-95 shadow-lg"
             >
               <Plus className="h-6 w-6 stroke-[2.5]" />
             </Link>
