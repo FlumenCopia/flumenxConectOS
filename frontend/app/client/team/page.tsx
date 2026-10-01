@@ -48,7 +48,7 @@ export default function ClientTeamPage() {
             <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
               <Users className="h-5 w-5" />
             </span>
-            <h1 className="text-2xl font-bold text-charcoal-900 tracking-tight">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-charcoal-900 tracking-tight">
               Workspace Team Members
             </h1>
           </div>

@@ -269,8 +269,8 @@ export default function ClientReportsPage() {
             <ChevronRight className="w-3 h-3" />
             <span className="text-charcoal-900 font-semibold">Reporting & Analytics</span>
           </div>
-          <h1 className="text-2xl font-bold text-charcoal-900 flex items-center gap-2 tracking-tight">
-            <BarChart3 className="w-6 h-6 text-brand-800" />
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-charcoal-900 flex items-center gap-2 tracking-tight">
+            <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-brand-800 shrink-0" />
             Marketing & Operational Intelligence
           </h1>
           <p className="text-xs text-sage-500 mt-0.5">

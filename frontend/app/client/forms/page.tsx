@@ -355,13 +355,13 @@ export default function ClientFormsPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 border-b border-sage-200 pb-4 sm:pb-5">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-charcoal-900">
               Website Lead Intake Forms
             </h1>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-forest-50 text-forest-800 border border-forest-100">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-forest-50 text-forest-800 border border-forest-100 shrink-0">
               Intake Engine
             </span>
           </div>
@@ -369,18 +369,18 @@ export default function ClientFormsPage() {
             Build responsive intake widgets, configure custom CRM field mappings, embed on external sites, and automate Unified Inbox routing.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={fetchForms}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-charcoal-700 bg-white border border-sage-200 rounded-xl hover:bg-sage-50 shadow-soft-xs transition"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-semibold text-charcoal-700 bg-white border border-sage-200 rounded-xl hover:bg-sage-50 shadow-soft-xs transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
           <button
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-brand-800 hover:bg-brand-900 rounded-xl shadow-forest-sm transition"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 text-xs font-semibold text-white bg-brand-800 hover:bg-brand-900 rounded-xl shadow-forest-sm transition"
           >
             <Plus className="w-4 h-4" />
             Create Form
