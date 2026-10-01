@@ -303,23 +303,49 @@ export default function PipelinePage() {
           <p className="text-xs text-slate-500">Loading pipeline board...</p>
         </div>
       ) : (
-        <div className="overflow-x-auto pb-4">
-          <div className="flex gap-4 min-w-[1280px]">
+        <div className="space-y-3">
+          {/* Mobile Stage Quick Navigator Pills */}
+          <div className="md:hidden flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
             {STAGES.map((col) => {
-              const colLeads = leads.filter((l) => l.stage === col.key);
-              const colSummary = summaries[col.key];
-              const isOver = dragOverStage === col.key;
-
+              const count = leads.filter((l) => l.stage === col.key).length;
               return (
-                <div
+                <button
                   key={col.key}
-                  onDragOver={(e) => handleDragOver(e, col.key)}
-                  onDragLeave={() => handleDragLeave(col.key)}
-                  onDrop={(e) => handleDrop(e, col.key)}
-                  className={`flex-1 flex flex-col min-w-[240px] max-w-[280px] bg-slate-100/70 rounded-xl p-3 border transition-colors ${
-                    isOver ? 'border-brand-500 ring-2 ring-brand-200 bg-brand-50/30' : col.border
-                  }`}
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById(`stage-col-${col.key}`);
+                    el?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                  }}
+                  className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-sage-200 text-xs font-semibold shadow-soft-xs text-sage-700 hover:border-brand-600 hover:text-brand-800 transition-colors"
                 >
+                  <span className={col.color}>{col.label}</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-sage-100 text-sage-800">
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Kanban Board Scrollable Columns */}
+          <div className="overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory">
+            <div className="flex gap-3 sm:gap-4 w-max md:min-w-[1280px]">
+              {STAGES.map((col) => {
+                const colLeads = leads.filter((l) => l.stage === col.key);
+                const colSummary = summaries[col.key];
+                const isOver = dragOverStage === col.key;
+
+                return (
+                  <div
+                    key={col.key}
+                    id={`stage-col-${col.key}`}
+                    onDragOver={(e) => handleDragOver(e, col.key)}
+                    onDragLeave={() => handleDragLeave(col.key)}
+                    onDrop={(e) => handleDrop(e, col.key)}
+                    className={`snap-center flex-1 flex flex-col w-[82vw] xs:w-[320px] sm:w-[270px] md:min-w-[240px] md:max-w-[280px] bg-slate-100/70 rounded-xl p-3 border transition-colors ${
+                      isOver ? 'border-brand-500 ring-2 ring-brand-200 bg-brand-50/30' : col.border
+                    }`}
+                  >
                   {/* Column Header */}
                   <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 mb-3">
                     <div className="flex items-center gap-2">
@@ -468,6 +494,7 @@ export default function PipelinePage() {
             })}
           </div>
         </div>
+      </div>
       )}
 
       {/* Lost Reason Modal */}
