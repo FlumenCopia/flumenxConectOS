@@ -259,7 +259,7 @@ export default function PipelinePage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-sage-200/90">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-sage-900">Lead Pipeline Board</h1>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-sage-900">Lead Pipeline Board</h1>
           <p className="text-xs text-sage-500 mt-1 font-normal">
             Visualize client deal flow, drag prospects across stages, and maintain sales velocity.
           </p>

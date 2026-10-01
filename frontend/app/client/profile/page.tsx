@@ -77,7 +77,7 @@ export default function ClientBusinessProfilePage() {
           <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
             <FileText className="h-5 w-5" />
           </span>
-          <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-charcoal-900">
             Company Business Profile
           </h1>
         </div>

@@ -348,7 +348,7 @@ export default function ClientLeadsPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-sage-200/90">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-sage-900">Leads CRM</h1>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-sage-900">Leads CRM</h1>
           <p className="text-xs text-sage-500 mt-1 font-normal">
             Capture, track, score, and progress incoming client prospects through pipeline stages.
           </p>

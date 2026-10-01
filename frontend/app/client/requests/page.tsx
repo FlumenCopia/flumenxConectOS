@@ -134,13 +134,13 @@ export default function ClientRequestsPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-sage-200 pb-4 sm:pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
+            <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100 shrink-0">
               <FileText className="h-5 w-5" />
             </span>
-            <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-charcoal-900">
               Customer Service Requests & Support Tickets
             </h1>
           </div>
@@ -149,20 +149,20 @@ export default function ClientRequestsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={() => fetchRequests(true)}
             disabled={refreshing || loading}
-            className="flex items-center gap-2 rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700 text-xs"
           >
             <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin text-brand-800' : ''}`} />
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
 
-          <Link href="/client/portal-users">
-            <Button size="sm" variant="outline" className="flex items-center gap-1.5 text-xs rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700">
+          <Link href="/client/portal-users" className="flex-1 sm:flex-initial">
+            <Button size="sm" variant="outline" className="w-full flex items-center justify-center gap-1.5 text-xs rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700">
               <User className="h-3.5 w-3.5 text-sage-500" />
               Manage Portal Users
             </Button>

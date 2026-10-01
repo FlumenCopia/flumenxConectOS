@@ -354,7 +354,7 @@ export default function ClientTasksPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-sage-200/90">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-sage-900">Tasks & Lead Follow-ups</h1>
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-sage-900">Tasks & Lead Follow-ups</h1>
             <Badge variant="brand">SLA Operations</Badge>
           </div>
           <p className="text-xs text-sage-500 mt-1 font-normal">

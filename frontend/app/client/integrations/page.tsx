@@ -463,7 +463,7 @@ function IntegrationsContent() {
             <span className="p-2 rounded-xl bg-brand-800 text-white shadow-xs">
               <Zap className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-slate-900">
               API & Channel Integrations Hub
             </h1>
           </div>
