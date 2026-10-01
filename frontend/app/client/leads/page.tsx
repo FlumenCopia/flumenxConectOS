@@ -354,45 +354,48 @@ export default function ClientLeadsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           {/* View Switcher */}
           <div className="inline-flex rounded-lg border border-sage-200 bg-white p-1 shadow-soft-xs">
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-800 text-white shadow-soft-xs"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-800 text-white shadow-soft-xs"
             >
               <Users className="w-3.5 h-3.5" />
               Directory
             </button>
             <Link
               href="/client/leads/pipeline"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-sage-600 hover:text-sage-900 hover:bg-sage-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-medium text-sage-600 hover:text-sage-900 hover:bg-sage-50 transition-colors"
             >
               <Kanban className="w-3.5 h-3.5" />
               Pipeline Board
             </Link>
           </div>
 
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleExport}
-            isLoading={isExporting}
-            className="text-sage-700 bg-white border-sage-300"
-          >
-            <Download className="w-4 h-4 mr-1.5" />
-            Export CSV
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleExport}
+              isLoading={isExporting}
+              className="text-sage-700 bg-white border-sage-300 text-xs px-2.5 sm:px-3"
+            >
+              <Download className="w-3.5 h-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Export CSV</span>
+              <span className="sm:hidden">Export</span>
+            </Button>
 
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsCreateOpen(true)}
-            className="shadow-forest-sm"
-          >
-            <Plus className="w-4 h-4 mr-1.5" />
-            New Lead
-          </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsCreateOpen(true)}
+              className="shadow-forest-sm text-xs px-2.5 sm:px-3"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              New Lead
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -438,8 +441,8 @@ export default function ClientLeadsPage() {
 
       {/* Filter and Search Bar */}
       <Card className="bg-white border-slate-200 shadow-xs">
-        <div className="p-4 flex flex-col md:flex-row gap-3 items-center justify-between">
-          <div className="relative w-full md:w-80">
+        <div className="p-3 sm:p-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          <div className="relative w-full md:w-80 shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
@@ -453,7 +456,7 @@ export default function ClientLeadsPage() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 w-full md:w-auto">
             {/* Stage filter */}
             <select
               value={stageFilter}
@@ -461,7 +464,7 @@ export default function ClientLeadsPage() {
                 setStageFilter(e.target.value as any);
                 setPage(1);
               }}
-              className="text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs"
+              className="w-full sm:w-auto text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs truncate"
             >
               <option value="all">All Stages</option>
               {STAGE_OPTIONS.map((opt) => (
@@ -478,7 +481,7 @@ export default function ClientLeadsPage() {
                 setSourceFilter(e.target.value as any);
                 setPage(1);
               }}
-              className="text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs"
+              className="w-full sm:w-auto text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs truncate"
             >
               <option value="all">All Sources</option>
               {SOURCE_OPTIONS.map((opt) => (
@@ -495,12 +498,12 @@ export default function ClientLeadsPage() {
                 setScoreTierFilter(e.target.value as any);
                 setPage(1);
               }}
-              className="text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs"
+              className="w-full sm:w-auto text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs truncate"
             >
-              <option value="all">All Priority Tiers</option>
-              <option value="hot">🔥 Hot Priority (75+)</option>
-              <option value="warm">Warm Priority (40-74)</option>
-              <option value="cold">Cold Priority (&lt;40)</option>
+              <option value="all">All Priorities</option>
+              <option value="hot">🔥 Hot Priority</option>
+              <option value="warm">Warm Priority</option>
+              <option value="cold">Cold Priority</option>
             </select>
 
             {/* Follow-up filter */}
@@ -510,11 +513,11 @@ export default function ClientLeadsPage() {
                 setFollowUpFilter(e.target.value as any);
                 setPage(1);
               }}
-              className="text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs"
+              className="w-full sm:w-auto text-xs bg-sage-50/60 border border-sage-200 rounded-lg px-2.5 py-2 text-sage-700 font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-700/20 focus:border-brand-700 cursor-pointer shadow-soft-xs truncate"
             >
               <option value="all">All Schedules</option>
-              <option value="overdue">⚠️ Overdue Follow-ups</option>
-              <option value="upcoming">Upcoming Follow-ups</option>
+              <option value="overdue">⚠️ Overdue</option>
+              <option value="upcoming">Upcoming</option>
             </select>
 
             {(search || stageFilter !== 'all' || sourceFilter !== 'all' || scoreTierFilter !== 'all' || followUpFilter !== 'all') && (
@@ -528,7 +531,7 @@ export default function ClientLeadsPage() {
                   setFollowUpFilter('all');
                   setPage(1);
                 }}
-                className="text-xs text-brand-800 hover:text-brand-900 font-semibold px-2 py-1"
+                className="col-span-2 sm:col-span-1 text-xs text-brand-800 hover:text-brand-900 font-semibold px-2 py-1 text-center"
               >
                 Clear Filters
               </button>

@@ -265,19 +265,19 @@ export default function PipelinePage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           {/* View Switcher */}
           <div className="inline-flex rounded-lg border border-sage-200 bg-white p-1 shadow-soft-xs">
             <Link
               href="/client/leads"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-sage-600 hover:text-sage-900 hover:bg-sage-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-medium text-sage-600 hover:text-sage-900 hover:bg-sage-50 transition-colors"
             >
               <Users className="w-3.5 h-3.5" />
               Directory
             </Link>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-800 text-white shadow-soft-xs"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-800 text-white shadow-soft-xs"
             >
               <Kanban className="w-3.5 h-3.5" />
               Pipeline Board
@@ -288,9 +288,9 @@ export default function PipelinePage() {
             variant="primary"
             size="sm"
             onClick={() => handleOpenCreateForStage('new')}
-            className="shadow-forest-sm"
+            className="shadow-forest-sm text-xs px-2.5 sm:px-3"
           >
-            <Plus className="w-4 h-4 mr-1.5" />
+            <Plus className="w-3.5 h-3.5 mr-1" />
             Add Lead
           </Button>
         </div>
