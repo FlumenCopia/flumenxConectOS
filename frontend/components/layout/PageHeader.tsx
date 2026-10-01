@@ -10,7 +10,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, description, acti
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-sage-200/90">
       <div>
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-sage-900 tracking-tight">{title}</h1>
+        <h1 className="text-base sm:text-lg font-bold text-sage-900 tracking-tight">{title}</h1>
         {description && <p className="text-xs text-sage-500 mt-1 font-normal leading-relaxed">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0">{actions}</div>}

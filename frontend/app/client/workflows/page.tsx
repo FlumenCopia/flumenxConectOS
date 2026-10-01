@@ -295,7 +295,7 @@ export default function ClientWorkflowsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-charcoal-900 tracking-tight">Workflow Automations</h1>
+            <h1 className="text-base sm:text-lg font-bold text-charcoal-900 tracking-tight">Workflow Automations</h1>
             <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-forest-50 text-forest-800 font-semibold border border-forest-100 shrink-0">
               Automation Engine
             </span>

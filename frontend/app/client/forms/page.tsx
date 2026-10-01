@@ -358,7 +358,7 @@ export default function ClientFormsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 border-b border-sage-200 pb-4 sm:pb-5">
         <div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-charcoal-900">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-charcoal-900">
               Website Lead Intake Forms
             </h1>
             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-forest-50 text-forest-800 border border-forest-100 shrink-0">

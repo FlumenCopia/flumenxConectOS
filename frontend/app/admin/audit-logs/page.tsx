@@ -67,7 +67,7 @@ export default function AuditLogsPage() {
     <div className="space-y-6">
       {/* Top Banner */}
       <div className="border-b border-sage-200/80 pb-5">
-        <h1 className="text-xl font-bold text-charcoal-900 flex items-center gap-2.5">
+        <h1 className="text-base sm:text-lg font-bold text-charcoal-900 flex items-center gap-2.5">
           <span className="p-2 rounded-xl bg-forest-50 border border-forest-100 text-brand-800">
             <FileSpreadsheet className="h-5 w-5" />
           </span>

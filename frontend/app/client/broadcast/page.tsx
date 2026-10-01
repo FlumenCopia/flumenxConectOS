@@ -485,7 +485,7 @@ export default function BroadcastPage() {
               <Send className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
                 Broadcast Campaign Blast
                 <Badge variant="outline" className="bg-forest-900/50 text-emerald-200 border-emerald-400/30 text-xs px-2 py-0.5">
                   Multi-Channel

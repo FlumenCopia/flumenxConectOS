@@ -235,7 +235,7 @@ export default function AdminRolesPage() {
             <span className="p-2 rounded-xl bg-forest-50 border border-forest-100 text-brand-800">
               <ShieldCheck className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-charcoal-900">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-charcoal-900">
               Role-Based Access Control (RBAC) & Permissions Matrix
             </h1>
           </div>

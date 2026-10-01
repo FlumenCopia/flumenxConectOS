@@ -70,7 +70,7 @@ export default function AdminSettingsPage() {
             <span className="p-2 rounded-lg bg-brand-50 text-brand-700">
               <Settings className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900">
               Platform & System Settings
             </h1>
           </div>

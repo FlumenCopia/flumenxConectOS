@@ -281,7 +281,7 @@ export default function LeadDetailPage() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-charcoal-900">{fullName}</h1>
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-charcoal-900">{fullName}</h1>
                 <Badge
                   variant={
                     lead.stage === 'won'

@@ -65,7 +65,7 @@ export default function AdminIntegrationsPage() {
             <span className="p-2 rounded-lg bg-brand-50 text-brand-700">
               <Radio className="h-5 w-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900">
               Global Integrations & Webhook Gateway Health
             </h1>
           </div>

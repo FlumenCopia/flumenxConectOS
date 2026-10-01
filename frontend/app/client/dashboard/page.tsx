@@ -153,7 +153,7 @@ export default function ClientDashboardPage() {
       {/* Top Greeting Header (matches reference design) */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-sage-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-base sm:text-lg font-bold text-sage-900 tracking-tight flex items-center gap-2">
             <span>Good morning, {userName}!</span>
             <span className="text-xl">👋</span>
           </h1>

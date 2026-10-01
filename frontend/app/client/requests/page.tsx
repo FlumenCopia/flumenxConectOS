@@ -140,7 +140,7 @@ export default function ClientRequestsPage() {
             <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100 shrink-0">
               <FileText className="h-5 w-5" />
             </span>
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-charcoal-900">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-charcoal-900">
               Customer Service Requests & Support Tickets
             </h1>
           </div>

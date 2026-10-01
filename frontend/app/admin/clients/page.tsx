@@ -206,7 +206,7 @@ export default function AdminClientsPage() {
       {/* Top Banner / Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage-200/80 pb-5">
         <div>
-          <h1 className="text-xl font-bold text-charcoal-900 tracking-tight flex items-center gap-2.5">
+          <h1 className="text-base sm:text-lg font-bold text-charcoal-900 tracking-tight flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-forest-50 border border-forest-100 text-brand-800">
               <Building2 className="h-5 w-5" />
             </span>

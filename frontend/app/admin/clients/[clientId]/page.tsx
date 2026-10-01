@@ -379,7 +379,7 @@ export default function ClientProfilePage() {
             </div>
             <div>
               <div className="flex items-center gap-2.5">
-                <h1 className="text-lg font-bold text-slate-900">{client.name}</h1>
+                <h1 className="text-base sm:text-lg font-bold text-slate-900">{client.name}</h1>
                 <Badge variant={client.status === 'active' ? 'success' : client.status === 'onboarding' ? 'info' : 'warning'}>
                   {client.status.toUpperCase()}
                 </Badge>
