@@ -233,13 +233,13 @@ export default function ClientCampaignsPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Banner & Title */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sage-200 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-sage-200 pb-4 sm:pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100">
+            <span className="p-2 rounded-xl bg-forest-50 text-forest-800 border border-forest-100 shrink-0">
               <Megaphone className="h-5 w-5" />
             </span>
-            <h1 className="text-2xl font-bold tracking-tight text-charcoal-900">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-charcoal-900">
               Campaigns & Ad Platform Integrations
             </h1>
           </div>
@@ -249,13 +249,13 @@ export default function ClientCampaignsPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={handleSyncAll}
             disabled={syncingAll || loading}
-            className="flex items-center gap-2 rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700 shadow-soft-xs"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-xl border-sage-200 hover:bg-sage-50 text-charcoal-700 shadow-soft-xs text-xs px-3 sm:px-4"
           >
             <RefreshCw className={`h-4 w-4 ${syncingAll ? 'animate-spin text-brand-800' : ''}`} />
             {syncingAll ? 'Syncing...' : 'Sync Ad Accounts'}
@@ -264,7 +264,7 @@ export default function ClientCampaignsPage() {
           <Button
             size="sm"
             onClick={() => setIsConnectModalOpen(true)}
-            className="bg-brand-800 hover:bg-brand-900 text-white flex items-center gap-2 rounded-xl shadow-soft-xs px-4"
+            className="flex-1 sm:flex-initial bg-brand-800 hover:bg-brand-900 text-white flex items-center justify-center gap-2 rounded-xl shadow-soft-xs px-3 sm:px-4 text-xs"
           >
             <Plus className="h-4 w-4" />
             Connect Ad Account
@@ -298,10 +298,10 @@ export default function ClientCampaignsPage() {
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-sage-200 gap-6 text-xs font-semibold">
+      <div className="flex border-b border-sage-200 overflow-x-auto no-scrollbar gap-2 sm:gap-6 text-xs font-semibold pb-0.5">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`pb-3.5 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`shrink-0 whitespace-nowrap pb-3 sm:pb-3.5 px-2 sm:px-1 flex items-center gap-1.5 sm:gap-2 border-b-2 transition-colors ${
             activeTab === 'overview'
               ? 'border-brand-800 text-brand-900 font-bold'
               : 'border-transparent text-sage-500 hover:text-charcoal-800'
@@ -313,7 +313,7 @@ export default function ClientCampaignsPage() {
 
         <button
           onClick={() => setActiveTab('campaigns')}
-          className={`pb-3.5 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`shrink-0 whitespace-nowrap pb-3 sm:pb-3.5 px-2 sm:px-1 flex items-center gap-1.5 sm:gap-2 border-b-2 transition-colors ${
             activeTab === 'campaigns'
               ? 'border-brand-800 text-brand-900 font-bold'
               : 'border-transparent text-sage-500 hover:text-charcoal-800'
@@ -325,7 +325,7 @@ export default function ClientCampaignsPage() {
 
         <button
           onClick={() => setActiveTab('attribution')}
-          className={`pb-3.5 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`shrink-0 whitespace-nowrap pb-3 sm:pb-3.5 px-2 sm:px-1 flex items-center gap-1.5 sm:gap-2 border-b-2 transition-colors ${
             activeTab === 'attribution'
               ? 'border-brand-800 text-brand-900 font-bold'
               : 'border-transparent text-sage-500 hover:text-charcoal-800'
@@ -337,7 +337,7 @@ export default function ClientCampaignsPage() {
 
         <button
           onClick={() => setActiveTab('connections')}
-          className={`pb-3.5 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`shrink-0 whitespace-nowrap pb-3 sm:pb-3.5 px-2 sm:px-1 flex items-center gap-1.5 sm:gap-2 border-b-2 transition-colors ${
             activeTab === 'connections'
               ? 'border-brand-800 text-brand-900 font-bold'
               : 'border-transparent text-sage-500 hover:text-charcoal-800'
@@ -530,7 +530,7 @@ export default function ClientCampaignsPage() {
       {activeTab === 'campaigns' && (
         <div className="space-y-4">
           {/* Search & Filter Bar */}
-          <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white p-3 rounded-2xl border border-sage-200/90 shadow-soft-xs">
+          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center justify-between bg-white p-3 rounded-2xl border border-sage-200/90 shadow-soft-xs">
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-sage-400" />
               <input
@@ -542,13 +542,13 @@ export default function ClientCampaignsPage() {
               />
             </div>
 
-            <div className="flex items-center gap-2 self-start sm:self-auto">
-              <div className="inline-flex rounded-xl border border-sage-200 p-0.5 bg-sage-50/50 text-xs">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+              <div className="inline-flex rounded-xl border border-sage-200 p-0.5 bg-sage-50/50 text-xs shrink-0">
                 {['all', 'meta', 'google'].map((p) => (
                   <button
                     key={p}
                     onClick={() => setSelectedPlatform(p)}
-                    className={`px-3 py-1.5 rounded-lg capitalize font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg capitalize font-medium transition-all shrink-0 ${
                       selectedPlatform === p
                         ? 'bg-brand-800 text-white shadow-soft-xs font-semibold'
                         : 'text-sage-600 hover:text-charcoal-900'
@@ -573,14 +573,14 @@ export default function ClientCampaignsPage() {
                     : 'No synced campaigns match your active search filters.'}
                 </p>
                 {connections.length === 0 && (
-                  <Button size="sm" onClick={() => setIsConnectModalOpen(true)} className="mt-2 bg-brand-800 hover:bg-brand-900 text-white rounded-xl">
+                  <Button size="sm" onClick={() => setIsConnectModalOpen(true)} className="mt-2 bg-brand-800 hover:bg-brand-900 text-white rounded-xl text-xs">
                     Connect Ad Account
                   </Button>
                 )}
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
+              <div className="overflow-x-auto scroll-smooth">
+                <table className="w-full min-w-[850px] text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-sage-200/90 text-[11px] font-semibold text-sage-600 uppercase bg-sage-50/60">
                       <th className="py-3 px-4">Campaign Name</th>
@@ -797,7 +797,7 @@ export default function ClientCampaignsPage() {
       {/* TAB 4: AD ACCOUNTS & CONNECTIONS */}
       {activeTab === 'connections' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="text-base font-bold text-charcoal-900">
                 Connected Advertising Accounts
@@ -806,7 +806,7 @@ export default function ClientCampaignsPage() {
                 Encrypted API integrations with Meta Marketing API and Google Ads API. Read-only sync.
               </p>
             </div>
-            <Button size="sm" onClick={() => setIsConnectModalOpen(true)} className="flex items-center gap-2 bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-soft-xs">
+            <Button size="sm" onClick={() => setIsConnectModalOpen(true)} className="flex items-center justify-center gap-2 bg-brand-800 hover:bg-brand-900 text-white rounded-xl shadow-soft-xs w-full sm:w-auto text-xs px-4">
               <Plus className="h-4 w-4" />
               Connect Account
             </Button>
