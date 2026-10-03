@@ -117,7 +117,7 @@ export default function PortalLoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-800 text-center">
+          <div className="mt-6 pt-6 border-t border-slate-800 space-y-4 text-center">
             <p className="text-xs text-slate-500">
               Have an invitation link?{' '}
               <Link
@@ -128,6 +128,39 @@ export default function PortalLoginPage() {
                 Activate Account
               </Link>
             </p>
+
+            {/* Quick Demo Login Credentials (Convenience) */}
+            <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60 text-left space-y-2">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block text-center">
+                Demo Quick Fill
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('customer@example.com');
+                    setPassword('Password123!');
+                    setError(null);
+                  }}
+                  className="flex-1 p-2 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-[11px] text-slate-200 text-center transition-colors border border-slate-600/40"
+                >
+                  <span className="font-semibold block text-indigo-300">customer@example.com</span>
+                  <span className="text-[10px] text-slate-400">Password123!</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('portal-test-charlie@customer.local');
+                    setPassword('OtherCustomerPassword123!');
+                    setError(null);
+                  }}
+                  className="flex-1 p-2 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-[11px] text-slate-200 text-center transition-colors border border-slate-600/40"
+                >
+                  <span className="font-semibold block text-indigo-300">charlie@customer</span>
+                  <span className="text-[10px] text-slate-400">OtherCustomerPassword123!</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

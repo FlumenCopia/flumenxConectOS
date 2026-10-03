@@ -219,36 +219,42 @@ function InfoTooltip({ fieldKey }: { fieldKey: string }) {
       </button>
 
       {open && (
-        <div
-          className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 sm:w-80 p-3 bg-slate-900 text-white rounded-xl shadow-2xl text-[11px] leading-relaxed animate-in fade-in zoom-in-95 pointer-events-auto"
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-        >
-          <div className="flex items-center gap-1.5 font-semibold text-amber-300 pb-1.5 border-b border-slate-700">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>{tip.title}</span>
-          </div>
-          <ol className="list-decimal pl-4 mt-2 space-y-1 text-slate-300">
-            {tip.steps.map((step, idx) => (
-              <li key={idx}>{step}</li>
-            ))}
-          </ol>
-          {tip.link && (
-            <div className="mt-2 pt-1.5 border-t border-slate-800 flex justify-end">
-              <a
-                href={tip.link.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-brand-300 hover:text-brand-200 underline font-medium"
-              >
-                <span>{tip.link.label}</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+        <>
+          <div
+            className="fixed inset-0 z-40 sm:hidden"
+            onClick={() => setOpen(false)}
+          />
+          <div
+            className="fixed sm:absolute z-50 left-4 right-4 bottom-20 sm:bottom-full sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:mb-2 max-w-sm sm:w-80 p-3.5 sm:p-3 bg-slate-900 text-white rounded-xl shadow-2xl text-[11px] leading-relaxed animate-in fade-in zoom-in-95 pointer-events-auto"
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+          >
+            <div className="flex items-center gap-1.5 font-semibold text-amber-300 pb-1.5 border-b border-slate-700">
+              <HelpCircle className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{tip.title}</span>
             </div>
-          )}
-          {/* Arrow */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
-        </div>
+            <ol className="list-decimal pl-4 mt-2 space-y-1 text-slate-300">
+              {tip.steps.map((step, idx) => (
+                <li key={idx}>{step}</li>
+              ))}
+            </ol>
+            {tip.link && (
+              <div className="mt-2 pt-1.5 border-t border-slate-800 flex justify-end">
+                <a
+                  href={tip.link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-brand-300 hover:text-brand-200 underline font-medium"
+                >
+                  <span>{tip.link.label}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            )}
+            {/* Arrow on desktop only */}
+            <div className="hidden sm:block absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+          </div>
+        </>
       )}
     </div>
   );
@@ -460,36 +466,36 @@ function IntegrationsContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-brand-800 text-white shadow-xs">
+            <span className="p-2 rounded-xl bg-brand-800 text-white shadow-xs shrink-0">
               <Zap className="h-5 w-5" />
             </span>
             <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900">
               API & Channel Integrations Hub
             </h1>
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-500 leading-relaxed">
             Centralized management for WhatsApp Cloud API, Instagram, Facebook Messenger, SMS, Resend Email, and Ads.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setIsWebhookModalOpen(true)}
-            className="flex items-center gap-1.5 text-xs border-slate-300"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 text-xs border-slate-300 h-9"
           >
             <Radio className="h-3.5 w-3.5 text-emerald-600" />
-            Webhook Endpoints
+            <span>Webhook Endpoints</span>
           </Button>
 
-          <Link href="/client/inbox">
+          <Link href="/client/inbox" className="flex-1 sm:flex-initial">
             <Button
               size="sm"
-              className="bg-brand-800 hover:bg-brand-700 text-white flex items-center gap-1.5 text-xs shadow-xs"
+              className="w-full bg-brand-800 hover:bg-brand-700 text-white flex items-center justify-center gap-1.5 text-xs shadow-xs h-9"
             >
               <MessageSquare className="h-3.5 w-3.5" />
-              Open Unified Inbox
+              <span>Open Unified Inbox</span>
             </Button>
           </Link>
         </div>
@@ -498,11 +504,11 @@ function IntegrationsContent() {
       {/* Global Alerts */}
       {success && (
         <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center justify-between shadow-xs">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
-            <span className="font-medium">{success}</span>
+            <span className="font-medium truncate">{success}</span>
           </div>
-          <button onClick={() => setSuccess(null)} className="text-emerald-600 hover:text-emerald-800">
+          <button onClick={() => setSuccess(null)} className="text-emerald-600 hover:text-emerald-800 shrink-0 p-1">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -510,29 +516,29 @@ function IntegrationsContent() {
 
       {error && (
         <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center justify-between shadow-xs">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <AlertTriangle className="h-4 w-4 shrink-0 text-rose-600" />
-            <span className="font-medium">{error}</span>
+            <span className="font-medium truncate">{error}</span>
           </div>
-          <button onClick={() => setError(null)} className="text-rose-600 hover:text-rose-800">
+          <button onClick={() => setError(null)} className="text-rose-600 hover:text-rose-800 shrink-0 p-1">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
       )}
 
-      {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      {/* Navigation Tabs - Horizontal Touch Scrollable on Mobile */}
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar scrollbar-none flex-nowrap -mx-4 px-4 sm:mx-0 sm:px-0">
         <button
           onClick={() => setActiveTab('messaging')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
             activeTab === 'messaging'
               ? 'bg-brand-800 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <MessageSquare className="w-4 h-4" />
-          Messaging & Inbox Channels
-          <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+          <MessageSquare className="w-4 h-4 shrink-0" />
+          <span>Messaging & Inbox Channels</span>
+          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
             activeTab === 'messaging' ? 'bg-brand-900/60 text-white' : 'bg-slate-200 text-slate-700'
           }`}>
             {providers.length}
@@ -541,15 +547,15 @@ function IntegrationsContent() {
 
         <button
           onClick={() => setActiveTab('ads')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
             activeTab === 'ads'
               ? 'bg-brand-800 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <Megaphone className="w-4 h-4" />
-          Advertising & Lead Gen
-          <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+          <Megaphone className="w-4 h-4 shrink-0" />
+          <span>Advertising & Lead Gen</span>
+          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
             activeTab === 'ads' ? 'bg-brand-900/60 text-white' : 'bg-slate-200 text-slate-700'
           }`}>
             {adConnections.length}
@@ -558,14 +564,14 @@ function IntegrationsContent() {
 
         <button
           onClick={() => setActiveTab('webhooks')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
             activeTab === 'webhooks'
               ? 'bg-brand-800 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <Radio className="w-4 h-4" />
-          Webhook & Callback URLs
+          <Radio className="w-4 h-4 shrink-0" />
+          <span>Webhook & Callback URLs</span>
         </button>
       </div>
 
@@ -574,7 +580,7 @@ function IntegrationsContent() {
       {/* ------------------------------------------------------------- */}
       {activeTab === 'messaging' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-sm font-bold text-slate-900">Configured Communication Channels</h2>
               <p className="text-xs text-slate-500">
@@ -586,10 +592,10 @@ function IntegrationsContent() {
               size="sm"
               onClick={loadAll}
               disabled={loading}
-              className="flex items-center gap-1.5 text-xs"
+              className="flex items-center justify-center gap-1.5 text-xs w-full sm:w-auto shrink-0"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Status
+              <span>Refresh Status</span>
             </Button>
           </div>
 
@@ -948,7 +954,7 @@ function IntegrationsContent() {
       {/* ------------------------------------------------------------- */}
       {activeTab === 'ads' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-sm font-bold text-slate-900">Connected Advertising Accounts</h2>
               <p className="text-xs text-slate-500">
@@ -958,17 +964,17 @@ function IntegrationsContent() {
             <Button
               size="sm"
               onClick={() => setIsAdModalOpen(true)}
-              className="bg-brand-800 hover:bg-brand-700 text-white flex items-center gap-1.5 text-xs shadow-xs"
+              className="bg-brand-800 hover:bg-brand-700 text-white flex items-center justify-center gap-1.5 text-xs shadow-xs w-full sm:w-auto shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
-              Connect Ad Account
+              <span>Connect Ad Account</span>
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Meta Ads Card */}
             <Card className="border-slate-200 bg-white shadow-xs">
-              <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
+              <CardContent className="p-4 sm:p-5 flex flex-col justify-between h-full space-y-4">
                 <div>
                   <div className="flex items-center justify-between">
                     <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-base border border-blue-100">
@@ -988,7 +994,7 @@ function IntegrationsContent() {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
                   <span className="text-[11px] text-slate-400">Marketing API v19.0</span>
                   <Button
                     size="sm"
@@ -1007,7 +1013,7 @@ function IntegrationsContent() {
 
             {/* Google Ads Card */}
             <Card className="border-slate-200 bg-white shadow-xs">
-              <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
+              <CardContent className="p-4 sm:p-5 flex flex-col justify-between h-full space-y-4">
                 <div>
                   <div className="flex items-center justify-between">
                     <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-base border border-amber-100">
@@ -1027,7 +1033,7 @@ function IntegrationsContent() {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
                   <span className="text-[11px] text-slate-400">Google Ads API v16</span>
                   <Button
                     size="sm"
@@ -1047,7 +1053,7 @@ function IntegrationsContent() {
 
           {/* Active Ad Accounts Table */}
           <Card className="border-slate-200 shadow-xs overflow-hidden bg-white">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="px-4 sm:px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
                 Connected Ad Accounts ({adConnections.length})
               </h3>
@@ -1056,10 +1062,10 @@ function IntegrationsContent() {
                 size="sm"
                 onClick={loadAll}
                 disabled={loading}
-                className="flex items-center gap-1 text-xs border-slate-300"
+                className="flex items-center justify-center gap-1 text-xs border-slate-300 w-full sm:w-auto"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-                Check Status
+                <span>Check Status</span>
               </Button>
             </div>
 
@@ -1614,24 +1620,25 @@ function IntegrationsContent() {
               )}
 
               {/* Modal Buttons */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+              <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-slate-100">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={handleTestProvider}
                   disabled={isTesting}
-                  className="text-xs border-slate-300"
+                  className="text-xs border-slate-300 w-full sm:w-auto"
                 >
                   {isTesting ? 'Validating...' : 'Test Connection'}
                 </Button>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => setActiveProviderModal(null)}
+                    className="flex-1 sm:flex-initial"
                   >
                     Cancel
                   </Button>
@@ -1639,7 +1646,7 @@ function IntegrationsContent() {
                     type="submit"
                     size="sm"
                     disabled={isSaving}
-                    className="bg-brand-800 hover:bg-brand-700 text-white"
+                    className="flex-1 sm:flex-initial bg-brand-800 hover:bg-brand-700 text-white"
                   >
                     {isSaving ? 'Saving...' : 'Save Configuration'}
                   </Button>
@@ -1728,12 +1735,13 @@ function IntegrationsContent() {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3">
+              <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 pt-3">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setIsAdModalOpen(false)}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
@@ -1741,7 +1749,7 @@ function IntegrationsContent() {
                   type="submit"
                   size="sm"
                   disabled={isAdSubmitting || !adAccountName || !adAccountId || !adAccessToken}
-                  className="bg-brand-800 hover:bg-brand-700 text-white"
+                  className="w-full sm:w-auto bg-brand-800 hover:bg-brand-700 text-white"
                 >
                   {isAdSubmitting ? 'Connecting...' : 'Authorize & Connect'}
                 </Button>
@@ -1756,7 +1764,7 @@ function IntegrationsContent() {
       {/* ------------------------------------------------------------- */}
       {isWebhookModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
@@ -1785,7 +1793,7 @@ function IntegrationsContent() {
                     type="text"
                     readOnly
                     value={webhookBase}
-                    className="flex-1 p-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-[11px] text-slate-700 select-all"
+                    className="flex-1 min-w-0 p-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-[11px] text-slate-700 select-all"
                   />
                   <Button
                     size="sm"
@@ -1808,7 +1816,7 @@ function IntegrationsContent() {
                     type="text"
                     readOnly
                     value="flumenx_conect_verify_token_secure"
-                    className="flex-1 p-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-[11px] text-slate-700 select-all"
+                    className="flex-1 min-w-0 p-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-[11px] text-slate-700 select-all"
                   />
                   <Button
                     size="sm"
@@ -1829,7 +1837,7 @@ function IntegrationsContent() {
               </div>
 
               <div className="flex justify-end pt-2">
-                <Button size="sm" onClick={() => setIsWebhookModalOpen(false)}>
+                <Button size="sm" onClick={() => setIsWebhookModalOpen(false)} className="w-full sm:w-auto">
                   Done
                 </Button>
               </div>
