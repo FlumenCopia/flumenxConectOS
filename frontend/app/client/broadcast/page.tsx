@@ -545,24 +545,24 @@ export default function BroadcastPage() {
           <div className="lg:col-span-7 space-y-6">
             {/* Step 1: Upload Excel/CSV */}
             <Card className="border-sage-200/90 shadow-soft-xs rounded-2xl overflow-hidden bg-white">
-              <div className="p-5 border-b border-sage-100 bg-sage-50/60 flex justify-between items-center">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-full bg-forest-100 text-forest-800 font-bold text-xs flex items-center justify-center border border-forest-200">
+              <div className="p-4 sm:p-5 border-b border-sage-100 bg-sage-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="w-6 h-6 rounded-full bg-forest-100 text-forest-800 font-bold text-xs flex items-center justify-center border border-forest-200 shrink-0">
                     1
                   </span>
-                  <h2 className="text-base font-semibold text-charcoal-900">
+                  <h2 className="text-sm sm:text-base font-semibold text-charcoal-900 leading-snug">
                     Upload Mobile Numbers (Excel or CSV)
                   </h2>
                 </div>
                 {uploadedFileName && (
-                  <Badge variant="outline" className="bg-forest-50 text-forest-800 border-forest-200 text-xs">
-                    <CheckCircle2 className="w-3 h-3 mr-1" />
-                    {uploadedFileName}
+                  <Badge variant="outline" className="bg-forest-50 text-forest-800 border-forest-200 text-xs self-start sm:self-auto max-w-full shrink-0 flex items-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-forest-700 shrink-0" />
+                    <span className="truncate max-w-[200px] sm:max-w-[260px]">{uploadedFileName}</span>
                   </Badge>
                 )}
               </div>
 
-              <CardContent className="p-5 space-y-4">
+              <CardContent className="p-4 sm:p-5 space-y-4">
                 {/* Upload Dropzone */}
                 <input
                   ref={fileInputRef}
@@ -573,23 +573,23 @@ export default function BroadcastPage() {
                 />
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-forest-200 hover:border-forest-400 bg-forest-50/20 hover:bg-forest-50/40 rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 group"
+                  className="border-2 border-dashed border-forest-200 hover:border-forest-400 bg-forest-50/20 hover:bg-forest-50/40 rounded-2xl p-4 sm:p-6 text-center cursor-pointer transition-all duration-200 group"
                 >
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-forest-100 group-hover:bg-forest-200 text-forest-800 flex items-center justify-center transition-all">
-                    <FileSpreadsheet className="w-6 h-6" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2.5 sm:mb-3 rounded-2xl bg-forest-100 group-hover:bg-forest-200 text-forest-800 flex items-center justify-center transition-all">
+                    <FileSpreadsheet className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <p className="text-sm font-semibold text-charcoal-900 mb-1">
+                  <p className="text-xs sm:text-sm font-semibold text-charcoal-900 mb-1">
                     Click to browse or drag & drop contact spreadsheet
                   </p>
-                  <p className="text-xs text-sage-500">
+                  <p className="text-[11px] sm:text-xs text-sage-500">
                     Supports Microsoft Excel (.xlsx, .xls) and Comma-Separated Values (.csv)
                   </p>
                 </div>
 
                 {/* Column Mapping Selector */}
                 {sheetColumns.length > 0 && (
-                  <div className="p-4 bg-sage-50/60 rounded-2xl border border-sage-200/90 space-y-3">
-                    <div className="flex justify-between items-center">
+                  <div className="p-3.5 sm:p-4 bg-sage-50/60 rounded-2xl border border-sage-200/90 space-y-3">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                       <span className="text-xs font-semibold text-charcoal-800 uppercase tracking-wider">
                         Column Mapping
                       </span>
@@ -802,18 +802,18 @@ export default function BroadcastPage() {
 
             {/* Step 2: Channel & Message Content */}
             <Card className="border-sage-200/90 shadow-soft-xs rounded-2xl overflow-hidden bg-white">
-              <div className="p-5 border-b border-sage-100 bg-sage-50/60 flex justify-between items-center">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-full bg-forest-100 text-forest-800 font-bold text-xs flex items-center justify-center border border-forest-200">
+              <div className="p-4 sm:p-5 border-b border-sage-100 bg-sage-50/60 flex items-center justify-between">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="w-6 h-6 rounded-full bg-forest-100 text-forest-800 font-bold text-xs flex items-center justify-center border border-forest-200 shrink-0">
                     2
                   </span>
-                  <h2 className="text-base font-semibold text-charcoal-900">
+                  <h2 className="text-sm sm:text-base font-semibold text-charcoal-900 leading-snug">
                     Delivery Channel & Message Blast
                   </h2>
                 </div>
               </div>
 
-              <CardContent className="p-5 space-y-5">
+              <CardContent className="p-4 sm:p-5 space-y-5">
                 {/* Campaign Name */}
                 <div>
                   <label className="block text-xs font-semibold text-charcoal-800 mb-1.5">
