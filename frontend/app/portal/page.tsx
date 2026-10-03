@@ -77,36 +77,36 @@ export default function PortalOverviewPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-900 via-forest-900 to-brand-950 border border-forest-800/40 p-6 sm:p-8 shadow-soft-lg text-white">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-brand-900 via-forest-900 to-brand-950 border border-forest-800/40 p-5 sm:p-7 md:p-8 shadow-soft-lg text-white">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(34,197,94,0.15),transparent_60%)] pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div>
-            <div className="flex items-center space-x-2 text-forest-200 text-xs font-bold uppercase tracking-wider mb-2">
-              <ShieldCheck className="w-4 h-4 text-forest-300" />
-              <span>Verified Customer Session • {user?.clientName || 'Workspace'}</span>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5 sm:gap-6">
+          <div className="min-w-0">
+            <div className="flex items-center space-x-2 text-forest-200 text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2">
+              <ShieldCheck className="w-4 h-4 text-forest-300 shrink-0" />
+              <span className="truncate">Verified Customer Session • {user?.clientName || 'Workspace'}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white break-words">
               Welcome back, {user?.name || 'Customer'}
             </h1>
             <p className="text-forest-100/90 text-xs sm:text-sm mt-1.5 max-w-xl leading-relaxed">
               Track your service requests, complete action items, reply to messages, and manage communication preferences securely.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
             <Link
               id="overview-new-request-btn"
               href="/portal/requests?new=true"
-              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white text-brand-900 hover:bg-forest-50 text-xs font-bold transition-all shadow-soft-sm"
+              className="inline-flex items-center justify-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white text-brand-900 hover:bg-forest-50 text-xs font-bold transition-all shadow-soft-sm active:scale-95"
             >
-              <PlusCircle className="w-4 h-4 text-brand-800" />
+              <PlusCircle className="w-4 h-4 text-brand-800 shrink-0" />
               <span>Submit Request</span>
             </Link>
             <Link
               id="overview-profile-btn"
               href="/portal/profile"
-              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 transition-all backdrop-blur-xs"
+              className="inline-flex items-center justify-center space-x-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 transition-all backdrop-blur-xs active:scale-95"
             >
               <span>Preferences</span>
             </Link>
@@ -115,76 +115,76 @@ export default function PortalOverviewPage() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <Link
           id="overview-metric-requests"
           href="/portal/requests"
-          className="group p-5 rounded-2xl bg-white border border-sage-200/90 hover:border-brand-800/40 transition-all shadow-soft-xs hover:shadow-soft-sm"
+          className="group p-4 sm:p-5 rounded-2xl bg-white border border-sage-200/90 hover:border-brand-800/40 transition-all shadow-soft-xs hover:shadow-soft-sm"
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-sage-500">Open Requests</span>
-            <div className="w-9 h-9 rounded-xl bg-forest-50 border border-forest-100 text-brand-800 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-forest-50 border border-forest-100 text-brand-800 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <FileText className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-charcoal-900 tracking-tight">{openRequests.length}</div>
+          <div className="text-2xl sm:text-3xl font-extrabold text-charcoal-900 tracking-tight">{openRequests.length}</div>
           <div className="mt-2 text-xs text-sage-500 flex items-center space-x-1 font-medium">
-            <span>{requests.length} total submitted</span>
-            <ArrowRight className="w-3.5 h-3.5 text-sage-400 group-hover:translate-x-0.5 transition-transform" />
+            <span className="truncate">{requests.length} total submitted</span>
+            <ArrowRight className="w-3.5 h-3.5 text-sage-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
           </div>
         </Link>
 
         <Link
           id="overview-metric-tasks"
           href="/portal/tasks"
-          className="group p-5 rounded-2xl bg-white border border-sage-200/90 hover:border-amber-500/40 transition-all shadow-soft-xs hover:shadow-soft-sm"
+          className="group p-4 sm:p-5 rounded-2xl bg-white border border-sage-200/90 hover:border-amber-500/40 transition-all shadow-soft-xs hover:shadow-soft-sm"
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-sage-500">Action Required</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <CheckSquare className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-charcoal-900 tracking-tight">{pendingTasks.length}</div>
+          <div className="text-2xl sm:text-3xl font-extrabold text-charcoal-900 tracking-tight">{pendingTasks.length}</div>
           <div className="mt-2 text-xs text-amber-700/90 flex items-center space-x-1 font-semibold">
-            <span>{pendingTasks.length > 0 ? 'Action required by you' : 'All items completed'}</span>
-            <ArrowRight className="w-3.5 h-3.5 text-amber-600 group-hover:translate-x-0.5 transition-transform" />
+            <span className="truncate">{pendingTasks.length > 0 ? 'Action required by you' : 'All items completed'}</span>
+            <ArrowRight className="w-3.5 h-3.5 text-amber-600 group-hover:translate-x-0.5 transition-transform shrink-0" />
           </div>
         </Link>
 
         <Link
           id="overview-metric-conversations"
           href="/portal/conversations"
-          className="group p-5 rounded-2xl bg-white border border-sage-200/90 hover:border-brand-800/40 transition-all shadow-soft-xs hover:shadow-soft-sm"
+          className="group p-4 sm:p-5 rounded-2xl bg-white border border-sage-200/90 hover:border-brand-800/40 transition-all shadow-soft-xs hover:shadow-soft-sm"
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-sage-500">Conversations</span>
-            <div className="w-9 h-9 rounded-xl bg-forest-50 border border-forest-100 text-brand-800 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-forest-50 border border-forest-100 text-brand-800 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <MessageSquare className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-charcoal-900 tracking-tight">{conversations.length}</div>
+          <div className="text-2xl sm:text-3xl font-extrabold text-charcoal-900 tracking-tight">{conversations.length}</div>
           <div className="mt-2 text-xs text-sage-500 flex items-center space-x-1 font-medium">
-            <span>Customer support channels</span>
-            <ArrowRight className="w-3.5 h-3.5 text-sage-400 group-hover:translate-x-0.5 transition-transform" />
+            <span className="truncate">Customer support channels</span>
+            <ArrowRight className="w-3.5 h-3.5 text-sage-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
           </div>
         </Link>
 
         <Link
           id="overview-metric-notifications"
           href="/portal/notifications"
-          className="group p-5 rounded-2xl bg-white border border-sage-200/90 hover:border-brand-800/40 transition-all shadow-soft-xs hover:shadow-soft-sm"
+          className="group p-4 sm:p-5 rounded-2xl bg-white border border-sage-200/90 hover:border-brand-800/40 transition-all shadow-soft-xs hover:shadow-soft-sm"
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-sage-500">Notifications</span>
-            <div className="w-9 h-9 rounded-xl bg-forest-50 border border-forest-100 text-brand-800 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-forest-50 border border-forest-100 text-brand-800 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <Bell className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-charcoal-900 tracking-tight">{unreadNotifications}</div>
+          <div className="text-2xl sm:text-3xl font-extrabold text-charcoal-900 tracking-tight">{unreadNotifications}</div>
           <div className="mt-2 text-xs text-sage-500 flex items-center space-x-1 font-medium">
-            <span>{unreadNotifications > 0 ? 'Unread alerts pending' : 'All caught up'}</span>
-            <ArrowRight className="w-3.5 h-3.5 text-sage-400 group-hover:translate-x-0.5 transition-transform" />
+            <span className="truncate">{unreadNotifications > 0 ? 'Unread alerts pending' : 'All caught up'}</span>
+            <ArrowRight className="w-3.5 h-3.5 text-sage-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
           </div>
         </Link>
       </div>

@@ -80,66 +80,100 @@ function PortalShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#F7F8F5] text-sage-900 flex flex-col lg:flex-row">
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between px-4 py-3.5 bg-white border-b border-sage-200/90 sticky top-0 z-40 shadow-soft-xs">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
+      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-sage-200/90 sticky top-0 z-30 shadow-soft-xs">
+        <div className="flex items-center space-x-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
             <Image
               src="/icons/icon-192x192.png"
               alt="flumenxConect Portal"
-              width={28}
-              height={28}
+              width={32}
+              height={32}
               className="w-full h-full object-cover"
             />
           </div>
-          <div>
-            <span className="font-bold text-xs tracking-tight block">Customer Portal</span>
-            <span className="text-[10px] text-sage-500 block truncate max-w-[150px]">{user?.clientName || 'Workspace'}</span>
+          <div className="min-w-0">
+            <div className="flex items-center space-x-1.5">
+              <span className="font-bold text-xs tracking-tight text-sage-900">flumenxConect</span>
+              <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-brand-50 text-brand-800 border border-brand-200">
+                Portal
+              </span>
+            </div>
+            <span className="text-[10px] text-sage-500 block truncate max-w-[180px]">
+              {user?.clientName || 'Customer Portal'}
+            </span>
           </div>
         </div>
         <button
           id="mobile-nav-toggle-btn"
           onClick={() => setMobileNavOpen(!mobileNavOpen)}
-          className="p-1.5 rounded-lg bg-sage-50 border border-sage-200 text-sage-600 hover:text-sage-900"
+          aria-label={mobileNavOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
+          className="p-2 rounded-xl bg-sage-50 border border-sage-200 text-sage-700 hover:text-sage-900 hover:bg-sage-100 transition-colors"
         >
-          {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          {mobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
-      </div>
+      </header>
 
-      {/* Sidebar Desktop */}
+      {/* Mobile Backdrop Overlay */}
+      {mobileNavOpen && (
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="Close sidebar overlay"
+          onClick={() => setMobileNavOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape' || e.key === 'Enter') setMobileNavOpen(false);
+          }}
+          className="fixed inset-0 bg-charcoal-900/50 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+        />
+      )}
+
+      {/* Sidebar Desktop & Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-sage-200/90 p-5 flex flex-col justify-between transition-transform duration-200 shadow-soft-xs lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-white border-r border-sage-200/90 p-5 flex flex-col justify-between overflow-y-auto transition-transform duration-200 ease-out shadow-soft-xl lg:shadow-soft-xs lg:static lg:translate-x-0 ${
           mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div>
           {/* Brand header */}
-          <div className="flex items-center space-x-2.5 mb-6">
-            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
-              <Image
-                src="/icons/icon-192x192.png"
-                alt="flumenxConect Portal"
-                width={32}
-                height={32}
-                className="w-full h-full object-cover"
-              />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
+                <Image
+                  src="/icons/icon-192x192.png"
+                  alt="flumenxConect Portal"
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="min-w-0">
+                <h1 className="font-bold text-sm tracking-tight text-sage-900 flex items-center space-x-1.5">
+                  <span>flumenxConect</span>
+                  <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-50 text-brand-800 border border-brand-200">
+                    Portal
+                  </span>
+                </h1>
+                <p className="text-[10px] text-sage-500 truncate max-w-[140px]">
+                  {user?.clientName || 'Customer Portal'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-bold text-sm tracking-tight text-sage-900 flex items-center space-x-1.5">
-                <span>flumenxConect</span>
-                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-50 text-brand-800 border border-brand-200">
-                  Portal
-                </span>
-              </h1>
-              <p className="text-[10px] text-sage-500 truncate max-w-[150px]">{user?.clientName || 'Customer Portal'}</p>
-            </div>
+            {/* Close button inside drawer for mobile */}
+            <button
+              onClick={() => setMobileNavOpen(false)}
+              className="lg:hidden p-1.5 rounded-lg text-sage-400 hover:text-sage-700 hover:bg-sage-100"
+              aria-label="Close sidebar"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
           {/* User badge */}
           <div className="mb-5 p-3 rounded-xl bg-sage-50/70 border border-sage-200/80 flex items-center space-x-2.5 shadow-soft-xs">
-            <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-800 border border-brand-200 flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-800 border border-brand-200 flex items-center justify-center font-bold text-xs shrink-0">
               {user?.name?.charAt(0) || 'C'}
             </div>
-            <div className="overflow-hidden flex-1 leading-tight">
+            <div className="overflow-hidden flex-1 min-w-0 leading-tight">
               <p className="text-xs font-bold text-sage-900 truncate">{user?.name}</p>
               <p className="text-[10px] text-sage-500 truncate">{user?.email}</p>
             </div>
@@ -162,8 +196,8 @@ function PortalShell({ children }: { children: React.ReactNode }) {
                       : 'text-sage-600 hover:text-sage-900 hover:bg-sage-100/70'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${active ? 'text-brand-800 stroke-[2.2]' : 'text-sage-400'}`} />
-                  <span>{item.label}</span>
+                  <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-brand-800 stroke-[2.2]' : 'text-sage-400'}`} />
+                  <span className="truncate">{item.label}</span>
                 </Link>
               );
             })}
@@ -171,13 +205,13 @@ function PortalShell({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Bottom controls */}
-        <div className="pt-3 border-t border-sage-100">
+        <div className="pt-4 mt-6 border-t border-sage-100">
           <button
             id="portal-logout-btn"
             onClick={logout}
             className="flex items-center space-x-2.5 w-full px-3 py-2 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4 shrink-0" />
             <span>Sign Out</span>
           </button>
         </div>
@@ -185,7 +219,7 @@ function PortalShell({ children }: { children: React.ReactNode }) {
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <div className="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">{children}</div>
+        <div className="max-w-7xl w-full mx-auto p-3.5 sm:p-6 lg:p-8">{children}</div>
       </main>
     </div>
   );
