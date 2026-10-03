@@ -131,7 +131,7 @@ export default function PortalLoginPage() {
             </button>
           </form>
 
-          <div className="pt-5 border-t border-[#13271A] space-y-4 text-center">
+          <div className="pt-4 border-t border-[#13271A] text-center">
             <p className="text-xs text-[#7E9F8B]">
               Have an invitation link?{' '}
               <Link
@@ -142,39 +142,6 @@ export default function PortalLoginPage() {
                 Activate Account
               </Link>
             </p>
-
-            {/* Quick Demo Login Credentials */}
-            <div className="p-3 bg-[#040C07] rounded-xl border border-[#13271A] text-left space-y-2">
-              <span className="text-[10px] font-bold text-[#7E9F8B] uppercase tracking-wider block text-center">
-                Demo Quick Fill
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('customer@example.com');
-                    setPassword('Password123!');
-                    setError(null);
-                  }}
-                  className="p-2 rounded-lg bg-[#07170E] hover:bg-[#0A2215] text-[11px] text-left transition-colors border border-[#183622] hover:border-emerald-500/40 active:scale-98 cursor-pointer"
-                >
-                  <span className="font-bold block text-emerald-400 truncate">customer@example.com</span>
-                  <span className="text-[10px] text-[#7E9F8B] block">Password123!</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('portal-test-charlie@customer.local');
-                    setPassword('OtherCustomerPassword123!');
-                    setError(null);
-                  }}
-                  className="p-2 rounded-lg bg-[#07170E] hover:bg-[#0A2215] text-[11px] text-left transition-colors border border-[#183622] hover:border-emerald-500/40 active:scale-98 cursor-pointer"
-                >
-                  <span className="font-bold block text-emerald-400 truncate">charlie@customer.local</span>
-                  <span className="text-[10px] text-[#7E9F8B] block">OtherCustomerPassword123!</span>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
