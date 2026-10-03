@@ -80,9 +80,9 @@ function PortalShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#F7F8F5] text-sage-900 flex flex-col lg:flex-row">
       {/* Mobile Header */}
-      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-sage-200/90 sticky top-0 z-30 shadow-soft-xs">
+      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#040C07] border-b border-[#13271A] sticky top-0 z-30 shadow-soft-xs">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
+          <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-[0_0_12px_rgba(16,185,129,0.2)] border border-emerald-500/30">
             <Image
               src="/icons/icon-192x192.png"
               alt="flumenxConect Portal"
@@ -93,12 +93,12 @@ function PortalShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="min-w-0">
             <div className="flex items-center space-x-1.5">
-              <span className="font-bold text-xs tracking-tight text-sage-900">flumenxConect</span>
-              <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-brand-50 text-brand-800 border border-brand-200">
+              <span className="font-bold text-xs tracking-tight text-white">flumenxConect</span>
+              <span className="text-[9px] uppercase font-extrabold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                 Portal
               </span>
             </div>
-            <span className="text-[10px] text-sage-500 block truncate max-w-[180px]">
+            <span className="text-[10px] text-[#7E9F8B] block truncate max-w-[180px]">
               {user?.clientName || 'Customer Portal'}
             </span>
           </div>
@@ -107,7 +107,7 @@ function PortalShell({ children }: { children: React.ReactNode }) {
           id="mobile-nav-toggle-btn"
           onClick={() => setMobileNavOpen(!mobileNavOpen)}
           aria-label={mobileNavOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
-          className="p-2 rounded-xl bg-sage-50 border border-sage-200 text-sage-700 hover:text-sage-900 hover:bg-sage-100 transition-colors"
+          className="p-2 rounded-xl bg-[#07170E] border border-[#152E1D] text-emerald-400 hover:text-emerald-300 hover:bg-[#0A2215] transition-colors"
         >
           {mobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -123,21 +123,21 @@ function PortalShell({ children }: { children: React.ReactNode }) {
           onKeyDown={(e) => {
             if (e.key === 'Escape' || e.key === 'Enter') setMobileNavOpen(false);
           }}
-          className="fixed inset-0 bg-charcoal-900/50 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden transition-opacity"
         />
       )}
 
       {/* Sidebar Desktop & Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-white border-r border-sage-200/90 p-5 flex flex-col justify-between overflow-y-auto transition-transform duration-200 ease-out shadow-soft-xl lg:shadow-soft-xs lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-[#040C07] border-r border-[#13271A] p-5 flex flex-col justify-between overflow-y-auto transition-transform duration-200 ease-out shadow-2xl lg:shadow-none lg:static lg:translate-x-0 ${
           mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div>
           {/* Brand header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#13271A]">
             <div className="flex items-center space-x-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-forest-sm">
+              <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-[0_0_12px_rgba(16,185,129,0.25)] border border-emerald-500/30">
                 <Image
                   src="/icons/icon-192x192.png"
                   alt="flumenxConect Portal"
@@ -147,13 +147,13 @@ function PortalShell({ children }: { children: React.ReactNode }) {
                 />
               </div>
               <div className="min-w-0">
-                <h1 className="font-bold text-sm tracking-tight text-sage-900 flex items-center space-x-1.5">
+                <h1 className="font-bold text-sm tracking-tight text-white flex items-center space-x-1.5">
                   <span>flumenxConect</span>
-                  <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-50 text-brand-800 border border-brand-200">
+                  <span className="text-[9px] uppercase font-extrabold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                     Portal
                   </span>
                 </h1>
-                <p className="text-[10px] text-sage-500 truncate max-w-[140px]">
+                <p className="text-[10px] text-[#7E9F8B] truncate max-w-[140px]">
                   {user?.clientName || 'Customer Portal'}
                 </p>
               </div>
@@ -161,7 +161,7 @@ function PortalShell({ children }: { children: React.ReactNode }) {
             {/* Close button inside drawer for mobile */}
             <button
               onClick={() => setMobileNavOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg text-sage-400 hover:text-sage-700 hover:bg-sage-100"
+              className="lg:hidden p-1.5 rounded-lg text-[#7E9F8B] hover:text-white hover:bg-white/[0.05]"
               aria-label="Close sidebar"
             >
               <X className="w-4 h-4" />
@@ -169,17 +169,23 @@ function PortalShell({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* User badge */}
-          <div className="mb-5 p-3 rounded-xl bg-sage-50/70 border border-sage-200/80 flex items-center space-x-2.5 shadow-soft-xs">
-            <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-800 border border-brand-200 flex items-center justify-center font-bold text-xs shrink-0">
+          <div className="mb-5 p-3 rounded-xl bg-[#07170E] border border-[#152E1D] flex items-center space-x-2.5 shadow-sm">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
               {user?.name?.charAt(0) || 'C'}
             </div>
             <div className="overflow-hidden flex-1 min-w-0 leading-tight">
-              <p className="text-xs font-bold text-sage-900 truncate">{user?.name}</p>
-              <p className="text-[10px] text-sage-500 truncate">{user?.email}</p>
+              <p className="text-xs font-bold text-white truncate">{user?.name}</p>
+              <p className="text-[10px] text-[#7E9F8B] truncate">{user?.email}</p>
             </div>
           </div>
 
           {/* Navigation links */}
+          <div className="px-1 pb-1 mb-1.5">
+            <span className="text-[9.5px] font-extrabold uppercase tracking-[0.2em] text-[#4E775C]">
+              PORTAL NAVIGATION
+            </span>
+          </div>
+
           <nav className="space-y-1">
             {navItems.map((item) => {
               const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
@@ -190,13 +196,17 @@ function PortalShell({ children }: { children: React.ReactNode }) {
                   id={`portal-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                   href={item.href}
                   onClick={() => setMobileNavOpen(false)}
-                  className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                  className={`flex items-center space-x-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 outline-none focus:outline-none ${
                     active
-                      ? 'bg-brand-50 text-brand-800 font-semibold shadow-soft-xs'
-                      : 'text-sage-600 hover:text-sage-900 hover:bg-sage-100/70'
+                      ? 'bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.08)]'
+                      : 'text-[#7E9F8B] hover:text-white hover:bg-white/[0.04] border border-transparent'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-brand-800 stroke-[2.2]' : 'text-sage-400'}`} />
+                  <Icon
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      active ? 'text-emerald-400 stroke-[2.2]' : 'text-[#4E775C] group-hover:text-emerald-300'
+                    }`}
+                  />
                   <span className="truncate">{item.label}</span>
                 </Link>
               );
@@ -205,11 +215,11 @@ function PortalShell({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Bottom controls */}
-        <div className="pt-4 mt-6 border-t border-sage-100">
+        <div className="pt-4 mt-6 border-t border-[#13271A]">
           <button
             id="portal-logout-btn"
             onClick={logout}
-            className="flex items-center space-x-2.5 w-full px-3 py-2 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
+            className="flex items-center space-x-2.5 w-full px-3 py-2 rounded-xl text-xs font-semibold text-rose-400/90 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all outline-none"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             <span>Sign Out</span>

@@ -49,3 +49,14 @@ body {
   background: #94A59B;
 }
 
+/* Subtle modern accessibility focus outlines without harsh browser borders */
+a:focus, button:focus {
+  outline: none;
+}
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid rgba(16, 185, 129, 0.5);
+  outline-offset: 2px;
+}
+
+
