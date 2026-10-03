@@ -129,13 +129,13 @@ function PortalShell({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar Desktop & Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-[#040C07] border-r border-[#13271A] p-5 flex flex-col justify-between overflow-y-auto transition-transform duration-200 ease-out shadow-2xl lg:shadow-none lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-[#040C07] text-white flex flex-col shrink-0 h-screen lg:sticky top-0 border-r border-[#13271A] select-none transition-transform duration-200 ease-out shadow-2xl lg:shadow-none lg:translate-x-0 ${
           mobileNavOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div>
-          {/* Brand header */}
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#13271A]">
+        {/* Brand Header */}
+        <div className="p-4 sm:p-5 border-b border-[#13271A] bg-[#040C07] shrink-0">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2.5 min-w-0">
               <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-[0_0_12px_rgba(16,185,129,0.25)] border border-emerald-500/30">
                 <Image
@@ -167,26 +167,17 @@ function PortalShell({ children }: { children: React.ReactNode }) {
               <X className="w-4 h-4" />
             </button>
           </div>
+        </div>
 
-          {/* User badge */}
-          <div className="mb-5 p-3 rounded-xl bg-[#07170E] border border-[#152E1D] flex items-center space-x-2.5 shadow-sm">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
-              {user?.name?.charAt(0) || 'C'}
-            </div>
-            <div className="overflow-hidden flex-1 min-w-0 leading-tight">
-              <p className="text-xs font-bold text-white truncate">{user?.name}</p>
-              <p className="text-[10px] text-[#7E9F8B] truncate">{user?.email}</p>
-            </div>
-          </div>
-
-          {/* Navigation links */}
-          <div className="px-1 pb-1 mb-1.5">
+        {/* Navigation Section */}
+        <nav className="flex-1 overflow-y-auto p-3.5 space-y-3">
+          <div className="px-1 pt-1">
             <span className="text-[9.5px] font-extrabold uppercase tracking-[0.2em] text-[#4E775C]">
               PORTAL NAVIGATION
             </span>
           </div>
 
-          <nav className="space-y-1">
+          <div className="space-y-1">
             {navItems.map((item) => {
               const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
               const Icon = item.icon;
@@ -211,19 +202,35 @@ function PortalShell({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
-          </nav>
-        </div>
+          </div>
+        </nav>
 
-        {/* Bottom controls */}
-        <div className="pt-4 mt-6 border-t border-[#13271A]">
-          <button
-            id="portal-logout-btn"
-            onClick={logout}
-            className="flex items-center space-x-2.5 w-full px-3 py-2 rounded-xl text-xs font-semibold text-rose-400/90 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all outline-none"
-          >
-            <LogOut className="w-4 h-4 shrink-0" />
-            <span>Sign Out</span>
-          </button>
+        {/* Footer User Profile Card with Integrated Sign Out (Always pinned at the bottom!) */}
+        <div className="p-3 border-t border-[#13271A] bg-[#040C07] shrink-0">
+          <div className="p-2.5 rounded-xl bg-[#07170E] border border-[#152E1D] flex items-center justify-between gap-2 shadow-sm">
+            <div className="flex items-center gap-2.5 min-w-0 overflow-hidden">
+              <div className="h-8 w-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xs shrink-0 shadow-inner">
+                {user?.name?.charAt(0) || 'C'}
+              </div>
+              <div className="flex flex-col min-w-0 overflow-hidden">
+                <span className="text-xs font-bold text-white truncate leading-tight">
+                  {user?.name || 'Customer'}
+                </span>
+                <span className="text-[10px] text-[#7E9F8B] truncate leading-tight mt-0.5">
+                  {user?.email || 'customer@portal'}
+                </span>
+              </div>
+            </div>
+            <button
+              id="portal-logout-btn"
+              onClick={logout}
+              title="Sign out"
+              aria-label="Sign out"
+              className="p-1.5 rounded-lg text-[#4E775C] hover:text-rose-400 hover:bg-rose-500/10 transition-colors shrink-0 outline-none"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </aside>
 
