@@ -33,7 +33,7 @@ function PortalShell({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/portal/reset-password');
 
   if (isAuthPage) {
-    return <div className="min-h-screen bg-[#F7F8F5] text-sage-900">{children}</div>;
+    return <div className="min-h-screen bg-[#040C07] text-white">{children}</div>;
   }
 
   if (isLoading) {

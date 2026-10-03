@@ -3,8 +3,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePortalAuth } from '@/context/PortalAuthContext';
-import { ShieldCheck, Lock, User, Phone, KeyRound, AlertCircle, Loader2 } from 'lucide-react';
+import { Lock, User, Phone, KeyRound, AlertCircle, Loader2 } from 'lucide-react';
 
 function AcceptInvitationForm() {
   const searchParams = useSearchParams();
@@ -67,34 +68,49 @@ function AcceptInvitationForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#040C07] text-white select-none">
       <div className="w-full max-w-lg">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 mb-4 shadow-xl shadow-indigo-600/10">
-            <ShieldCheck className="w-7 h-7" />
+        {/* Brand Header */}
+        <div className="text-center mb-7">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#07170E] border border-emerald-500/30 shadow-[0_0_24px_rgba(16,185,129,0.25)] mb-3.5 p-2.5">
+            <Image
+              src="/icons/icon-192x192.png"
+              alt="flumenxConect Portal"
+              width={40}
+              height={40}
+              className="w-full h-full object-cover rounded-xl"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Activate Customer Account</h1>
-          <p className="text-sm text-slate-400 mt-1">Set up your password to complete your customer portal registration</p>
+          <div className="flex items-center justify-center space-x-1.5 mb-1">
+            <h1 className="text-xl font-bold tracking-tight text-white">Activate Customer Account</h1>
+            <span className="text-[9px] uppercase font-extrabold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              INVITATION
+            </span>
+          </div>
+          <p className="text-xs text-[#7E9F8B] max-w-sm mx-auto">
+            Set up your credentials to complete your customer portal onboarding
+          </p>
         </div>
 
-        <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800 p-8 rounded-2xl shadow-2xl">
+        {/* Card */}
+        <div className="bg-[#07170E]/95 backdrop-blur-xl border border-[#13271A] p-6 sm:p-8 rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-5">
           {error && (
             <div
               id="portal-invite-error"
-              className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start space-x-3"
+              className="p-3.5 sm:p-4 rounded-xl bg-rose-950/50 border border-rose-800/50 text-rose-300 text-xs sm:text-sm flex items-start space-x-3"
             >
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-rose-400 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             <div>
-              <label htmlFor="portal-invite-token-input" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+              <label htmlFor="portal-invite-token-input" className="block text-xs font-semibold uppercase tracking-wider text-[#7E9F8B] mb-1.5">
                 Invitation Token
               </label>
               <div className="relative">
-                <KeyRound className="w-5 h-5 text-slate-500 absolute left-3.5 top-3" />
+                <KeyRound className="w-4 h-4 text-[#52705E] absolute left-3.5 top-3" />
                 <input
                   id="portal-invite-token-input"
                   type="text"
@@ -102,71 +118,71 @@ function AcceptInvitationForm() {
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
                   placeholder="Paste your invitation token"
-                  className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm font-mono"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#040C07] border border-[#183622] text-white placeholder-[#456350] focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all text-xs sm:text-sm font-mono"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="portal-invite-name-input" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label htmlFor="portal-invite-name-input" className="block text-xs font-semibold uppercase tracking-wider text-[#7E9F8B] mb-1.5">
                   Full Name (Optional)
                 </label>
                 <div className="relative">
-                  <User className="w-5 h-5 text-slate-500 absolute left-3.5 top-3" />
+                  <User className="w-4 h-4 text-[#52705E] absolute left-3.5 top-3" />
                   <input
                     id="portal-invite-name-input"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your name"
-                    className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#040C07] border border-[#183622] text-white placeholder-[#456350] focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all text-xs sm:text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="portal-invite-phone-input" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label htmlFor="portal-invite-phone-input" className="block text-xs font-semibold uppercase tracking-wider text-[#7E9F8B] mb-1.5">
                   Phone (Optional)
                 </label>
                 <div className="relative">
-                  <Phone className="w-5 h-5 text-slate-500 absolute left-3.5 top-3" />
+                  <Phone className="w-4 h-4 text-[#52705E] absolute left-3.5 top-3" />
                   <input
                     id="portal-invite-phone-input"
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+1 (555) 000-0000"
-                    className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#040C07] border border-[#183622] text-white placeholder-[#456350] focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all text-xs sm:text-sm"
                   />
                 </div>
               </div>
             </div>
 
             <div>
-              <label htmlFor="portal-invite-password-input" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+              <label htmlFor="portal-invite-password-input" className="block text-xs font-semibold uppercase tracking-wider text-[#7E9F8B] mb-1.5">
                 New Password
               </label>
               <div className="relative">
-                <Lock className="w-5 h-5 text-slate-500 absolute left-3.5 top-3" />
+                <Lock className="w-4 h-4 text-[#52705E] absolute left-3.5 top-3" />
                 <input
                   id="portal-invite-password-input"
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 8 characters with 1 uppercase & 1 number"
-                  className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm"
+                  placeholder="At least 8 chars with 1 uppercase & 1 number"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#040C07] border border-[#183622] text-white placeholder-[#456350] focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all text-xs sm:text-sm"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="portal-invite-confirm-password-input" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+              <label htmlFor="portal-invite-confirm-password-input" className="block text-xs font-semibold uppercase tracking-wider text-[#7E9F8B] mb-1.5">
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className="w-5 h-5 text-slate-500 absolute left-3.5 top-3" />
+                <Lock className="w-4 h-4 text-[#52705E] absolute left-3.5 top-3" />
                 <input
                   id="portal-invite-confirm-password-input"
                   type="password"
@@ -174,7 +190,7 @@ function AcceptInvitationForm() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter your password"
-                  className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#040C07] border border-[#183622] text-white placeholder-[#456350] focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all text-xs sm:text-sm"
                 />
               </div>
             </div>
@@ -183,11 +199,11 @@ function AcceptInvitationForm() {
               id="portal-invite-submit-btn"
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium text-sm flex items-center justify-center space-x-2 transition-all shadow-lg shadow-indigo-600/25"
+              className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-white hover:bg-neutral-100 disabled:opacity-50 text-[#040C07] font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all shadow-md active:scale-98 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#040C07]" />
                   <span>Activating Account...</span>
                 </>
               ) : (
@@ -196,13 +212,14 @@ function AcceptInvitationForm() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-800 text-center">
+          <div className="pt-2 text-center">
             <Link
               id="portal-back-to-login-link"
               href="/portal/login"
-              className="text-xs text-slate-400 hover:text-slate-200"
+              className="text-xs text-[#7E9F8B] hover:text-white transition-colors"
             >
-              Already have an active account? Sign In
+              Already have an active account?{' '}
+              <span className="font-semibold text-emerald-400 hover:text-emerald-300">Sign In</span>
             </Link>
           </div>
         </div>
@@ -215,10 +232,10 @@ export default function AcceptInvitationPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-          <div className="flex items-center space-x-2 text-indigo-400">
-            <Loader2 className="w-6 h-6 animate-spin" />
-            <span className="text-sm font-medium text-slate-300">Loading invitation...</span>
+        <div className="min-h-screen flex items-center justify-center p-4 bg-[#040C07] text-white">
+          <div className="flex items-center space-x-2 text-emerald-400">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span className="text-xs sm:text-sm font-medium text-[#7E9F8B]">Loading invitation...</span>
           </div>
         </div>
       }
