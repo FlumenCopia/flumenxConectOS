@@ -25,7 +25,20 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Client-Id', 'X-Requested-With'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Client-Id',
+      'x-client-id',
+      'X-Client-Slug',
+      'x-client-slug',
+      'X-Requested-With',
+      'x-portal-csrf',
+      'X-Portal-Csrf',
+      'idempotency-key',
+      'Idempotency-Key',
+      'Accept',
+    ],
   })
 );
 
