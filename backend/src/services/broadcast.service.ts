@@ -13,6 +13,8 @@ export interface CreateBroadcastInput {
   name: string;
   channel: BroadcastChannel;
   messageBody: string;
+  templateName?: string;
+  templateLanguage?: string;
   attachment?: IBroadcastAttachment;
   recipients: Array<{
     name: string;
@@ -88,6 +90,8 @@ export class BroadcastService {
       name: data.name.trim(),
       channel: data.channel || 'whatsapp',
       messageBody: data.messageBody.trim(),
+      templateName: data.templateName?.trim(),
+      templateLanguage: data.templateLanguage?.trim() || 'en_US',
       attachment: data.attachment,
       totalRecipients: validRecipients.length,
       sentCount: 0,
@@ -140,6 +144,13 @@ export class BroadcastService {
             channel: campaign.channel,
             attachments: campaign.attachment ? [campaign.attachment] : undefined,
             idempotencyKey: `broadcast_${campaign._id}_${rec.phone}_${Date.now()}`,
+            metadata: campaign.templateName
+              ? {
+                  type: 'template',
+                  templateName: campaign.templateName,
+                  templateLanguage: campaign.templateLanguage || 'en_US',
+                }
+              : undefined,
           }
         );
 

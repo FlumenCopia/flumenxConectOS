@@ -30,6 +30,8 @@ export interface BroadcastCampaignItem {
   name: string;
   channel: BroadcastChannel;
   messageBody: string;
+  templateName?: string;
+  templateLanguage?: string;
   attachment?: BroadcastAttachment;
   totalRecipients: number;
   sentCount: number;
@@ -60,6 +62,8 @@ export interface CreateBroadcastPayload {
   name: string;
   channel: BroadcastChannel;
   messageBody: string;
+  templateName?: string;
+  templateLanguage?: string;
   attachment?: BroadcastAttachment;
   recipients: Array<{
     name?: string;

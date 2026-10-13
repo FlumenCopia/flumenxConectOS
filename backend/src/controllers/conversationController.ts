@@ -1,9 +1,13 @@
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 import { Request, Response, NextFunction } from 'express';
 import { ConversationService } from '../services/conversation.service';
 import { MessageService } from '../services/message.service';
 import { ConversationActivityService } from '../services/conversationActivity.service';
 import { ClientMembership } from '../models/ClientMembership';
 import { CommunicationProvider } from '../models/CommunicationProvider';
+import { QuickReply } from '../models/QuickReply';
 import { sendSuccess } from '../utils/response';
 import { AppError } from '../middleware/errorHandler';
 
@@ -462,4 +466,220 @@ export const testCommunicationProvider = async (req: Request, res: Response, nex
     return next(error);
   }
 };
+
+/**
+ * Retrieves pre-approved WhatsApp message templates from Meta Cloud API
+ */
+export const getWhatsAppTemplates = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    const provider = await CommunicationProvider.findOne({
+      clientId,
+      providerType: 'whatsapp',
+      status: 'active',
+    });
+
+    const fallbackTemplates = [
+      {
+        id: 'hello_world',
+        name: 'hello_world',
+        status: 'APPROVED',
+        category: 'UTILITY',
+        language: 'en_US',
+        bodyText:
+          'Welcome and congratulations!! This message demonstrates your ability to send a WhatsApp message notification from the Cloud API, hosted by Meta. Thank you for taking the time to test with us.',
+      },
+    ];
+
+    if (!provider || !provider.configuration?.accessToken) {
+      return sendSuccess(res, { templates: fallbackTemplates, count: fallbackTemplates.length }, 'Templates retrieved');
+    }
+
+    const { accessToken, wabaId } = provider.configuration;
+    if (!wabaId) {
+      return sendSuccess(res, { templates: fallbackTemplates, count: fallbackTemplates.length }, 'Templates retrieved');
+    }
+
+    try {
+      const response = await fetch(`https://graph.facebook.com/v21.0/${wabaId}/message_templates?limit=100`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        return sendSuccess(res, { templates: fallbackTemplates, count: fallbackTemplates.length }, 'Templates retrieved');
+      }
+
+      const metaData = (await response.json()) as any;
+      const templates = (metaData.data || []).map((t: any) => ({
+        id: t.id || t.name,
+        name: t.name,
+        status: t.status,
+        category: t.category,
+        language: t.language,
+        bodyText: t.components?.find((c: any) => c.type === 'BODY')?.text || '',
+        components: t.components,
+      }));
+
+      if (!templates.some((t: any) => t.name === 'hello_world')) {
+        templates.unshift(fallbackTemplates[0]);
+      }
+
+      return sendSuccess(res, { templates, count: templates.length }, 'WhatsApp templates retrieved successfully');
+    } catch (metaErr) {
+      return sendSuccess(res, { templates: fallbackTemplates, count: fallbackTemplates.length }, 'Templates retrieved');
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Uploads media attachment (image, audio, video, document) for WhatsApp / Conversation messages
+ */
+export const uploadConversationAttachment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { base64Data, name, mimeType } = req.body;
+    if (!base64Data || !name) {
+      throw new AppError('File data and filename are required', 400);
+    }
+    const uploadsDir = path.join(process.cwd(), 'uploads', 'conversations');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    const ext = path.extname(name) || (mimeType ? `.${mimeType.split('/')[1]}` : '.bin');
+    const safeName = `att_${Date.now()}_${crypto.randomBytes(4).toString('hex')}${ext}`;
+    const filePath = path.join(uploadsDir, safeName);
+
+    const base64Clean = base64Data.replace(/^data:[^;]+;base64,/, '');
+    const buffer = Buffer.from(base64Clean, 'base64');
+    fs.writeFileSync(filePath, buffer);
+
+    const relativeUrl = `/uploads/conversations/${safeName}`;
+    const baseUrl = process.env.APP_URL || 'https://connectos.flumenx.in';
+    const publicUrl = `${baseUrl.replace(/\/$/, '')}${relativeUrl}`;
+
+    return sendSuccess(
+      res,
+      {
+        url: relativeUrl,
+        publicUrl,
+        name,
+        mimeType: mimeType || 'application/octet-stream',
+        size: buffer.length,
+      },
+      'Media uploaded successfully',
+      201
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Retrieves predefined messages / quick replies for workspace
+ */
+export const getQuickReplies = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    let replies = await QuickReply.find({ clientId }).sort({ category: 1, createdAt: 1 }).lean();
+
+    if (replies.length === 0) {
+      const defaults = [
+        {
+          clientId,
+          title: 'Welcome Greeting',
+          category: 'Greeting',
+          body: 'Hello! Thank you for reaching out to us. How can we assist you today?',
+          channel: 'whatsapp',
+        },
+        {
+          clientId,
+          title: 'Specialist Follow-up',
+          category: 'Support',
+          body: 'Thank you for your message! Our team has received your inquiry and a specialist will get back to you shortly.',
+          channel: 'whatsapp',
+        },
+        {
+          clientId,
+          title: 'Request Information',
+          category: 'Sales',
+          body: 'Could you please share your email address and business requirements so we can prepare a tailored proposal?',
+          channel: 'whatsapp',
+        },
+        {
+          clientId,
+          title: 'Business Hours Notice',
+          category: 'Information',
+          body: 'Our office hours are Monday through Friday, 9:00 AM to 6:00 PM. We will attend to your request as soon as we open.',
+          channel: 'whatsapp',
+        },
+        {
+          clientId,
+          title: 'Pricing & Catalog Link',
+          category: 'Sales',
+          body: 'We are pleased to share our current service catalog and pricing details: https://flumenx.com',
+          channel: 'whatsapp',
+        },
+      ];
+      await QuickReply.insertMany(defaults);
+      replies = await QuickReply.find({ clientId }).sort({ category: 1, createdAt: 1 }).lean();
+    }
+
+    return sendSuccess(res, { quickReplies: replies, count: replies.length }, 'Quick replies retrieved');
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Creates custom quick reply
+ */
+export const createQuickReply = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    const userId = req.user!._id;
+    const { title, body, category, channel, tags } = req.body;
+
+    if (!title || !body) {
+      throw new AppError('Title and message body are required', 400);
+    }
+
+    const quickReply = await QuickReply.create({
+      clientId,
+      title: title.trim(),
+      body: body.trim(),
+      category: category?.trim() || 'General',
+      channel: channel || 'whatsapp',
+      tags: tags || [],
+      createdBy: userId,
+    });
+
+    return sendSuccess(res, quickReply, 'Quick reply created successfully', 201);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Deletes quick reply
+ */
+export const deleteQuickReply = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    const { id } = req.params;
+
+    const deleted = await QuickReply.findOneAndDelete({ _id: id, clientId });
+    if (!deleted) {
+      throw new AppError('Quick reply not found or access denied', 404);
+    }
+
+    return sendSuccess(res, { deletedId: id }, 'Quick reply deleted successfully');
+  } catch (error) {
+    return next(error);
+  }
+};
+
+
 

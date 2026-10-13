@@ -91,23 +91,33 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
       };
     } else if (params.attachments && params.attachments.length > 0) {
       const attachment = params.attachments[0];
-      const mime = attachment.mimeType || '';
+      const mime = (attachment.mimeType || '').toLowerCase();
       let mediaType = 'document';
 
-      if (mime.startsWith('image/')) mediaType = 'image';
-      else if (mime.startsWith('video/')) mediaType = 'video';
-      else if (mime.startsWith('audio/')) mediaType = 'audio';
+      if (mime.startsWith('image/') || /\.(png|jpe?g|webp|gif)$/i.test(attachment.name || '')) mediaType = 'image';
+      else if (mime.startsWith('video/') || /\.(mp4|mov|3gp)$/i.test(attachment.name || '')) mediaType = 'video';
+      else if (mime.startsWith('audio/') || /\.(mp3|ogg|wav|m4a|aac)$/i.test(attachment.name || '')) mediaType = 'audio';
+
+      let mediaUrl = attachment.url;
+      if (!mediaUrl.startsWith('http://') && !mediaUrl.startsWith('https://')) {
+        const baseUrl = process.env.APP_URL || 'https://connectos.flumenx.in';
+        mediaUrl = `${baseUrl.replace(/\/$/, '')}${mediaUrl.startsWith('/') ? '' : '/'}${mediaUrl}`;
+      }
+
+      const mediaPayload: Record<string, any> = { link: mediaUrl };
+      if (mediaType === 'document') {
+        if (attachment.name) mediaPayload.filename = attachment.name;
+        if (params.body?.trim()) mediaPayload.caption = params.body.trim();
+      } else if (mediaType === 'image' || mediaType === 'video') {
+        if (params.body?.trim()) mediaPayload.caption = params.body.trim();
+      }
 
       payload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
         to: toDigits,
         type: mediaType,
-        [mediaType]: {
-          link: attachment.url,
-          caption: params.body?.trim() || undefined,
-          filename: attachment.name || undefined,
-        },
+        [mediaType]: mediaPayload,
       };
     } else {
       payload = {

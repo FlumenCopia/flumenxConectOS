@@ -276,3 +276,67 @@ export const testCommunicationProviderApi = async (data: {
   return res.data;
 };
 
+export interface WhatsAppTemplateItem {
+  id: string;
+  name: string;
+  status: string;
+  category: string;
+  language: string;
+  bodyText?: string;
+  components?: any[];
+}
+
+export const getWhatsAppTemplatesApi = async (): Promise<WhatsAppTemplateItem[]> => {
+  const res = await apiClient.get<ApiResponse<{ templates: WhatsAppTemplateItem[]; count: number }>>('/conversations/templates');
+  return res.data.data?.templates || [];
+};
+
+export interface QuickReplyItem {
+  _id: string;
+  title: string;
+  category: string;
+  body: string;
+  channel: string;
+  tags: string[];
+  createdAt: string;
+}
+
+export const getQuickRepliesApi = async (): Promise<QuickReplyItem[]> => {
+  const res = await apiClient.get<ApiResponse<{ quickReplies: QuickReplyItem[]; count: number }>>('/conversations/quick-replies');
+  return res.data.data?.quickReplies || [];
+};
+
+export const createQuickReplyApi = async (data: {
+  title: string;
+  body: string;
+  category?: string;
+  channel?: string;
+}): Promise<QuickReplyItem> => {
+  const res = await apiClient.post<ApiResponse<QuickReplyItem>>('/conversations/quick-replies', data);
+  return res.data.data!;
+};
+
+export const deleteQuickReplyApi = async (id: string): Promise<string> => {
+  const res = await apiClient.delete<ApiResponse<{ deletedId: string }>>(`/conversations/quick-replies/${id}`);
+  return res.data.data!.deletedId;
+};
+
+export interface UploadAttachmentResult {
+  url: string;
+  publicUrl: string;
+  name: string;
+  mimeType: string;
+  size: number;
+}
+
+export const uploadConversationAttachmentApi = async (file: {
+  name: string;
+  mimeType: string;
+  base64Data: string;
+}): Promise<UploadAttachmentResult> => {
+  const res = await apiClient.post<ApiResponse<UploadAttachmentResult>>('/conversations/upload', file);
+  return res.data.data!;
+};
+
+
+

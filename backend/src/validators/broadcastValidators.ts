@@ -4,6 +4,8 @@ export const createBroadcastSchema = z.object({
   name: z.string().min(1, 'Broadcast campaign name is required'),
   channel: z.enum(['whatsapp', 'sms', 'email']).default('whatsapp'),
   messageBody: z.string().min(1, 'Message body is required'),
+  templateName: z.string().optional(),
+  templateLanguage: z.string().optional(),
   attachment: z
     .object({
       name: z.string(),

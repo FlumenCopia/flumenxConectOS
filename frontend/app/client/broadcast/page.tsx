@@ -42,6 +42,10 @@ import {
   uploadBroadcastAttachmentApi,
   getBroadcastByIdApi,
 } from '@/lib/broadcast';
+import {
+  WhatsAppTemplateItem,
+  getWhatsAppTemplatesApi,
+} from '@/lib/conversations';
 import { useAuth } from '@/hooks/useAuth';
 
 interface ParsedContact {
@@ -64,6 +68,14 @@ export default function BroadcastPage() {
   const [messageBody, setMessageBody] = useState(
     'Hi {{Name}}, greeting from Acme Digital Media! 🎉\n\nWe are excited to share our latest product catalog and special discounts with you. Please review the attached document for exclusive deals.\n\nReply to this message anytime to chat with our executive!'
   );
+
+  // Meta Template Mode State
+  const [useMetaTemplate, setUseMetaTemplate] = useState(false);
+  const [availableTemplates, setAvailableTemplates] = useState<WhatsAppTemplateItem[]>([]);
+  const [selectedTemplateName, setSelectedTemplateName] = useState('hello_world');
+  const [selectedTemplateLanguage, setSelectedTemplateLanguage] = useState('en_US');
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
+  const [showFailureDetails, setShowFailureDetails] = useState(false);
 
   // File & Contact List State
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
@@ -119,6 +131,22 @@ export default function BroadcastPage() {
       fetchCampaigns();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    if (channel === 'whatsapp') {
+      setIsLoadingTemplates(true);
+      getWhatsAppTemplatesApi()
+        .then((data) => {
+          setAvailableTemplates(data);
+          if (data.length > 0 && !selectedTemplateName) {
+            setSelectedTemplateName(data[0].name);
+            setSelectedTemplateLanguage(data[0].language);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setIsLoadingTemplates(false));
+    }
+  }, [channel]);
 
   // Load sample default contacts if none uploaded
   useEffect(() => {
@@ -433,6 +461,14 @@ export default function BroadcastPage() {
         name: campaignName.trim() || `Broadcast Blast - ${new Date().toLocaleDateString()}`,
         channel,
         messageBody: messageBody.trim(),
+        templateName:
+          channel === 'whatsapp' && useMetaTemplate && selectedTemplateName
+            ? selectedTemplateName
+            : undefined,
+        templateLanguage:
+          channel === 'whatsapp' && useMetaTemplate && selectedTemplateLanguage
+            ? selectedTemplateLanguage
+            : undefined,
         attachment: attachment || undefined,
         recipients: validContacts.map((c) => ({
           name: c.name,
@@ -904,6 +940,116 @@ export default function BroadcastPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* WhatsApp Meta Template / Mode Selector */}
+                {channel === 'whatsapp' && (
+                  <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-emerald-700" />
+                        <span className="text-xs font-bold text-emerald-950">
+                          WhatsApp Dispatch Mode
+                        </span>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200">
+                        Meta Cloud API
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setUseMetaTemplate(false)}
+                        className={`p-3 rounded-lg border text-left transition-all ${
+                          !useMetaTemplate
+                            ? 'bg-white border-emerald-600 text-emerald-900 font-semibold shadow-xs ring-2 ring-emerald-500/20'
+                            : 'bg-emerald-50/40 border-emerald-200 text-slate-600 hover:bg-white'
+                        }`}
+                      >
+                        <div className="font-bold text-xs flex items-center justify-between">
+                          <span>Custom Message &amp; Media</span>
+                          {!useMetaTemplate && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-normal mt-0.5">
+                          For active contacts within 24h window
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUseMetaTemplate(true);
+                          if (availableTemplates.length > 0) {
+                            const tmpl = availableTemplates[0];
+                            setSelectedTemplateName(tmpl.name);
+                            setSelectedTemplateLanguage(tmpl.language);
+                            if (tmpl.bodyText) setMessageBody(tmpl.bodyText);
+                          }
+                        }}
+                        className={`p-3 rounded-lg border text-left transition-all ${
+                          useMetaTemplate
+                            ? 'bg-white border-emerald-600 text-emerald-900 font-semibold shadow-xs ring-2 ring-emerald-500/20'
+                            : 'bg-emerald-50/40 border-emerald-200 text-slate-600 hover:bg-white'
+                        }`}
+                      >
+                        <div className="font-bold text-xs flex items-center justify-between">
+                          <span className="flex items-center gap-1">
+                            Approved Template <Badge variant="outline" className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0">24/7 Delivery</Badge>
+                          </span>
+                          {useMetaTemplate && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-normal mt-0.5">
+                          Reaches ANY number, bypasses 24h rule
+                        </div>
+                      </button>
+                    </div>
+
+                    {useMetaTemplate && (
+                      <div className="pt-2 border-t border-emerald-200/60 space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <label className="text-[11px] font-bold text-emerald-950 flex items-center gap-1">
+                            Select Meta Approved Template:
+                          </label>
+                          <a
+                            href="https://business.facebook.com/wa/manage/message-templates/?waba_id=2381123346055633"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[10px] text-emerald-700 hover:text-emerald-900 underline flex items-center gap-0.5 font-medium"
+                          >
+                            Meta Template Manager <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        </div>
+
+                        <select
+                          value={selectedTemplateName}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setSelectedTemplateName(val);
+                            const found = availableTemplates.find((t) => t.name === val);
+                            if (found) {
+                              setSelectedTemplateLanguage(found.language);
+                              if (found.bodyText) setMessageBody(found.bodyText);
+                            }
+                          }}
+                          className="w-full text-xs bg-white border border-emerald-300 rounded-lg p-2 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        >
+                          {availableTemplates.length === 0 ? (
+                            <option value="hello_world">hello_world (en_US) · APPROVED</option>
+                          ) : (
+                            availableTemplates.map((tmpl) => (
+                              <option key={`${tmpl.name}_${tmpl.language}`} value={tmpl.name}>
+                                {tmpl.name} ({tmpl.language}) · {tmpl.status}
+                              </option>
+                            ))
+                          )}
+                        </select>
+                        <p className="text-[10px] text-emerald-800">
+                          Pre-approved by Meta. This template will deliver to any recipient regardless of when they last messaged.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Variable chips */}
                 <div>
@@ -1402,17 +1548,29 @@ export default function BroadcastPage() {
                 <div className="w-14 h-14 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center">
                   <XCircle className="w-7 h-7" />
                 </div>
+              ) : dispatchSuccess?.sentCount === 0 && (dispatchSuccess?.failedCount || 0) > 0 ? (
+                <div className="w-14 h-14 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center shadow-lg shadow-rose-500/20">
+                  <XCircle className="w-7 h-7" />
+                </div>
+              ) : dispatchSuccess && (dispatchSuccess.failedCount || 0) > 0 ? (
+                <div className="w-14 h-14 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center shadow-lg shadow-amber-500/20">
+                  <AlertCircle className="w-7 h-7" />
+                </div>
               ) : (
                 <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/20">
                   <CheckCircle2 className="w-7 h-7" />
                 </div>
               )}
 
-              <h3 className="text-lg font-bold text-slate-900">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900">
                 {isDispatching
                   ? 'Dispatching Broadcast Blast...'
                   : dispatchError
                   ? 'Broadcast Blast Failed'
+                  : dispatchSuccess?.sentCount === 0 && (dispatchSuccess?.failedCount || 0) > 0
+                  ? 'Delivery Rejected by Carrier / Meta'
+                  : dispatchSuccess && (dispatchSuccess.failedCount || 0) > 0
+                  ? 'Broadcast Blast Partially Delivered'
                   : 'Broadcast Blast Completed!'}
               </h3>
               <p className="text-xs text-slate-500">
@@ -1420,13 +1578,15 @@ export default function BroadcastPage() {
                   ? 'Sending personalized messages and media to all verified mobile numbers...'
                   : dispatchError
                   ? dispatchError
+                  : dispatchSuccess?.sentCount === 0 && (dispatchSuccess?.failedCount || 0) > 0
+                  ? `None of the ${dispatchSuccess.totalRecipients} recipients could receive the message. Check rejection reasons below.`
                   : `Successfully delivered to ${dispatchSuccess?.sentCount || validContacts.length} recipients.`}
               </p>
             </div>
 
             {/* Campaign Summary Card */}
             {dispatchSuccess && (
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs">
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs max-h-[60vh] overflow-y-auto">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Campaign:</span>
                   <span className="font-semibold text-slate-800">{dispatchSuccess.name}</span>
@@ -1451,7 +1611,7 @@ export default function BroadcastPage() {
                 </div>
                 {dispatchSuccess.failedCount > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Failed / Invalid:</span>
+                    <span className="text-slate-500">Failed / Rejected:</span>
                     <span className="font-bold text-rose-600">
                       ✗ {dispatchSuccess.failedCount}
                     </span>
@@ -1460,10 +1620,84 @@ export default function BroadcastPage() {
                 {dispatchSuccess.attachment && (
                   <div className="flex justify-between items-center pt-1 border-t border-slate-200">
                     <span className="text-slate-500">Media Attached:</span>
-                    <span className="font-medium text-indigo-600 flex items-center gap-1">
-                      <Paperclip className="w-3 h-3" />
-                      {dispatchSuccess.attachment.name}
+                    <span className="font-medium text-indigo-600 flex items-center gap-1 truncate max-w-[180px]">
+                      <Paperclip className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{dispatchSuccess.attachment.name}</span>
                     </span>
+                  </div>
+                )}
+
+                {/* Recipient Rejection Breakdown & Helpful Diagnostics */}
+                {dispatchSuccess.failedCount > 0 && (
+                  <div className="pt-2 border-t border-slate-200 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-rose-700">Rejection Details:</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowFailureDetails(!showFailureDetails)}
+                        className="text-[11px] text-indigo-600 hover:text-indigo-800 underline font-semibold"
+                      >
+                        {showFailureDetails ? 'Hide details' : `Show failed contacts (${dispatchSuccess.failedCount})`}
+                      </button>
+                    </div>
+
+                    {/* Common failure diagnostic alert */}
+                    {dispatchSuccess.recipients?.some(
+                      (r) =>
+                        r.status === 'failed' &&
+                        (r.error?.includes('24-Hour') ||
+                          r.error?.includes('Template') ||
+                          r.error?.includes('131047'))
+                    ) && (
+                      <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-900 leading-relaxed space-y-1">
+                        <strong className="block font-bold">Meta 24-Hour Policy Rule:</strong>
+                        <span>
+                          Customers who haven't messaged you recently cannot receive free-form text or media.
+                          You must use an <strong>Approved Meta Template</strong> (e.g. <code>hello_world</code>).
+                        </span>
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setUseMetaTemplate(true);
+                              setShowProgressModal(false);
+                            }}
+                            className="text-[11px] font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-2 py-0.5 rounded transition"
+                          >
+                            Switch to Approved Meta Template &amp; Re-send →
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {dispatchSuccess.recipients?.some(
+                      (r) => r.status === 'failed' && r.error?.includes('Development Mode')
+                    ) && (
+                      <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-[11px] text-blue-900 leading-relaxed">
+                        <strong className="block font-bold">Meta Sandbox Mode Detected:</strong>
+                        Your WhatsApp number is currently in Meta Developer Test Mode. Test numbers must be registered in your Meta Developer Portal under API Setup &gt; "To" list.
+                      </div>
+                    )}
+
+                    {showFailureDetails && (
+                      <div className="max-h-40 overflow-y-auto border border-rose-200 rounded-lg bg-rose-50/50 p-2 space-y-1.5 divide-y divide-rose-100">
+                        {dispatchSuccess.recipients
+                          ?.filter((r) => r.status === 'failed')
+                          .map((r, idx) => (
+                            <div key={idx} className="pt-1.5 first:pt-0">
+                              <div className="flex justify-between font-medium text-slate-800">
+                                <span>
+                                  {r.name || 'Contact'} ({r.phone})
+                                </span>
+                                <span className="text-rose-600 font-bold">Failed</span>
+                              </div>
+                              <p className="text-[10px] text-rose-700 font-mono mt-0.5 break-words">
+                                {r.error || 'Carrier / Meta rejected message delivery'}
+                              </p>
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

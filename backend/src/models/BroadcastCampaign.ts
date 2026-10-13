@@ -27,6 +27,8 @@ export interface IBroadcastCampaign extends Document {
   name: string;
   channel: BroadcastChannel;
   messageBody: string;
+  templateName?: string;
+  templateLanguage?: string;
   attachment?: IBroadcastAttachment;
   totalRecipients: number;
   sentCount: number;
@@ -86,6 +88,16 @@ const BroadcastCampaignSchema = new Schema<IBroadcastCampaign>(
     messageBody: {
       type: String,
       required: true,
+    },
+    templateName: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    templateLanguage: {
+      type: String,
+      required: false,
+      default: 'en_US',
     },
     attachment: {
       type: BroadcastAttachmentSchema,

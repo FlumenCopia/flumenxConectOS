@@ -33,6 +33,13 @@ import {
   Radio,
   Sliders,
   Sparkles,
+  Zap,
+  Trash2,
+  FileText,
+  Film,
+  Music,
+  Download,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -58,6 +65,14 @@ import {
   ConversationChannel,
   ConversationStatus,
   ConversationPriority,
+  WhatsAppTemplateItem,
+  getWhatsAppTemplatesApi,
+  QuickReplyItem,
+  getQuickRepliesApi,
+  createQuickReplyApi,
+  deleteQuickReplyApi,
+  uploadConversationAttachmentApi,
+  UploadAttachmentResult,
 } from '@/lib/conversations';
 import { getWorkspaceTeamApi, ClientMemberItem } from '@/lib/clients';
 
@@ -94,6 +109,57 @@ function UnifiedInboxContent() {
   const [replyText, setReplyText] = useState('');
   const [replyChannel, setReplyChannel] = useState<ConversationChannel>('whatsapp');
   const chatBottomRef = useRef<HTMLDivElement>(null);
+
+  // WhatsApp Templates
+  const [availableTemplates, setAvailableTemplates] = useState<WhatsAppTemplateItem[]>([]);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
+
+  const loadTemplates = useCallback(async () => {
+    setIsLoadingTemplates(true);
+    try {
+      const data = await getWhatsAppTemplatesApi();
+      setAvailableTemplates(data);
+    } catch {
+      // keep fallback
+    } finally {
+      setIsLoadingTemplates(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTemplates();
+  }, [loadTemplates]);
+
+  // Quick Replies (Predefined Messages)
+  const [quickReplies, setQuickReplies] = useState<QuickReplyItem[]>([]);
+  const [showQuickRepliesPopover, setShowQuickRepliesPopover] = useState(false);
+  const [isLoadingQuickReplies, setIsLoadingQuickReplies] = useState(false);
+  const [newQuickReplyTitle, setNewQuickReplyTitle] = useState('');
+  const [newQuickReplyBody, setNewQuickReplyBody] = useState('');
+  const [showAddQuickReplyForm, setShowAddQuickReplyForm] = useState(false);
+  const [isSavingQuickReply, setIsSavingQuickReply] = useState(false);
+
+  const loadQuickReplies = useCallback(async () => {
+    setIsLoadingQuickReplies(true);
+    try {
+      const data = await getQuickRepliesApi();
+      setQuickReplies(data);
+    } catch {
+      // fallback
+    } finally {
+      setIsLoadingQuickReplies(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadQuickReplies();
+  }, [loadQuickReplies]);
+
+  // Media Attachment Upload
+  const [selectedAttachment, setSelectedAttachment] = useState<UploadAttachmentResult | null>(null);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // New Thread Modal
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
@@ -226,16 +292,28 @@ function UnifiedInboxContent() {
   // Handle Send Reply
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!replyText.trim() || !activeConversationId || isSending) return;
+    if ((!replyText.trim() && !selectedAttachment) || !activeConversationId || isSending) return;
 
     setIsSending(true);
-    const bodyToSend = replyText.trim();
+    const bodyToSend = replyText.trim() || (selectedAttachment ? selectedAttachment.name : '');
+    const currentAttachment = selectedAttachment;
     setReplyText('');
+    setSelectedAttachment(null);
 
     try {
       const newMsg = await sendMessageApi(activeConversationId, {
         body: bodyToSend,
         channel: replyChannel,
+        attachments: currentAttachment
+          ? [
+              {
+                name: currentAttachment.name,
+                url: currentAttachment.publicUrl || currentAttachment.url,
+                mimeType: currentAttachment.mimeType,
+                size: currentAttachment.size,
+              },
+            ]
+          : undefined,
       });
 
       setMessages((prev) => [...prev, newMsg]);
@@ -260,10 +338,86 @@ function UnifiedInboxContent() {
     }
   };
 
-  // Handle Send WhatsApp Template (e.g. hello_world)
-  const handleSendTemplate = async (templateName: string = 'hello_world') => {
+  // Handle Media Attachment Upload (Image, Video, Audio, Document)
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 25 * 1024 * 1024) {
+      alert('File size exceeds the 25MB limit.');
+      return;
+    }
+
+    setIsUploadingAttachment(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Data = reader.result as string;
+        try {
+          const res = await uploadConversationAttachmentApi({
+            name: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            base64Data,
+          });
+          setSelectedAttachment(res);
+        } catch (err: any) {
+          alert(err?.response?.data?.message || 'Failed to upload media attachment');
+        } finally {
+          setIsUploadingAttachment(false);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setIsUploadingAttachment(false);
+    }
+  };
+
+  // Handle Quick Reply Actions
+  const handleSelectQuickReply = (body: string) => {
+    setReplyText((prev) => (prev ? `${prev}\n${body}` : body));
+    setShowQuickRepliesPopover(false);
+  };
+
+  const handleCreateQuickReply = async () => {
+    if (!newQuickReplyTitle.trim() || !newQuickReplyBody.trim()) {
+      alert('Please fill in both a title and message text for the quick reply.');
+      return;
+    }
+    setIsSavingQuickReply(true);
+    try {
+      const created = await createQuickReplyApi({
+        title: newQuickReplyTitle.trim(),
+        body: newQuickReplyBody.trim(),
+        channel: replyChannel,
+      });
+      setQuickReplies((prev) => [...prev, created]);
+      setNewQuickReplyTitle('');
+      setNewQuickReplyBody('');
+      setShowAddQuickReplyForm(false);
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to save quick reply');
+    } finally {
+      setIsSavingQuickReply(false);
+    }
+  };
+
+  const handleDeleteQuickReply = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this quick reply?')) return;
+    try {
+      await deleteQuickReplyApi(id);
+      setQuickReplies((prev) => prev.filter((r) => r._id !== id));
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to delete quick reply');
+    }
+  };
+
+  // Handle Send WhatsApp Template
+  const handleSendTemplate = async (templateName: string = 'hello_world', templateLanguage: string = 'en_US') => {
     if (!activeConversationId || isSending) return;
     setIsSending(true);
+    setShowTemplateModal(false);
     try {
       const newMsg = await sendMessageApi(activeConversationId, {
         body: `[Template: ${templateName}]`,
@@ -271,6 +425,7 @@ function UnifiedInboxContent() {
         metadata: {
           type: 'template',
           templateName,
+          templateLanguage,
         },
       });
 
@@ -935,7 +1090,59 @@ function UnifiedInboxContent() {
                               : 'bg-white border border-slate-200 text-slate-900 rounded-tl-none'
                           }`}
                         >
-                          <p className="whitespace-pre-line">{msg.body}</p>
+                          {/* Attached Media (Image, Audio, Video, Document) */}
+                          {msg.attachments && msg.attachments.length > 0 && (
+                            <div className="mb-2 space-y-1.5">
+                              {msg.attachments.map((att, idx) => {
+                                const mime = (att.mimeType || '').toLowerCase();
+                                const isImg = mime.startsWith('image/') || /\.(png|jpe?g|webp|gif)$/i.test(att.name || att.url || '');
+                                const isVideo = mime.startsWith('video/') || /\.(mp4|mov|3gp)$/i.test(att.name || att.url || '');
+                                const isAudio = mime.startsWith('audio/') || /\.(mp3|ogg|wav|m4a|aac)$/i.test(att.name || att.url || '');
+
+                                if (isImg) {
+                                  return (
+                                    <a key={idx} href={att.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg border border-white/20">
+                                      <img src={att.url} alt={att.name || 'Image'} className="max-h-60 w-auto rounded object-contain bg-black/10" />
+                                    </a>
+                                  );
+                                }
+                                if (isVideo) {
+                                  return (
+                                    <div key={idx} className="rounded-lg overflow-hidden border border-white/20 bg-black">
+                                      <video src={att.url} controls className="max-h-60 w-full" />
+                                    </div>
+                                  );
+                                }
+                                if (isAudio) {
+                                  return (
+                                    <div key={idx} className="my-1">
+                                      <audio src={att.url} controls className="w-full h-8" />
+                                    </div>
+                                  );
+                                }
+                                return (
+                                  <a
+                                    key={idx}
+                                    href={att.url}
+                                    target="_blank"
+                                    download
+                                    rel="noreferrer"
+                                    className={`flex items-center gap-2 p-2 rounded-lg text-[11px] font-medium transition ${
+                                      isOutbound
+                                        ? 'bg-white/10 hover:bg-white/20 text-white'
+                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                                    }`}
+                                  >
+                                    <FileText className="w-4 h-4 shrink-0" />
+                                    <span className="truncate flex-1">{att.name || 'Document'}</span>
+                                    <Download className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {msg.body && <p className="whitespace-pre-line">{msg.body}</p>}
 
                           {/* Failure banner with Retry */}
                           {isFailed && (
@@ -964,12 +1171,12 @@ function UnifiedInboxContent() {
                               {(msg.failureReason?.includes('24-Hour') || msg.failureReason?.includes('131047') || msg.failureReason?.includes('template')) && (
                                 <button
                                   type="button"
-                                  onClick={() => handleSendTemplate('hello_world')}
+                                  onClick={() => setShowTemplateModal(true)}
                                   disabled={isSending}
                                   className="text-[10px] self-start px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 hover:bg-emerald-200 font-semibold transition flex items-center gap-1 mt-0.5"
                                 >
                                   <Sparkles className="w-2.5 h-2.5 text-emerald-700" />
-                                  Send "hello_world" template to initiate conversation
+                                  Choose an approved template to initiate conversation
                                 </button>
                               )}
                             </div>
@@ -1035,11 +1242,48 @@ function UnifiedInboxContent() {
             </div>
 
             {/* Message Composer Bar */}
+            {/* Message Composer Bar */}
             <div className="p-2.5 sm:p-4 bg-white border-t border-slate-200">
+              {/* Attachment Preview (if selected) */}
+              {selectedAttachment && (
+                <div className="mb-2 flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs animate-in fade-in duration-150">
+                  <div className="flex items-center gap-2 truncate">
+                    {selectedAttachment.mimeType?.startsWith('image/') ? (
+                      <ImageIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                    ) : selectedAttachment.mimeType?.startsWith('video/') ? (
+                      <Film className="w-4 h-4 text-purple-600 shrink-0" />
+                    ) : selectedAttachment.mimeType?.startsWith('audio/') ? (
+                      <Music className="w-4 h-4 text-amber-600 shrink-0" />
+                    ) : (
+                      <FileText className="w-4 h-4 text-blue-600 shrink-0" />
+                    )}
+                    <span className="font-semibold text-slate-800 truncate">{selectedAttachment.name}</span>
+                    <span className="text-[10px] text-slate-400">({Math.round(selectedAttachment.size / 1024)} KB)</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAttachment(null)}
+                    className="p-1 text-slate-400 hover:text-rose-600 rounded"
+                    title="Remove attachment"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
+              {/* Hidden file input for media upload */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xlsx"
+                className="hidden"
+              />
+
               <form onSubmit={handleSendMessage} className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400 font-medium">Channel:</span>
+                <div className="flex items-center justify-between text-xs flex-wrap gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-slate-400 font-medium text-[11px]">Channel:</span>
                     <select
                       value={replyChannel}
                       onChange={(e) => setReplyChannel(e.target.value as any)}
@@ -1051,16 +1295,145 @@ function UnifiedInboxContent() {
                       <option value="internal">Internal Note</option>
                     </select>
 
+                    {/* Media Attachment Upload Button */}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploadingAttachment || isSending}
+                      title="Attach image, video, audio or document"
+                      className="text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100 transition flex items-center gap-1"
+                    >
+                      {isUploadingAttachment ? (
+                        <RotateCw className="w-3 h-3 animate-spin text-brand-600" />
+                      ) : (
+                        <Paperclip className="w-3 h-3 text-slate-600" />
+                      )}
+                      <span>Attach</span>
+                    </button>
+
+                    {/* Quick Replies (Predefined Messages) Button with popover */}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowQuickRepliesPopover(!showQuickRepliesPopover)}
+                        title="Choose predefined canned responses"
+                        className="text-[11px] font-medium px-2 py-0.5 rounded border border-amber-200 text-amber-800 bg-amber-50 hover:bg-amber-100 transition flex items-center gap-1"
+                      >
+                        <Zap className="w-3 h-3 text-amber-600" />
+                        <span>Quick Replies ({quickReplies.length})</span>
+                      </button>
+
+                      {/* Quick Replies Popover */}
+                      {showQuickRepliesPopover && (
+                        <div className="absolute left-0 bottom-full mb-1.5 w-80 bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-30 animate-in fade-in duration-100 max-h-96 flex flex-col">
+                          <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
+                            <span className="font-bold text-xs text-slate-800 flex items-center gap-1">
+                              <Zap className="w-3.5 h-3.5 text-amber-500" /> Predefined Quick Replies
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setShowQuickRepliesPopover(false)}
+                              className="text-slate-400 hover:text-slate-600"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-56">
+                            {isLoadingQuickReplies ? (
+                              <p className="text-[11px] text-slate-400 p-2 text-center">Loading quick replies...</p>
+                            ) : quickReplies.length === 0 ? (
+                              <p className="text-[11px] text-slate-400 p-2 text-center">No quick replies created yet.</p>
+                            ) : (
+                              quickReplies.map((qr) => (
+                                <div
+                                  key={qr._id}
+                                  onClick={() => handleSelectQuickReply(qr.body)}
+                                  className="p-2 rounded-lg border border-slate-100 hover:border-amber-300 hover:bg-amber-50/50 cursor-pointer transition text-left group flex items-start justify-between gap-1"
+                                >
+                                  <div>
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="text-xs font-semibold text-slate-800">{qr.title}</span>
+                                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 font-medium">
+                                        {qr.category || 'General'}
+                                      </span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">{qr.body}</p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => handleDeleteQuickReply(qr._id, e)}
+                                    className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-600 p-1 transition"
+                                    title="Delete quick reply"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ))
+                            )}
+                          </div>
+
+                          {/* Add Custom Quick Reply Toggle */}
+                          <div className="pt-2 border-t border-slate-100 mt-2">
+                            {showAddQuickReplyForm ? (
+                              <div className="space-y-2">
+                                <input
+                                  type="text"
+                                  placeholder="Shortcut / Title (e.g. Price Quote)"
+                                  value={newQuickReplyTitle}
+                                  onChange={(e) => setNewQuickReplyTitle(e.target.value)}
+                                  className="w-full text-xs p-1.5 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                />
+                                <textarea
+                                  rows={2}
+                                  placeholder="Predefined message text..."
+                                  value={newQuickReplyBody}
+                                  onChange={(e) => setNewQuickReplyBody(e.target.value)}
+                                  className="w-full text-xs p-1.5 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                />
+                                <div className="flex justify-end gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowAddQuickReplyForm(false)}
+                                    className="px-2 py-0.5 text-[10px] text-slate-500 border border-slate-200 rounded"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleCreateQuickReply}
+                                    disabled={isSavingQuickReply}
+                                    className="px-2.5 py-0.5 text-[10px] bg-amber-600 text-white font-medium rounded hover:bg-amber-700"
+                                  >
+                                    {isSavingQuickReply ? 'Saving...' : 'Save Quick Reply'}
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => setShowAddQuickReplyForm(true)}
+                                className="w-full py-1 text-center text-xs font-medium text-brand-700 hover:text-brand-900 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 transition flex items-center justify-center gap-1"
+                              >
+                                <Plus className="w-3 h-3" /> Add Custom Quick Reply
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* WhatsApp Meta Templates Modal Trigger */}
                     {replyChannel === 'whatsapp' && (
                       <button
                         type="button"
-                        onClick={() => handleSendTemplate('hello_world')}
+                        onClick={() => setShowTemplateModal(true)}
                         disabled={isSending}
-                        title="Meta allows sending pre-approved templates outside the 24h window"
-                        className="text-[10px] font-medium px-2 py-0.5 rounded border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition flex items-center gap-1"
+                        title="View and send Meta approved WhatsApp templates"
+                        className="text-[11px] font-medium px-2 py-0.5 rounded border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition flex items-center gap-1 shadow-xs"
                       >
-                        <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
-                        Send "hello_world" Template
+                        <Sparkles className="w-3 h-3 text-emerald-600" />
+                        <span>Meta Templates ({availableTemplates.length || 1})</span>
                       </button>
                     )}
                   </div>
@@ -1081,14 +1454,18 @@ function UnifiedInboxContent() {
                         handleSendMessage();
                       }
                     }}
-                    placeholder={`Reply to ${activeConversation.contactId?.name} via ${replyChannel}...`}
+                    placeholder={
+                      selectedAttachment
+                        ? `Add a caption for ${selectedAttachment.name}... (optional)`
+                        : `Reply to ${activeConversation.contactId?.name} via ${replyChannel}...`
+                    }
                     className="flex-1 text-xs p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-600 resize-none"
                   />
                   <Button
                     type="submit"
                     variant="primary"
                     size="sm"
-                    disabled={!replyText.trim() || isSending}
+                    disabled={(!replyText.trim() && !selectedAttachment) || isSending}
                     isLoading={isSending}
                     className="h-10 px-4 bg-brand-800 hover:bg-brand-700 text-white rounded-lg shrink-0"
                   >
@@ -1254,6 +1631,126 @@ function UnifiedInboxContent() {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* WHATSAPP META TEMPLATES MODAL */}
+      {/* ------------------------------------------------------------- */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full border border-slate-200 p-6 space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-emerald-600" /> WhatsApp Meta Message Templates
+                  </h3>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
+                    {availableTemplates.length} Approved
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Pre-approved Meta templates can be sent anytime, even outside the 24-hour customer messaging window.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={loadTemplates}
+                  disabled={isLoadingTemplates}
+                  title="Refresh templates from Meta"
+                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 transition"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isLoadingTemplates ? 'animate-spin' : ''}`} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowTemplateModal(false)}
+                  className="text-slate-400 hover:text-slate-600 p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Quick banner with Meta manager link */}
+            <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg flex items-center justify-between text-xs text-emerald-900">
+              <span className="text-[11px]">
+                Want to create a new custom template with buttons or media?
+              </span>
+              <a
+                href="https://business.facebook.com/wa/manage/message-templates/?waba_id=2381123346055633"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-emerald-800 hover:underline flex items-center gap-1 shrink-0 ml-2 text-[11px]"
+              >
+                <span>Meta Template Manager</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+
+            {/* Templates List */}
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+              {isLoadingTemplates ? (
+                <div className="p-8 text-center text-xs text-slate-500">
+                  <RotateCw className="w-5 h-5 animate-spin mx-auto text-emerald-600 mb-2" />
+                  Fetching approved templates from Meta WhatsApp Cloud API...
+                </div>
+              ) : availableTemplates.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-400">
+                  No approved templates found in Meta. You can use the standard <code>hello_world</code> template.
+                </div>
+              ) : (
+                availableTemplates.map((tmpl) => (
+                  <div
+                    key={tmpl.id || tmpl.name}
+                    className="border border-slate-200 rounded-xl p-4 hover:border-emerald-300 hover:bg-emerald-50/20 transition flex flex-col justify-between gap-3"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-xs text-slate-900 font-mono">{tmpl.name}</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase bg-emerald-100 text-emerald-800">
+                            {tmpl.status}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium">
+                          <span className="px-1.5 py-0.5 rounded bg-slate-100">{tmpl.category || 'UTILITY'}</span>
+                          <span className="px-1.5 py-0.5 rounded bg-slate-100 uppercase">{tmpl.language || 'en_US'}</span>
+                        </div>
+                      </div>
+
+                      {/* WhatsApp preview card */}
+                      <div className="p-3 bg-emerald-50/50 border border-emerald-100 rounded-lg text-xs text-slate-700 whitespace-pre-line leading-relaxed font-sans">
+                        {tmpl.bodyText || 'Standard Meta approved notification.'}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-1">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="primary"
+                        disabled={!activeConversationId || isSending}
+                        onClick={() => handleSendTemplate(tmpl.name, tmpl.language)}
+                        className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs h-8 px-3"
+                      >
+                        <Send className="w-3 h-3 mr-1" />
+                        Send Template to Contact
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="flex justify-end pt-3 border-t border-slate-100">
+              <Button variant="outline" size="sm" type="button" onClick={() => setShowTemplateModal(false)}>
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       )}

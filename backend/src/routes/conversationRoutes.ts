@@ -18,6 +18,11 @@ import {
   saveCommunicationProvider,
   deleteCommunicationProvider,
   testCommunicationProvider,
+  getWhatsAppTemplates,
+  uploadConversationAttachment,
+  getQuickReplies,
+  createQuickReply,
+  deleteQuickReply,
 } from '../controllers/conversationController';
 import { requireAuth } from '../middleware/authMiddleware';
 import { requirePermission } from '../middleware/permissionMiddleware';
@@ -40,6 +45,18 @@ router.use(requireAuth);
 
 router.get('/', requirePermission('conversations.view'), getConversations);
 router.post('/', requirePermission('conversations.create'), validate(createConversationSchema), createConversation);
+
+// WhatsApp Meta Templates
+router.get('/templates', requirePermission('conversations.view'), getWhatsAppTemplates);
+router.get('/templates/whatsapp', requirePermission('conversations.view'), getWhatsAppTemplates);
+
+// Media Upload (Image, Video, Audio, Document)
+router.post('/upload', requirePermission('conversations.create'), uploadConversationAttachment);
+
+// Predefined Messages / Quick Replies
+router.get('/quick-replies', requirePermission('conversations.view'), getQuickReplies);
+router.post('/quick-replies', requirePermission('conversations.create'), createQuickReply);
+router.delete('/quick-replies/:id', requirePermission('conversations.manage_status'), deleteQuickReply);
 
 // Channel Communication Provider Management
 router.get('/providers', requirePermission('conversations.view'), getCommunicationProviders);
