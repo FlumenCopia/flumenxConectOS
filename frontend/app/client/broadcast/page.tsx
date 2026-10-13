@@ -29,6 +29,10 @@ import {
   ExternalLink,
   Users,
   Filter,
+  Settings,
+  Building,
+  Globe,
+  User,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -44,7 +48,10 @@ import {
 } from '@/lib/broadcast';
 import {
   WhatsAppTemplateItem,
+  WhatsAppBusinessProfile,
   getWhatsAppTemplatesApi,
+  getWhatsAppBusinessProfileApi,
+  updateWhatsAppBusinessProfileApi,
 } from '@/lib/conversations';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -72,10 +79,92 @@ export default function BroadcastPage() {
   // Meta Template Mode State
   const [useMetaTemplate, setUseMetaTemplate] = useState(false);
   const [availableTemplates, setAvailableTemplates] = useState<WhatsAppTemplateItem[]>([]);
-  const [selectedTemplateName, setSelectedTemplateName] = useState('hello_world');
-  const [selectedTemplateLanguage, setSelectedTemplateLanguage] = useState('en_US');
+  const [selectedTemplateName, setSelectedTemplateName] = useState('misc_website_view');
+  const [selectedTemplateLanguage, setSelectedTemplateLanguage] = useState('en');
+  const [templateVariableMappings, setTemplateVariableMappings] = useState<Record<string, string>>({});
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
   const [showFailureDetails, setShowFailureDetails] = useState(false);
+
+  // WhatsApp Business Profile State
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileData, setProfileData] = useState<WhatsAppBusinessProfile>({
+    about: '',
+    description: '',
+    address: '',
+    email: '',
+    websites: [''],
+    vertical: 'PROF_SERVICES',
+    phoneNumber: '+91 79070 64848',
+    verifiedName: 'miscarchive',
+  });
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileFeedback, setProfileFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const fetchProfile = async () => {
+    try {
+      setIsLoadingProfile(true);
+      setProfileFeedback(null);
+      const data = await getWhatsAppBusinessProfileApi();
+      setProfileData({
+        about: data.about || '',
+        description: data.description || '',
+        address: data.address || '',
+        email: data.email || '',
+        websites: data.websites && data.websites.length > 0 ? data.websites : [''],
+        vertical: data.vertical || 'PROF_SERVICES',
+        phoneNumber: data.phoneNumber || '+91 79070 64848',
+        verifiedName: data.verifiedName || 'miscarchive',
+      });
+    } catch (err: any) {
+      setProfileFeedback({
+        type: 'error',
+        text: err.response?.data?.message || err.message || 'Failed to load profile from Meta',
+      });
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setIsSavingProfile(true);
+      setProfileFeedback(null);
+      await updateWhatsAppBusinessProfileApi({
+        about: profileData.about,
+        description: profileData.description,
+        address: profileData.address,
+        email: profileData.email,
+        vertical: profileData.vertical,
+        websites: profileData.websites?.filter(Boolean),
+      });
+      setProfileFeedback({
+        type: 'success',
+        text: 'WhatsApp Business Profile successfully updated and live on Meta!',
+      });
+    } catch (err: any) {
+      setProfileFeedback({
+        type: 'error',
+        text: err.response?.data?.message || err.message || 'Failed to update profile in Meta',
+      });
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  // Auto-detect dynamic variables in selected template
+  const detectedVars = useMemo(() => {
+    const currentTmpl = availableTemplates.find((t) => t.name === selectedTemplateName);
+    if (!currentTmpl) return [];
+    if (currentTmpl.variables && currentTmpl.variables.length > 0) return currentTmpl.variables;
+    const matches: string[] = [];
+    const regex = /\{\{([a-zA-Z0-9_]+)\}\}/g;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(currentTmpl.bodyText || '')) !== null) {
+      matches.push(match[1]);
+    }
+    return Array.from(new Set(matches));
+  }, [availableTemplates, selectedTemplateName]);
 
   // File & Contact List State
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
@@ -90,6 +179,31 @@ export default function BroadcastPage() {
   const [searchFilter, setSearchFilter] = useState('');
   const [previewPage, setPreviewPage] = useState(1);
   const pageSize = 8;
+
+  // Auto-map template variables to detected columns
+  useEffect(() => {
+    if (detectedVars.length > 0) {
+      setTemplateVariableMappings((prev) => {
+        const next = { ...prev };
+        detectedVars.forEach((v) => {
+          if (!next[v]) {
+            const vLower = v.toLowerCase();
+            if (vLower === 'name' || vLower === '1') {
+              next[v] = nameColumn || sheetColumns.find((c) => /name|customer|client/i.test(c)) || 'Full Name';
+            } else if (vLower === 'phone' || vLower === '2' || vLower === 'mobile') {
+              next[v] = phoneColumn || sheetColumns.find((c) => /phone|mobile/i.test(c)) || 'Mobile Number';
+            } else if (vLower === 'email') {
+              next[v] = emailColumn || 'Email';
+            } else {
+              const match = sheetColumns.find((c) => c.toLowerCase() === vLower);
+              next[v] = match || nameColumn || 'Full Name';
+            }
+          }
+        });
+        return next;
+      });
+    }
+  }, [detectedVars, sheetColumns, nameColumn, phoneColumn, emailColumn]);
 
   // Media Attachment State
   const [attachment, setAttachment] = useState<BroadcastAttachment | null>(null);
@@ -138,9 +252,12 @@ export default function BroadcastPage() {
       getWhatsAppTemplatesApi()
         .then((data) => {
           setAvailableTemplates(data);
-          if (data.length > 0 && !selectedTemplateName) {
-            setSelectedTemplateName(data[0].name);
-            setSelectedTemplateLanguage(data[0].language);
+          if (data.length > 0) {
+            const hasExisting = data.some((t) => t.name === selectedTemplateName);
+            if (!hasExisting) {
+              setSelectedTemplateName(data[0].name);
+              setSelectedTemplateLanguage(data[0].language);
+            }
           }
         })
         .catch(() => {})
@@ -393,6 +510,34 @@ export default function BroadcastPage() {
     XLSX.writeFile(wb, 'flumenx_broadcast_mobile_sample.xlsx');
   };
 
+  // Download template-specific custom Excel sample pre-populated with exact variables
+  const handleDownloadTemplateSampleExcel = () => {
+    const row1: Record<string, string> = {
+      'Full Name': 'Najil Rahman',
+      'Mobile Number': '+919048649412',
+      Email: 'najil@example.com',
+    };
+    const row2: Record<string, string> = {
+      'Full Name': 'Dhishin',
+      'Mobile Number': '+919895040202',
+      Email: 'dhishin@example.com',
+    };
+
+    detectedVars.forEach((v) => {
+      const vKey = v.toLowerCase();
+      if (vKey !== '1' && vKey !== 'name') {
+        const colTitle = v.charAt(0).toUpperCase() + v.slice(1);
+        row1[colTitle] = `Sample ${v}`;
+        row2[colTitle] = `Special ${v}`;
+      }
+    });
+
+    const ws = XLSX.utils.json_to_sheet([row1, row2]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Template_Contacts');
+    XLSX.writeFile(wb, `${selectedTemplateName}_sample_contacts.xlsx`);
+  };
+
   // Insert variable into message textarea
   const insertVariable = (variableKey: string) => {
     if (!textareaRef.current) return;
@@ -469,6 +614,10 @@ export default function BroadcastPage() {
           channel === 'whatsapp' && useMetaTemplate && selectedTemplateLanguage
             ? selectedTemplateLanguage
             : undefined,
+        templateVariables:
+          channel === 'whatsapp' && useMetaTemplate
+            ? templateVariableMappings
+            : undefined,
         attachment: attachment || undefined,
         recipients: validContacts.map((c) => ({
           name: c.name,
@@ -504,11 +653,27 @@ export default function BroadcastPage() {
   };
 
   // Preview message with first contact's data
-  const sampleContact = validContacts[0] || { name: 'Rajesh Sharma', phone: '+919820123456' };
-  const previewPersonalizedText = messageBody
-    .replace(/\{\{Name\}\}/gi, sampleContact.name || 'Valued Customer')
-    .replace(/\{\{Phone\}\}/gi, sampleContact.phone || '+91 98201 23456')
-    .replace(/\{\{Email\}\}/gi, sampleContact.email || 'customer@example.com');
+  const sampleContact = validContacts[0] || { name: 'Najil Rahman', phone: '+919048649412' };
+  const previewPersonalizedText = useMemo(() => {
+    if (channel === 'whatsapp' && useMetaTemplate) {
+      const currentTmpl = availableTemplates.find((t) => t.name === selectedTemplateName);
+      let text = currentTmpl?.bodyText || messageBody;
+      detectedVars.forEach((v) => {
+        const mappedCol = templateVariableMappings[v];
+        const val =
+          (mappedCol && sampleContact.customFields?.[mappedCol]) ||
+          (mappedCol === nameColumn || v.toLowerCase() === 'name' || v === '1' ? sampleContact.name : '') ||
+          sampleContact.name ||
+          'Valued Customer';
+        text = text.replace(new RegExp(`\\{\\{${v}\\}\\}`, 'gi'), val);
+      });
+      return text;
+    }
+    return messageBody
+      .replace(/\{\{Name\}\}/gi, sampleContact.name || 'Valued Customer')
+      .replace(/\{\{Phone\}\}/gi, sampleContact.phone || '+91 90486 49412')
+      .replace(/\{\{Email\}\}/gi, sampleContact.email || 'customer@example.com');
+  }, [channel, useMetaTemplate, availableTemplates, selectedTemplateName, messageBody, detectedVars, templateVariableMappings, sampleContact, nameColumn]);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
@@ -1010,14 +1175,26 @@ export default function BroadcastPage() {
                           <label className="text-[11px] font-bold text-emerald-950 flex items-center gap-1">
                             Select Meta Approved Template:
                           </label>
-                          <a
-                            href="https://business.facebook.com/wa/manage/message-templates/?waba_id=2381123346055633"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-[10px] text-emerald-700 hover:text-emerald-900 underline flex items-center gap-0.5 font-medium"
-                          >
-                            Meta Template Manager <ExternalLink className="w-2.5 h-2.5" />
-                          </a>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowProfileModal(true);
+                                fetchProfile();
+                              }}
+                              className="text-[10px] text-emerald-800 hover:text-emerald-950 font-semibold bg-emerald-100 hover:bg-emerald-200 px-2 py-0.5 rounded border border-emerald-300 flex items-center gap-1 transition-colors"
+                            >
+                              <Settings className="w-2.5 h-2.5 text-emerald-700" /> WhatsApp Profile & Details
+                            </button>
+                            <a
+                              href="https://business.facebook.com/wa/manage/message-templates/?waba_id=2381123346055633"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[10px] text-emerald-700 hover:text-emerald-900 underline flex items-center gap-0.5 font-medium"
+                            >
+                              Meta Template Manager <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          </div>
                         </div>
 
                         <select
@@ -1050,33 +1227,187 @@ export default function BroadcastPage() {
                             (t) => t.name === selectedTemplateName
                           );
                           if (!currentTmpl) return null;
+                          const hasImageHeader =
+                            currentTmpl.headerFormat === 'IMAGE' ||
+                            currentTmpl.name.includes('image') ||
+                            currentTmpl.name.startsWith('misc_');
+
                           return (
-                            <div className="p-3 bg-white border border-emerald-200 rounded-xl space-y-2 text-xs shadow-2xs">
-                              {currentTmpl.headerFormat && (
-                                <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 w-fit">
-                                  <span>🖼️ Header Format: {currentTmpl.headerFormat}</span>
-                                </div>
-                              )}
-                              <div className="text-slate-700 whitespace-pre-line leading-relaxed font-sans text-xs">
-                                {currentTmpl.bodyText}
-                              </div>
-                              {currentTmpl.buttons && currentTmpl.buttons.length > 0 && (
-                                <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
-                                  {currentTmpl.buttons.map((btn, bIdx) => (
-                                    <div
-                                      key={bIdx}
-                                      className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-300 text-emerald-900 text-[11px] font-semibold flex items-center gap-1"
-                                    >
-                                      <span>🔗 {btn.text}</span>
-                                      {btn.url && (
-                                        <span className="text-[9px] text-emerald-600 truncate max-w-[120px]">
-                                          ({btn.url})
-                                        </span>
-                                      )}
+                            <div className="space-y-3">
+                              {/* Template Summary Card */}
+                              <div className="p-3 bg-white border border-emerald-200 rounded-xl space-y-2 text-xs shadow-2xs">
+                                <div className="flex items-center justify-between">
+                                  {currentTmpl.headerFormat && (
+                                    <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 w-fit">
+                                      <span>🖼️ Header Format: {currentTmpl.headerFormat}</span>
                                     </div>
-                                  ))}
+                                  )}
+                                  <span className="text-[10px] text-emerald-700 font-medium">
+                                    Language: {currentTmpl.language}
+                                  </span>
+                                </div>
+                                <div className="text-slate-700 whitespace-pre-line leading-relaxed font-sans text-xs">
+                                  {currentTmpl.bodyText}
+                                </div>
+                                {currentTmpl.buttons && currentTmpl.buttons.length > 0 && (
+                                  <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+                                    {currentTmpl.buttons.map((btn, bIdx) => (
+                                      <div
+                                        key={bIdx}
+                                        className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-300 text-emerald-900 text-[11px] font-semibold flex items-center gap-1"
+                                      >
+                                        <span>🔗 {btn.text}</span>
+                                        {btn.url && (
+                                          <span className="text-[9px] text-emerald-600 truncate max-w-[120px]">
+                                            ({btn.url})
+                                          </span>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Custom Header Image Uploader (for templates requiring or supporting media) */}
+                              {hasImageHeader && (
+                                <div className="p-3 bg-white border border-emerald-200 rounded-xl space-y-2.5 text-xs shadow-2xs">
+                                  <div className="flex items-center justify-between">
+                                    <label className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
+                                      <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />
+                                      Template Header Image
+                                    </label>
+                                    <span className="text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded font-medium border border-emerald-200">
+                                      Customizable Media
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-slate-500 leading-normal">
+                                    You can send <strong>any custom image</strong> (flyer, catalog poster, or banner) with this verified template. Upload an image file below:
+                                  </p>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => mediaInputRef.current?.click()}
+                                      disabled={isUploadingMedia}
+                                      className="text-xs gap-1.5 border-emerald-300 text-emerald-800 hover:bg-emerald-50 bg-emerald-50/40"
+                                    >
+                                      <UploadCloud className="w-3.5 h-3.5 text-emerald-600" />
+                                      {isUploadingMedia ? 'Uploading...' : attachment ? 'Change Image' : 'Upload Custom Image'}
+                                    </Button>
+                                    {attachment && (
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={removeAttachment}
+                                        className="text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                                      >
+                                        <Trash2 className="w-3 h-3 mr-1" />
+                                        Reset to Default Logo
+                                      </Button>
+                                    )}
+                                  </div>
+                                  {attachmentLocalPreview && (
+                                    <div className="relative w-36 h-20 rounded-lg overflow-hidden border border-emerald-300 shadow-2xs mt-1">
+                                      <img
+                                        src={attachmentLocalPreview}
+                                        alt="Header preview"
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                  )}
                                 </div>
                               )}
+
+                              {/* Dynamic Template Variables Mapping & Sample Excel Download Card */}
+                              <div className="p-3.5 bg-emerald-50/80 border border-emerald-300/80 rounded-xl space-y-3 text-xs shadow-2xs">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <Sparkles className="w-4 h-4 text-emerald-700" />
+                                    <span className="font-bold text-emerald-950 text-xs">
+                                      Dynamic Variables Assignment
+                                    </span>
+                                    <Badge variant="outline" className="text-[10px] bg-white text-emerald-800 border-emerald-300 font-semibold">
+                                      {detectedVars.length} {detectedVars.length === 1 ? 'Variable' : 'Variables'} Detected
+                                    </Badge>
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={handleDownloadTemplateSampleExcel}
+                                    className="text-xs gap-1.5 bg-white border-emerald-400 text-emerald-900 hover:bg-emerald-50 shadow-2xs font-semibold"
+                                  >
+                                    <Download className="w-3.5 h-3.5 text-emerald-600" />
+                                    Download Sample Excel
+                                  </Button>
+                                </div>
+
+                                <p className="text-[11px] text-emerald-800 leading-relaxed">
+                                  Each variable placeholder (e.g. <code>{'{{name}}'}</code>, <code>{'{{1}}'}</code>) is auto-matched with your uploaded recipient list. You can adjust the assigned column below:
+                                </p>
+
+                                {detectedVars.length === 0 ? (
+                                  <div className="p-2.5 bg-white/90 rounded-lg border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                    <span>
+                                      This template has no dynamic body variables. All recipients will receive the standard approved template message.
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-2 bg-white p-3 rounded-lg border border-emerald-200 shadow-2xs">
+                                    {detectedVars.map((v) => (
+                                      <div
+                                        key={v}
+                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs border-b border-slate-100 last:border-b-0 pb-2 last:pb-0"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <span className="font-mono text-xs font-bold text-emerald-950 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300">
+                                            {`{{${v}}}`}
+                                          </span>
+                                          <span className="text-slate-500 text-[11px]">maps to column:</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 flex-1 sm:max-w-xs">
+                                          <select
+                                            value={templateVariableMappings[v] || ''}
+                                            onChange={(e) =>
+                                              setTemplateVariableMappings((prev) => ({
+                                                ...prev,
+                                                [v]: e.target.value,
+                                              }))
+                                            }
+                                            className="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-1.5 font-medium text-slate-800 focus:ring-1 focus:ring-emerald-500"
+                                          >
+                                            <option value="">-- Choose Column --</option>
+                                            <option value={nameColumn || 'Full Name'}>
+                                              Full Name ({sampleContact.name || 'Sample'})
+                                            </option>
+                                            <option value={phoneColumn || 'Mobile Number'}>
+                                              Mobile Number ({sampleContact.phone || 'Phone'})
+                                            </option>
+                                            {emailColumn && (
+                                              <option value={emailColumn}>Email ({sampleContact.email || 'Email'})</option>
+                                            )}
+                                            {sheetColumns
+                                              .filter((c) => c !== nameColumn && c !== phoneColumn && c !== emailColumn)
+                                              .map((col) => (
+                                                <option key={col} value={col}>
+                                                  {col} (Custom Column)
+                                                </option>
+                                              ))}
+                                          </select>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                <div className="flex items-center justify-between text-[11px] text-emerald-900 pt-0.5">
+                                  <span>💡 Click <strong>Download Sample Excel</strong> above to get an Excel template pre-formatted with these exact columns.</span>
+                                </div>
+                              </div>
                             </div>
                           );
                         })()}
@@ -1338,7 +1669,7 @@ export default function BroadcastPage() {
                     {/* Outbound Message Bubble */}
                     <div className="max-w-[85%] self-end bg-[#DCF8C6] text-slate-800 rounded-2xl rounded-tr-xs p-3 shadow-sm border border-emerald-100 space-y-2">
                       {/* Attached Media in bubble */}
-                      {attachment && (
+                      {attachment ? (
                         <div className="rounded-xl overflow-hidden bg-white/80 border border-slate-200">
                           {attachment.fileType === 'image' && attachmentLocalPreview ? (
                             <div className="relative group">
@@ -1374,12 +1705,43 @@ export default function BroadcastPage() {
                             </div>
                           )}
                         </div>
-                      )}
+                      ) : useMetaTemplate && (() => {
+                        const currentTmpl = availableTemplates.find((t) => t.name === selectedTemplateName);
+                        const hasImg = currentTmpl?.headerFormat === 'IMAGE' || selectedTemplateName.includes('image') || selectedTemplateName.startsWith('misc_');
+                        if (!hasImg) return null;
+                        return (
+                          <div className="rounded-xl overflow-hidden bg-white border border-slate-200">
+                            <img
+                              src="https://connectos.flumenx.in/images/logo.png"
+                              alt="Header Logo"
+                              className="w-full max-h-36 object-contain p-2 bg-white"
+                            />
+                          </div>
+                        );
+                      })()}
 
                       {/* Text */}
                       <p className="text-xs leading-relaxed whitespace-pre-wrap break-words">
                         {previewPersonalizedText}
                       </p>
+
+                      {/* Interactive Buttons (Meta Templates) */}
+                      {useMetaTemplate && (() => {
+                        const currentTmpl = availableTemplates.find((t) => t.name === selectedTemplateName);
+                        if (!currentTmpl?.buttons || currentTmpl.buttons.length === 0) return null;
+                        return (
+                          <div className="pt-2 border-t border-emerald-200/60 flex flex-col gap-1.5 mt-1">
+                            {currentTmpl.buttons.map((btn, bIdx) => (
+                              <div
+                                key={bIdx}
+                                className="py-1.5 px-3 rounded-lg bg-white/90 border border-emerald-300 text-emerald-800 text-[11px] font-semibold text-center flex items-center justify-center gap-1.5 shadow-2xs"
+                              >
+                                {btn.type === 'PHONE_NUMBER' ? '📞' : btn.type === 'URL' ? '🌐' : '💬'} {btn.text}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
 
                       {/* Metadata / Checkmark */}
                       <div className="flex items-center justify-end gap-1 text-[10px] text-slate-500">
@@ -1861,6 +2223,247 @@ export default function BroadcastPage() {
                 onClick={() => setSelectedCampaign(null)}
               >
                 Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* WhatsApp Business Profile Manager Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150 my-8">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-500/20">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    WhatsApp Business Profile
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300 text-[10px]">
+                      Verified Meta Cloud API
+                    </Badge>
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Manage your public WhatsApp profile details displayed to your customers.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowProfileModal(false)}
+                className="text-slate-400 hover:text-slate-600 rounded-lg p-1.5 hover:bg-slate-100"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            {profileFeedback && (
+              <div
+                className={`p-3 rounded-xl text-xs flex items-center gap-2 border ${
+                  profileFeedback.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                    : 'bg-rose-50 text-rose-900 border-rose-200'
+                }`}
+              >
+                {profileFeedback.type === 'success' ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                )}
+                <span>{profileFeedback.text}</span>
+              </div>
+            )}
+
+            {isLoadingProfile ? (
+              <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-500">
+                <RefreshCw className="w-6 h-6 animate-spin text-emerald-600" />
+                <span className="text-xs font-medium">Fetching profile from Meta Cloud API...</span>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Account Header Badge */}
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-500 block text-[10px]">Connected Phone Number</span>
+                    <span className="font-mono font-bold text-slate-900 text-sm">
+                      {profileData.phoneNumber || '+91 79070 64848'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[10px]">Verified Display Name</span>
+                    <span className="font-semibold text-slate-800">
+                      {profileData.verifiedName || 'miscarchive'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[10px]">Phone Number ID</span>
+                    <span className="font-mono text-slate-600 text-[11px]">
+                      1284439638095450
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                  {/* About / Tagline */}
+                  <div className="md:col-span-2">
+                    <label className="font-semibold text-slate-700 block mb-1">
+                      Business About / Bio
+                    </label>
+                    <input
+                      type="text"
+                      value={profileData.about || ''}
+                      onChange={(e) => setProfileData({ ...profileData, about: e.target.value })}
+                      placeholder="e.g. Flumenx ConectOS - Intelligent Multi-Channel Workspace"
+                      maxLength={139}
+                      className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500"
+                    />
+                    <span className="text-[10px] text-slate-400 mt-0.5 block">
+                      Shown beneath your business name in contact info (Max 139 characters).
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <div className="md:col-span-2">
+                    <label className="font-semibold text-slate-700 block mb-1">
+                      Business Description
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={profileData.description || ''}
+                      onChange={(e) => setProfileData({ ...profileData, description: e.target.value })}
+                      placeholder="Describe your products, services, and company background..."
+                      maxLength={512}
+                      className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500"
+                    />
+                    <span className="text-[10px] text-slate-400 mt-0.5 block">
+                      Detailed business description shown under 'ABOUT' in WhatsApp (Max 512 characters).
+                    </span>
+                  </div>
+
+                  {/* Industry Category */}
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1">
+                      Business Category
+                    </label>
+                    <select
+                      value={profileData.vertical || 'PROF_SERVICES'}
+                      onChange={(e) => setProfileData({ ...profileData, vertical: e.target.value })}
+                      className="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white focus:ring-1 focus:ring-emerald-500"
+                    >
+                      <option value="PROF_SERVICES">Professional Services</option>
+                      <option value="RETAIL">Retail & Shopping</option>
+                      <option value="EDU">Education</option>
+                      <option value="ENTERTAIN">Entertainment & Media</option>
+                      <option value="HEALTH">Health & Medical</option>
+                      <option value="RESTAURANT">Restaurant & Food</option>
+                      <option value="TRAVEL">Travel & Hospitality</option>
+                      <option value="OTHER">Other / Miscellaneous</option>
+                    </select>
+                  </div>
+
+                  {/* Business Email */}
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1">
+                      Business Email
+                    </label>
+                    <input
+                      type="email"
+                      value={profileData.email || ''}
+                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                      placeholder="contact@yourdomain.com"
+                      className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Website */}
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1">
+                      Business Website
+                    </label>
+                    <input
+                      type="url"
+                      value={profileData.websites?.[0] || ''}
+                      onChange={(e) =>
+                        setProfileData({
+                          ...profileData,
+                          websites: [e.target.value, profileData.websites?.[1] || ''],
+                        })
+                      }
+                      placeholder="https://conectos.flumenx.in"
+                      className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Business Address */}
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1">
+                      Business Address
+                    </label>
+                    <input
+                      type="text"
+                      value={profileData.address || ''}
+                      onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
+                      placeholder="City, State, Country"
+                      className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Profile Photo & Display Name Notice */}
+                <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs space-y-1 text-amber-900">
+                  <p className="font-bold flex items-center gap-1.5 text-amber-950">
+                    <span>💡 How to Change Profile Picture (Avatar) & Display Name:</span>
+                  </p>
+                  <p className="text-[11px] leading-relaxed text-amber-800">
+                    Meta verifies business identity strictly. To change your <strong>Profile Photo</strong> or <strong>Display Name</strong>, open the official Meta WhatsApp Manager portal directly:
+                  </p>
+                  <div className="pt-1">
+                    <a
+                      href="https://business.facebook.com/wa/manage/phone-numbers/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-950 bg-amber-200/80 hover:bg-amber-300/80 px-2.5 py-1 rounded-md transition-colors"
+                    >
+                      Open Meta WhatsApp Manager <ExternalLink className="w-3 h-3 ml-0.5" />
+                    </a>
+                    <span className="text-[11px] text-amber-800 ml-2">
+                      (Select Phone Number &gt; Profile &gt; Upload Avatar)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowProfileModal(false)}
+                className="text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                disabled={isSavingProfile || isLoadingProfile}
+                onClick={handleSaveProfile}
+                className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1.5 shadow-sm"
+              >
+                {isSavingProfile ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    Saving to Meta...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    Save Profile to Meta
+                  </>
+                )}
               </Button>
             </div>
           </div>

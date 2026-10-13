@@ -64,6 +64,7 @@ export interface CreateBroadcastPayload {
   messageBody: string;
   templateName?: string;
   templateLanguage?: string;
+  templateVariables?: Record<string, string>;
   attachment?: BroadcastAttachment;
   recipients: Array<{
     name?: string;

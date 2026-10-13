@@ -15,6 +15,7 @@ export interface CreateBroadcastInput {
   messageBody: string;
   templateName?: string;
   templateLanguage?: string;
+  templateVariables?: Record<string, string>;
   attachment?: IBroadcastAttachment;
   recipients: Array<{
     name: string;
@@ -91,7 +92,10 @@ export class BroadcastService {
       channel: data.channel || 'whatsapp',
       messageBody: data.messageBody.trim(),
       templateName: data.templateName?.trim(),
-      templateLanguage: data.templateLanguage?.trim() || 'en_US',
+      templateLanguage:
+        data.templateLanguage?.trim() ||
+        (data.templateName?.startsWith('misc_') ? 'en' : 'en_US'),
+      templateVariables: data.templateVariables,
       attachment: data.attachment,
       totalRecipients: validRecipients.length,
       sentCount: 0,
@@ -134,6 +138,29 @@ export class BroadcastService {
           subject: `Broadcast: ${campaign.name}`,
         });
 
+        // Resolve dynamic template parameters for this recipient
+        const recipientVariableValues: Record<string, string> = {};
+        if (data.templateVariables) {
+          for (const [varKey, mappedCol] of Object.entries(data.templateVariables)) {
+            let val = '';
+            const lowerCol = (mappedCol || '').toLowerCase();
+            if (lowerCol.includes('name')) {
+              val = rec.name;
+            } else if (lowerCol.includes('phone') || lowerCol.includes('mobile')) {
+              val = rec.phone;
+            } else if (lowerCol.includes('email')) {
+              val = rec.email || '';
+            } else if (rec.customFields && rec.customFields[mappedCol]) {
+              val = String(rec.customFields[mappedCol]);
+            } else {
+              val = rec.name;
+            }
+            recipientVariableValues[varKey] = val || rec.name || 'Valued Customer';
+          }
+        }
+        if (!recipientVariableValues['name']) recipientVariableValues['name'] = rec.name;
+        if (!recipientVariableValues['1']) recipientVariableValues['1'] = rec.name;
+
         // Dispatch outbound message
         const message = await MessageService.sendMessage(
           clientId,
@@ -148,7 +175,11 @@ export class BroadcastService {
               ? {
                   type: 'template',
                   templateName: campaign.templateName,
-                  templateLanguage: campaign.templateLanguage || 'en_US',
+                  templateLanguage:
+                    campaign.templateLanguage ||
+                    (campaign.templateName.startsWith('misc_') ? 'en' : 'en_US'),
+                  recipientName: rec.name,
+                  variableValues: recipientVariableValues,
                 }
               : undefined,
           }

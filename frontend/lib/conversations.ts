@@ -286,6 +286,8 @@ export interface WhatsAppTemplateItem {
   headerFormat?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' | null;
   buttons?: Array<{ type: string; text: string; url?: string; phone_number?: string }>;
   components?: any[];
+  variables?: string[];
+  parameterFormat?: 'NAMED' | 'POSITIONAL';
 }
 
 export const getWhatsAppTemplatesApi = async (): Promise<WhatsAppTemplateItem[]> => {
@@ -338,6 +340,30 @@ export const uploadConversationAttachmentApi = async (file: {
 }): Promise<UploadAttachmentResult> => {
   const res = await apiClient.post<ApiResponse<UploadAttachmentResult>>('/conversations/upload', file);
   return res.data.data!;
+};
+
+export interface WhatsAppBusinessProfile {
+  phoneNumberId?: string;
+  phoneNumber?: string;
+  verifiedName?: string;
+  about?: string;
+  address?: string;
+  description?: string;
+  email?: string;
+  profile_picture_url?: string;
+  websites?: string[];
+  vertical?: string;
+  messaging_product?: string;
+}
+
+export const getWhatsAppBusinessProfileApi = async (): Promise<WhatsAppBusinessProfile> => {
+  const res = await apiClient.get<ApiResponse<{ profile: WhatsAppBusinessProfile }>>('/conversations/whatsapp/profile');
+  return res.data.data?.profile || {};
+};
+
+export const updateWhatsAppBusinessProfileApi = async (data: Partial<WhatsAppBusinessProfile>): Promise<boolean> => {
+  const res = await apiClient.post<ApiResponse<{ success: boolean }>>('/conversations/whatsapp/profile', data);
+  return res.data.data?.success || false;
 };
 
 

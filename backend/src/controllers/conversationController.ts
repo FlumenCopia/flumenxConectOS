@@ -491,38 +491,62 @@ export const getWhatsAppTemplates = async (req: Request, res: Response, next: Ne
       },
     ];
 
-    if (!provider || !provider.configuration?.accessToken) {
-      return sendSuccess(res, { templates: fallbackTemplates, count: fallbackTemplates.length }, 'Templates retrieved');
-    }
+    const accessToken =
+      provider?.configuration?.accessToken ||
+      'EAAXfy0sybgwBSg4zbyODVjmoDn5YUSC0MOzCZCMECFWPgOwx4EUc919ppIbrc95ay4w0SufSvOuDUhQo2YDm7VQYnx1eupnZAZCLWmGeTsdAxHaoMre7ZBME0W9NnLi2P3SOaAx5PNywTWHz6xlhnOG68odbZBwkGDWBh0tLoECgfZCzSC0ZBSMp6dZBHigzxQZDZD';
 
-    const { accessToken, wabaId } = provider.configuration;
-    if (!wabaId) {
-      return sendSuccess(res, { templates: fallbackTemplates, count: fallbackTemplates.length }, 'Templates retrieved');
-    }
+    const candidateWabas = Array.from(
+      new Set(
+        [
+          provider?.configuration?.wabaId,
+          '2381123346055633', // miscarchive (Live Phone)
+          '5747625935463466', // Test WhatsApp Business Account
+        ].filter(Boolean)
+      )
+    ) as string[];
 
     try {
-      const response = await fetch(`https://graph.facebook.com/v21.0/${wabaId}/message_templates?limit=100`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const templateMap = new Map<string, any>();
 
-      if (!response.ok) {
-        return sendSuccess(res, { templates: fallbackTemplates, count: fallbackTemplates.length }, 'Templates retrieved');
+      for (const wId of candidateWabas) {
+        try {
+          const response = await fetch(`https://graph.facebook.com/v21.0/${wId}/message_templates?limit=100`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          if (response.ok) {
+            const metaData = (await response.json()) as any;
+            for (const t of metaData.data || []) {
+              const key = `${t.name}_${t.language}`;
+              if (!templateMap.has(key) || t.status === 'APPROVED') {
+                  const bText = t.components?.find((c: any) => c.type === 'BODY')?.text || '';
+                  const varMatches = [...bText.matchAll(/\{\{([a-zA-Z0-9_]+)\}\}/g)].map((m) => m[1]);
+                  const uniqueVars = Array.from(new Set(varMatches));
+                  const isNamed = t.parameter_format === 'NAMED' || uniqueVars.some((v) => !/^\d+$/.test(v));
+
+                  templateMap.set(key, {
+                    id: t.id || t.name,
+                    name: t.name,
+                    status: t.status,
+                    category: t.category,
+                    language: t.language,
+                    bodyText: bText,
+                    buttons: t.components?.find((c: any) => c.type === 'BUTTONS')?.buttons || [],
+                    headerFormat: t.components?.find((c: any) => c.type === 'HEADER')?.format || null,
+                    components: t.components,
+                    variables: uniqueVars,
+                    parameterFormat: isNamed ? 'NAMED' : 'POSITIONAL',
+                  });
+              }
+            }
+          }
+        } catch {
+          // ignore single WABA error and continue
+        }
       }
 
-      const metaData = (await response.json()) as any;
-      const templates = (metaData.data || []).map((t: any) => ({
-        id: t.id || t.name,
-        name: t.name,
-        status: t.status,
-        category: t.category,
-        language: t.language,
-        bodyText: t.components?.find((c: any) => c.type === 'BODY')?.text || '',
-        buttons: t.components?.find((c: any) => c.type === 'BUTTONS')?.buttons || [],
-        headerFormat: t.components?.find((c: any) => c.type === 'HEADER')?.format || null,
-        components: t.components,
-      }));
+      const templates = Array.from(templateMap.values());
 
       if (!templates.some((t: any) => t.name === 'hello_world')) {
         templates.unshift(fallbackTemplates[0]);
@@ -532,6 +556,103 @@ export const getWhatsAppTemplates = async (req: Request, res: Response, next: Ne
     } catch (metaErr) {
       return sendSuccess(res, { templates: fallbackTemplates, count: fallbackTemplates.length }, 'Templates retrieved');
     }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Retrieves WhatsApp Business Profile from Meta Cloud API
+ */
+export const getWhatsAppBusinessProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    const provider = await CommunicationProvider.findOne({
+      clientId,
+      providerType: 'whatsapp',
+      status: 'active',
+    });
+
+    const accessToken =
+      provider?.configuration?.accessToken ||
+      'EAAXfy0sybgwBSg4zbyODVjmoDn5YUSC0MOzCZCMECFWPgOwx4EUc919ppIbrc95ay4w0SufSvOuDUhQo2YDm7VQYnx1eupnZAZCLWmGeTsdAxHaoMre7ZBME0W9NnLi2P3SOaAx5PNywTWHz6xlhnOG68odbZBwkGDWBh0tLoECgfZCzSC0ZBSMp6dZBHigzxQZDZD';
+    const phoneNumberId = provider?.configuration?.phoneNumberId || '1284439638095450';
+
+    const url = `https://graph.facebook.com/v22.0/${phoneNumberId}/whatsapp_business_profile?fields=about,address,description,email,profile_picture_url,websites,vertical`;
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (!response.ok) {
+      const err = (await response.json().catch(() => ({}))) as any;
+      throw new AppError(err.error?.message || 'Failed to fetch WhatsApp profile from Meta', 400);
+    }
+
+    const data = (await response.json()) as any;
+    const profile = data.data?.[0] || {};
+
+    return sendSuccess(
+      res,
+      {
+        profile: {
+          phoneNumberId,
+          phoneNumber: '+91 79070 64848',
+          verifiedName: 'miscarchive',
+          ...profile,
+        },
+      },
+      'WhatsApp business profile retrieved successfully'
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Updates WhatsApp Business Profile in Meta Cloud API
+ */
+export const updateWhatsAppBusinessProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    const provider = await CommunicationProvider.findOne({
+      clientId,
+      providerType: 'whatsapp',
+      status: 'active',
+    });
+
+    const accessToken =
+      provider?.configuration?.accessToken ||
+      'EAAXfy0sybgwBSg4zbyODVjmoDn5YUSC0MOzCZCMECFWPgOwx4EUc919ppIbrc95ay4w0SufSvOuDUhQo2YDm7VQYnx1eupnZAZCLWmGeTsdAxHaoMre7ZBME0W9NnLi2P3SOaAx5PNywTWHz6xlhnOG68odbZBwkGDWBh0tLoECgfZCzSC0ZBSMp6dZBHigzxQZDZD';
+    const phoneNumberId = provider?.configuration?.phoneNumberId || '1284439638095450';
+
+    const { about, description, address, email, vertical, websites } = req.body;
+
+    const payload: Record<string, any> = {
+      messaging_product: 'whatsapp',
+    };
+    if (about !== undefined) payload.about = about;
+    if (description !== undefined) payload.description = description;
+    if (address !== undefined) payload.address = address;
+    if (email !== undefined) payload.email = email;
+    if (vertical !== undefined) payload.vertical = vertical;
+    if (Array.isArray(websites)) payload.websites = websites.filter(Boolean);
+
+    const url = `https://graph.facebook.com/v22.0/${phoneNumberId}/whatsapp_business_profile`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const err = (await response.json().catch(() => ({}))) as any;
+      throw new AppError(err.error?.message || 'Failed to update WhatsApp profile in Meta', 400);
+    }
+
+    return sendSuccess(res, { success: true }, 'WhatsApp business profile updated successfully');
   } catch (error) {
     return next(error);
   }

@@ -75,21 +75,40 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
 
     if (isTemplate) {
       const templateName = params.metadata?.templateName || this.config.defaultTemplateName || 'hello_world';
+      const isEnglish = templateName === 'misc_website_view' || templateName === 'misc_test_utility_message';
       const templateLang =
         params.metadata?.templateLanguage ||
-        (templateName === 'misc_website_view' ? 'en' : this.config.defaultTemplateLanguage || 'en_US');
+        (isEnglish ? 'en' : this.config.defaultTemplateLanguage || 'en_US');
 
       let components = params.metadata?.components;
 
-      if (!components && templateName === 'misc_website_view') {
-        const recipientName = params.metadata?.recipientName || 'Valued Customer';
-        let headerImg = params.attachments?.[0]?.url || 'https://connectos.flumenx.in/images/logo.png';
-        if (!headerImg.startsWith('http://') && !headerImg.startsWith('https://')) {
-          headerImg = `https://connectos.flumenx.in${headerImg.startsWith('/') ? '' : '/'}${headerImg}`;
-        }
+      if (!components) {
+        const builtComponents: any[] = [];
+        const varVals = params.metadata?.variableValues || {};
+        const recipientName =
+          varVals['name'] ||
+          varVals['1'] ||
+          params.metadata?.recipientName ||
+          'Valued Customer';
 
-        components = [
-          {
+        // 1. Resolve Header Image (custom upload, URL override, or branding fallback)
+        let headerImg =
+          params.attachments?.[0]?.url ||
+          params.metadata?.headerImageUrl ||
+          (params.metadata?.headerFormat === 'IMAGE' ||
+            templateName === 'misc_website_view' ||
+            templateName === 'misc_test_utility_message' ||
+            templateName === 'jaspers_market_image_cta_v1'
+            ? 'https://connectos.flumenx.in/images/logo.png'
+            : null);
+
+        if (headerImg) {
+          if (!headerImg.startsWith('http://') && !headerImg.startsWith('https://')) {
+            const baseUrl = process.env.APP_URL || 'https://connectos.flumenx.in';
+            headerImg = `${baseUrl.replace(/\/$/, '')}${headerImg.startsWith('/') ? '' : '/'}${headerImg}`;
+          }
+
+          builtComponents.push({
             type: 'header',
             parameters: [
               {
@@ -97,17 +116,52 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
                 image: { link: headerImg },
               },
             ],
-          },
-          {
-            type: 'body',
-            parameters: [
-              {
+          });
+        }
+
+        // 2. Resolve Body Variables ({{1}}, {{2}}, {{name}}, etc.)
+        if (templateName !== 'hello_world' && templateName !== 'misc_test_utility_message') {
+          const keys = Object.keys(varVals);
+          if (keys.length > 0) {
+            const isAllNumeric = keys.every((k) => /^\d+$/.test(k));
+            const sortedKeys = isAllNumeric
+              ? [...keys].sort((a, b) => Number(a) - Number(b))
+              : keys;
+
+            const bodyParams = sortedKeys.map((k) => {
+              const val = String(varVals[k] || recipientName || 'Valued Customer');
+              const paramObj: Record<string, any> = {
                 type: 'text',
-                text: recipientName,
-              },
-            ],
-          },
-        ];
+                text: val,
+              };
+              if (!isAllNumeric && params.metadata?.parameterFormat === 'NAMED') {
+                paramObj.parameter_name = k;
+              }
+              return paramObj;
+            });
+
+            if (bodyParams.length > 0) {
+              builtComponents.push({
+                type: 'body',
+                parameters: bodyParams,
+              });
+            }
+          } else if (templateName === 'misc_website_view' || params.metadata?.recipientName) {
+            builtComponents.push({
+              type: 'body',
+              parameters: [
+                {
+                  type: 'text',
+                  text: recipientName,
+                },
+              ],
+            });
+          }
+        }
+
+        if (builtComponents.length > 0) {
+          components = builtComponents;
+        }
       }
 
       payload = {

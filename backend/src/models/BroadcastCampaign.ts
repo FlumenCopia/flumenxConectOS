@@ -29,6 +29,7 @@ export interface IBroadcastCampaign extends Document {
   messageBody: string;
   templateName?: string;
   templateLanguage?: string;
+  templateVariables?: Record<string, string>;
   attachment?: IBroadcastAttachment;
   totalRecipients: number;
   sentCount: number;
@@ -98,6 +99,10 @@ const BroadcastCampaignSchema = new Schema<IBroadcastCampaign>(
       type: String,
       required: false,
       default: 'en_US',
+    },
+    templateVariables: {
+      type: Schema.Types.Mixed,
+      default: {},
     },
     attachment: {
       type: BroadcastAttachmentSchema,

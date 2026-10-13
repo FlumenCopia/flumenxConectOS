@@ -414,10 +414,12 @@ function UnifiedInboxContent() {
   };
 
   // Handle Send WhatsApp Template
-  const handleSendTemplate = async (templateName: string = 'hello_world', templateLanguage: string = 'en_US') => {
+  const handleSendTemplate = async (templateName: string = 'hello_world', templateLanguage?: string) => {
     if (!activeConversationId || isSending) return;
     setIsSending(true);
     setShowTemplateModal(false);
+    const lang = templateLanguage || (templateName === 'misc_website_view' ? 'en' : 'en_US');
+    const recipientName = activeConversation?.contactId?.name || 'Valued Customer';
     try {
       const newMsg = await sendMessageApi(activeConversationId, {
         body: `[Template: ${templateName}]`,
@@ -425,7 +427,8 @@ function UnifiedInboxContent() {
         metadata: {
           type: 'template',
           templateName,
-          templateLanguage,
+          templateLanguage: lang,
+          recipientName,
         },
       });
 
@@ -1142,7 +1145,54 @@ function UnifiedInboxContent() {
                             </div>
                           )}
 
-                          {msg.body && <p className="whitespace-pre-line">{msg.body}</p>}
+                          {msg.body?.includes('misc_website_view') ? (
+                            <div className="space-y-2 text-left">
+                              <div className="rounded-xl overflow-hidden border border-emerald-400/40 bg-emerald-950/30">
+                                <img
+                                  src="https://connectos.flumenx.in/images/logo.png"
+                                  alt="Misc Archive"
+                                  className="w-full max-h-36 object-contain bg-white/10 p-2"
+                                  onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                                />
+                                <div className="p-3 text-xs leading-relaxed">
+                                  <div className="flex items-center gap-1.5 text-emerald-300 font-bold mb-1.5 text-[11px]">
+                                    <Sparkles className="w-3.5 h-3.5" />
+                                    <span>Misc Archive — Official Notification</span>
+                                  </div>
+                                  <p className="text-white/95">
+                                    Hi {activeConversation?.contactId?.name || 'there'}, greetings from Misc Archive! 🎉
+                                  </p>
+                                  <p className="mt-1.5 text-white/85 text-[11px]">
+                                    We&apos;re excited to share our latest collection and special offers with you. Explore our attached catalog to discover more and check out the exclusive deals available.
+                                  </p>
+                                  <p className="mt-1.5 text-white/75 text-[10px]">
+                                    Have any questions? Simply reply to this message, and our team will be happy to assist you!
+                                  </p>
+                                  <div className="mt-2.5 pt-2 border-t border-white/20">
+                                    <a
+                                      href="https://miscarchive.com/"
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-emerald-900 font-bold text-xs shadow hover:bg-emerald-50 transition"
+                                    >
+                                      <span>🔗 Visit website</span>
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-[10px] text-white/60 block font-mono">[Template: misc_website_view]</span>
+                            </div>
+                          ) : msg.body?.includes('hello_world') ? (
+                            <div className="space-y-1.5 text-left">
+                              <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-400/40 text-xs leading-relaxed text-white/95">
+                                <p className="font-bold text-emerald-300 text-[11px] mb-1">👋 Welcome Greeting (hello_world)</p>
+                                <p>Welcome and congratulations!! This message demonstrates your ability to send a WhatsApp message notification from the Cloud API, hosted by Meta. Thank you for taking the time to test with us.</p>
+                              </div>
+                              <span className="text-[10px] text-white/60 block font-mono">[Template: hello_world]</span>
+                            </div>
+                          ) : msg.body ? (
+                            <p className="whitespace-pre-line">{msg.body}</p>
+                          ) : null}
 
                           {/* Failure banner with Retry */}
                           {isFailed && (
@@ -1241,7 +1291,56 @@ function UnifiedInboxContent() {
               )}
             </div>
 
-            {/* Message Composer Bar */}
+            {/* Approved Meta Templates Quick Bar (1-Click Send for Cold Contacts) */}
+            {(replyChannel === 'whatsapp' || activeConversation?.channel === 'whatsapp') && (
+              <div className="px-3.5 py-2.5 bg-gradient-to-r from-emerald-50/90 via-teal-50/70 to-slate-50 border-t border-emerald-200/70 flex items-center justify-between gap-2.5 flex-wrap">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="text-xs font-bold text-emerald-950">Approved Meta Templates:</span>
+                  <span className="text-[11px] text-emerald-700 hidden sm:inline">
+                    (Bypass 24-hr restriction • Deliver 24/7)
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  {(availableTemplates.length > 0
+                    ? availableTemplates
+                    : [
+                        { id: 'misc_website_view', name: 'misc_website_view', language: 'en', buttons: [{ text: 'Visit website' }] },
+                        { id: 'hello_world', name: 'hello_world', language: 'en_US', buttons: [] },
+                      ]
+                  ).map((tmpl) => (
+                    <button
+                      key={tmpl.id || tmpl.name}
+                      type="button"
+                      onClick={() => handleSendTemplate(tmpl.name, tmpl.language)}
+                      disabled={!activeConversationId || isSending}
+                      title={`Instantly send ${tmpl.name} template with ${activeConversation?.contactId?.name || 'recipient'}'s name`}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-emerald-300 text-emerald-900 hover:bg-emerald-700 hover:text-white hover:border-emerald-700 transition shadow-2xs flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
+                    >
+                      <span>{tmpl.name === 'misc_website_view' ? '🚀' : '👋'}</span>
+                      <span className="font-mono text-[11px]">{tmpl.name}</span>
+                      {tmpl.buttons && tmpl.buttons.length > 0 && (
+                        <span className="text-[10px] px-1 py-0.2 rounded bg-emerald-100 text-emerald-800 font-sans font-bold">
+                          +Button
+                        </span>
+                      )}
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={() => setShowTemplateModal(true)}
+                    disabled={isSending}
+                    className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 hover:underline px-1.5 py-1 flex items-center gap-1"
+                  >
+                    <span>All Templates ({availableTemplates.length || 2})</span>
+                    <span>→</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Message Composer Bar */}
             <div className="p-2.5 sm:p-4 bg-white border-t border-slate-200">
               {/* Attachment Preview (if selected) */}
@@ -1725,11 +1824,25 @@ function UnifiedInboxContent() {
                       {/* WhatsApp preview card */}
                       <div className="p-3 bg-emerald-50/50 border border-emerald-100 rounded-lg text-xs text-slate-700 whitespace-pre-line leading-relaxed font-sans space-y-2">
                         {tmpl.headerFormat && (
-                          <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-800 bg-white/80 px-2 py-1 rounded border border-emerald-200 w-fit">
-                            <span>🖼️ Header: {tmpl.headerFormat}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-semibold text-emerald-800 bg-white/80 px-2 py-0.5 rounded border border-emerald-200">
+                              🖼️ Header ({tmpl.headerFormat})
+                            </span>
+                            {tmpl.headerFormat === 'IMAGE' && (
+                              <img
+                                src="https://connectos.flumenx.in/images/logo.png"
+                                alt="Header preview"
+                                className="h-10 w-auto object-contain rounded bg-white p-0.5 border border-emerald-200"
+                              />
+                            )}
                           </div>
                         )}
-                        <div>{tmpl.bodyText || 'Standard Meta approved notification.'}</div>
+                        <div className="font-sans">
+                          {(tmpl.bodyText || 'Standard Meta approved notification.').replace(
+                            '{{1}}',
+                            activeConversation?.contactId?.name || 'Valued Customer'
+                          )}
+                        </div>
                         {tmpl.buttons && tmpl.buttons.length > 0 && (
                           <div className="pt-2 border-t border-emerald-200/60 flex flex-wrap gap-1.5">
                             {tmpl.buttons.map((btn, bIdx) => (
@@ -1757,10 +1870,10 @@ function UnifiedInboxContent() {
                         variant="primary"
                         disabled={!activeConversationId || isSending}
                         onClick={() => handleSendTemplate(tmpl.name, tmpl.language)}
-                        className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs h-8 px-3"
+                        className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs h-8 px-3 shadow-sm"
                       >
                         <Send className="w-3 h-3 mr-1" />
-                        Send Template to Contact
+                        Send Template to {activeConversation?.contactId?.name || 'Contact'}
                       </Button>
                     </div>
                   </div>

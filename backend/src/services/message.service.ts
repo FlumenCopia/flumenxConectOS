@@ -123,13 +123,18 @@ export class MessageService {
     // 6. Dispatch through Provider Manager
     const provider = await ProviderManager.getProvider(clientId, channel);
     try {
+      const mergedMetadata = {
+        ...data.metadata,
+        recipientName: data.metadata?.recipientName || contact?.name || 'Valued Customer',
+      };
+
       const sendResult = await provider.sendMessage({
         to: recipientTarget,
         channel,
         body: sanitizedBody,
         attachments: data.attachments,
         idempotencyKey: data.idempotencyKey,
-        metadata: data.metadata,
+        metadata: mergedMetadata,
       });
 
       if (sendResult.success) {

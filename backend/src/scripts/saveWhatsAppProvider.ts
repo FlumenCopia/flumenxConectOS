@@ -24,8 +24,9 @@ async function run() {
             configuration: {
               phoneNumberId,
               accessToken,
-              defaultTemplateName: 'hello_world',
-              defaultTemplateLanguage: 'en_US',
+              wabaId: '2381123346055633',
+              defaultTemplateName: 'misc_website_view',
+              defaultTemplateLanguage: 'en',
             },
           },
         },

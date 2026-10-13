@@ -6,6 +6,7 @@ export const createBroadcastSchema = z.object({
   messageBody: z.string().min(1, 'Message body is required'),
   templateName: z.string().optional(),
   templateLanguage: z.string().optional(),
+  templateVariables: z.record(z.string()).optional(),
   attachment: z
     .object({
       name: z.string(),

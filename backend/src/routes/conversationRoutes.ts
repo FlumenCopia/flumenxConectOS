@@ -19,6 +19,8 @@ import {
   deleteCommunicationProvider,
   testCommunicationProvider,
   getWhatsAppTemplates,
+  getWhatsAppBusinessProfile,
+  updateWhatsAppBusinessProfile,
   uploadConversationAttachment,
   getQuickReplies,
   createQuickReply,
@@ -49,6 +51,10 @@ router.post('/', requirePermission('conversations.create'), validate(createConve
 // WhatsApp Meta Templates
 router.get('/templates', requirePermission('conversations.view'), getWhatsAppTemplates);
 router.get('/templates/whatsapp', requirePermission('conversations.view'), getWhatsAppTemplates);
+
+// WhatsApp Business Profile
+router.get('/whatsapp/profile', requirePermission('conversations.view'), getWhatsAppBusinessProfile);
+router.post('/whatsapp/profile', requirePermission('conversations.create'), updateWhatsAppBusinessProfile);
 
 // Media Upload (Image, Video, Audio, Document)
 router.post('/upload', requirePermission('conversations.create'), uploadConversationAttachment);
