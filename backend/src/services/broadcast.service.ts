@@ -140,7 +140,7 @@ export class BroadcastService {
 
         // Resolve dynamic template parameters for this recipient
         const recipientVariableValues: Record<string, string> = {};
-        if (data.templateVariables) {
+        if (data.templateVariables && Object.keys(data.templateVariables).length > 0) {
           for (const [varKey, mappedCol] of Object.entries(data.templateVariables)) {
             let val = '';
             const lowerCol = (mappedCol || '').toLowerCase();
@@ -157,9 +157,9 @@ export class BroadcastService {
             }
             recipientVariableValues[varKey] = val || rec.name || 'Valued Customer';
           }
+        } else {
+          recipientVariableValues['1'] = rec.name || 'Valued Customer';
         }
-        if (!recipientVariableValues['name']) recipientVariableValues['name'] = rec.name;
-        if (!recipientVariableValues['1']) recipientVariableValues['1'] = rec.name;
 
         // Dispatch outbound message
         const message = await MessageService.sendMessage(

@@ -120,13 +120,31 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
         }
 
         // 2. Resolve Body Variables ({{1}}, {{2}}, {{name}}, etc.)
-        if (templateName !== 'hello_world' && templateName !== 'misc_test_utility_message') {
+        if (templateName === 'misc_website_view') {
+          // misc_website_view requires exactly 1 body parameter: {{1}} (Customer name)
+          const val = String(varVals['1'] || varVals['name'] || recipientName || 'Valued Customer');
+          builtComponents.push({
+            type: 'body',
+            parameters: [
+              {
+                type: 'text',
+                text: val,
+              },
+            ],
+          });
+        } else if (templateName !== 'hello_world' && templateName !== 'misc_test_utility_message') {
           const keys = Object.keys(varVals);
           if (keys.length > 0) {
-            const isAllNumeric = keys.every((k) => /^\d+$/.test(k));
+            // Deduplicate if both numeric '1' and named 'name' alias are present
+            let filteredKeys = keys;
+            if (filteredKeys.includes('1') && filteredKeys.includes('name')) {
+              filteredKeys = filteredKeys.filter((k) => k !== 'name');
+            }
+
+            const isAllNumeric = filteredKeys.every((k) => /^\d+$/.test(k));
             const sortedKeys = isAllNumeric
-              ? [...keys].sort((a, b) => Number(a) - Number(b))
-              : keys;
+              ? [...filteredKeys].sort((a, b) => Number(a) - Number(b))
+              : filteredKeys;
 
             const bodyParams = sortedKeys.map((k) => {
               const val = String(varVals[k] || recipientName || 'Valued Customer');
@@ -146,7 +164,7 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
                 parameters: bodyParams,
               });
             }
-          } else if (templateName === 'misc_website_view' || params.metadata?.recipientName) {
+          } else if (params.metadata?.recipientName) {
             builtComponents.push({
               type: 'body',
               parameters: [

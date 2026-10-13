@@ -320,6 +320,14 @@ export const createQuickReplyApi = async (data: {
   return res.data.data!;
 };
 
+export const updateQuickReplyApi = async (
+  id: string,
+  data: { title?: string; body?: string; category?: string; channel?: string }
+): Promise<QuickReplyItem> => {
+  const res = await apiClient.put<ApiResponse<QuickReplyItem>>(`/conversations/quick-replies/${id}`, data);
+  return res.data.data!;
+};
+
 export const deleteQuickReplyApi = async (id: string): Promise<string> => {
   const res = await apiClient.delete<ApiResponse<{ deletedId: string }>>(`/conversations/quick-replies/${id}`);
   return res.data.data!.deletedId;
@@ -364,6 +372,22 @@ export const getWhatsAppBusinessProfileApi = async (): Promise<WhatsAppBusinessP
 export const updateWhatsAppBusinessProfileApi = async (data: Partial<WhatsAppBusinessProfile>): Promise<boolean> => {
   const res = await apiClient.post<ApiResponse<{ success: boolean }>>('/conversations/whatsapp/profile', data);
   return res.data.data?.success || false;
+};
+
+export const uploadWhatsAppProfilePictureApi = async (
+  base64Data: string,
+  mimeType?: string
+): Promise<boolean> => {
+  const res = await apiClient.post<ApiResponse<{ success: boolean }>>(
+    '/conversations/whatsapp/profile-picture',
+    { base64Data, mimeType }
+  );
+  return res.data.data?.success || false;
+};
+
+export const getWhatsAppHealthApi = async (): Promise<any> => {
+  const res = await apiClient.get<ApiResponse<{ health: any }>>('/conversations/whatsapp/health');
+  return res.data.data?.health || {};
 };
 
 

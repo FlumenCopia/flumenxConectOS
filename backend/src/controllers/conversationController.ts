@@ -519,7 +519,8 @@ export const getWhatsAppTemplates = async (req: Request, res: Response, next: Ne
             const metaData = (await response.json()) as any;
             for (const t of metaData.data || []) {
               const key = `${t.name}_${t.language}`;
-              if (!templateMap.has(key) || t.status === 'APPROVED') {
+              const existing = templateMap.get(key);
+              if (!existing || (existing.status !== 'APPROVED' && t.status === 'APPROVED')) {
                   const bText = t.components?.find((c: any) => c.type === 'BODY')?.text || '';
                   const varMatches = [...bText.matchAll(/\{\{([a-zA-Z0-9_]+)\}\}/g)].map((m) => m[1]);
                   const uniqueVars = Array.from(new Set(varMatches));
@@ -659,6 +660,110 @@ export const updateWhatsAppBusinessProfile = async (req: Request, res: Response,
 };
 
 /**
+ * Uploads profile picture / avatar to Meta WhatsApp Cloud API via Resumable Upload
+ */
+export const uploadWhatsAppProfilePicture = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    const provider = await CommunicationProvider.findOne({
+      clientId,
+      providerType: 'whatsapp',
+      status: 'active',
+    });
+
+    const accessToken =
+      provider?.configuration?.accessToken ||
+      'EAAXfy0sybgwBSg4zbyODVjmoDn5YUSC0MOzCZCMECFWPgOwx4EUc919ppIbrc95ay4w0SufSvOuDUhQo2YDm7VQYnx1eupnZAZCLWmGeTsdAxHaoMre7ZBME0W9NnLi2P3SOaAx5PNywTWHz6xlhnOG68odbZBwkGDWBh0tLoECgfZCzSC0ZBSMp6dZBHigzxQZDZD';
+    const phoneNumberId = provider?.configuration?.phoneNumberId || '1284439638095450';
+    const appId = '1653439116504588';
+
+    const { base64Data, mimeType } = req.body;
+    if (!base64Data) {
+      throw new AppError('Image file data is required', 400);
+    }
+
+    const cleanBase64 = base64Data.replace(/^data:[^;]+;base64,/, '');
+    const buffer = Buffer.from(cleanBase64, 'base64');
+    const imageType = mimeType || 'image/jpeg';
+
+    // Step 1: Create Resumable Upload Session
+    const sessionRes = await fetch(
+      `https://graph.facebook.com/v22.0/${appId}/uploads?file_length=${buffer.length}&file_type=${encodeURIComponent(imageType)}&access_token=${accessToken}`,
+      { method: 'POST' }
+    );
+    const sessionData = (await sessionRes.json()) as any;
+    if (!sessionRes.ok || !sessionData.id) {
+      throw new AppError(sessionData.error?.message || 'Failed to initiate Meta upload session', 400);
+    }
+
+    // Step 2: Upload file binary to the session
+    const uploadRes = await fetch(`https://graph.facebook.com/v22.0/${sessionData.id}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `OAuth ${accessToken}`,
+        file_offset: '0',
+        'Content-Type': 'application/octet-stream',
+      },
+      body: buffer,
+    });
+    const uploadData = (await uploadRes.json()) as any;
+    if (!uploadRes.ok || !uploadData.h) {
+      throw new AppError(uploadData.error?.message || 'Failed to upload image to Meta', 400);
+    }
+
+    // Step 3: Attach profile_picture_handle to WhatsApp Business Profile
+    const profileRes = await fetch(`https://graph.facebook.com/v22.0/${phoneNumberId}/whatsapp_business_profile`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        profile_picture_handle: uploadData.h,
+      }),
+    });
+    const profileData = (await profileRes.json()) as any;
+    if (!profileRes.ok) {
+      throw new AppError(profileData.error?.message || 'Failed to set WhatsApp profile photo in Meta', 400);
+    }
+
+    return sendSuccess(res, { success: true }, 'WhatsApp profile photo updated successfully');
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Retrieves WhatsApp account quality rating, verification status, and limits
+ */
+export const getWhatsAppHealth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    const provider = await CommunicationProvider.findOne({
+      clientId,
+      providerType: 'whatsapp',
+      status: 'active',
+    });
+
+    const accessToken =
+      provider?.configuration?.accessToken ||
+      'EAAXfy0sybgwBSg4zbyODVjmoDn5YUSC0MOzCZCMECFWPgOwx4EUc919ppIbrc95ay4w0SufSvOuDUhQo2YDm7VQYnx1eupnZAZCLWmGeTsdAxHaoMre7ZBME0W9NnLi2P3SOaAx5PNywTWHz6xlhnOG68odbZBwkGDWBh0tLoECgfZCzSC0ZBSMp6dZBHigzxQZDZD';
+    const phoneNumberId = provider?.configuration?.phoneNumberId || '1284439638095450';
+
+    const phoneRes = await fetch(
+      `https://graph.facebook.com/v22.0/${phoneNumberId}?fields=verified_name,display_phone_number,quality_rating,code_verification_status,name_status,messaging_limit_tier`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    const phoneInfo = (await phoneRes.json()) as any;
+
+    return sendSuccess(res, { health: phoneInfo }, 'WhatsApp health retrieved');
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
  * Uploads media attachment (image, audio, video, document) for WhatsApp / Conversation messages
  */
 export const uploadConversationAttachment = async (req: Request, res: Response, next: NextFunction) => {
@@ -780,6 +885,33 @@ export const createQuickReply = async (req: Request, res: Response, next: NextFu
     });
 
     return sendSuccess(res, quickReply, 'Quick reply created successfully', 201);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Updates an existing quick reply
+ */
+export const updateQuickReply = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const clientId = await resolveScopeClientId(req);
+    const { id } = req.params;
+    const { title, body, category, channel, tags } = req.body;
+
+    const quickReply = await QuickReply.findOne({ _id: id, clientId });
+    if (!quickReply) {
+      throw new AppError('Quick reply not found or access denied', 404);
+    }
+
+    if (title !== undefined) quickReply.title = title.trim();
+    if (body !== undefined) quickReply.body = body.trim();
+    if (category !== undefined) quickReply.category = category.trim();
+    if (channel !== undefined) quickReply.channel = channel;
+    if (tags !== undefined) quickReply.tags = tags;
+
+    await quickReply.save();
+    return sendSuccess(res, quickReply, 'Quick reply updated successfully');
   } catch (error) {
     return next(error);
   }

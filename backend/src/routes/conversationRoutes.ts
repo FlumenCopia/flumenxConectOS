@@ -21,9 +21,12 @@ import {
   getWhatsAppTemplates,
   getWhatsAppBusinessProfile,
   updateWhatsAppBusinessProfile,
+  uploadWhatsAppProfilePicture,
+  getWhatsAppHealth,
   uploadConversationAttachment,
   getQuickReplies,
   createQuickReply,
+  updateQuickReply,
   deleteQuickReply,
 } from '../controllers/conversationController';
 import { requireAuth } from '../middleware/authMiddleware';
@@ -52,9 +55,11 @@ router.post('/', requirePermission('conversations.create'), validate(createConve
 router.get('/templates', requirePermission('conversations.view'), getWhatsAppTemplates);
 router.get('/templates/whatsapp', requirePermission('conversations.view'), getWhatsAppTemplates);
 
-// WhatsApp Business Profile
+// WhatsApp Business Profile & Account Health
 router.get('/whatsapp/profile', requirePermission('conversations.view'), getWhatsAppBusinessProfile);
 router.post('/whatsapp/profile', requirePermission('conversations.create'), updateWhatsAppBusinessProfile);
+router.post('/whatsapp/profile-picture', requirePermission('conversations.create'), uploadWhatsAppProfilePicture);
+router.get('/whatsapp/health', requirePermission('conversations.view'), getWhatsAppHealth);
 
 // Media Upload (Image, Video, Audio, Document)
 router.post('/upload', requirePermission('conversations.create'), uploadConversationAttachment);
@@ -62,6 +67,7 @@ router.post('/upload', requirePermission('conversations.create'), uploadConversa
 // Predefined Messages / Quick Replies
 router.get('/quick-replies', requirePermission('conversations.view'), getQuickReplies);
 router.post('/quick-replies', requirePermission('conversations.create'), createQuickReply);
+router.put('/quick-replies/:id', requirePermission('conversations.create'), updateQuickReply);
 router.delete('/quick-replies/:id', requirePermission('conversations.manage_status'), deleteQuickReply);
 
 // Channel Communication Provider Management

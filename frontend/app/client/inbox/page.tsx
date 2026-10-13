@@ -40,6 +40,8 @@ import {
   Music,
   Download,
   Image as ImageIcon,
+  Edit3,
+  Layers,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -70,6 +72,7 @@ import {
   QuickReplyItem,
   getQuickRepliesApi,
   createQuickReplyApi,
+  updateQuickReplyApi,
   deleteQuickReplyApi,
   uploadConversationAttachmentApi,
   UploadAttachmentResult,
@@ -379,6 +382,44 @@ function UnifiedInboxContent() {
     setShowQuickRepliesPopover(false);
   };
 
+  const [editingQuickReplyId, setEditingQuickReplyId] = useState<string | null>(null);
+  const [editQuickReplyTitle, setEditQuickReplyTitle] = useState('');
+  const [editQuickReplyBody, setEditQuickReplyBody] = useState('');
+  const [editQuickReplyCategory, setEditQuickReplyCategory] = useState('General');
+  const [isUpdatingQuickReply, setIsUpdatingQuickReply] = useState(false);
+
+  const handleStartEditQuickReply = (qr: QuickReplyItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingQuickReplyId(qr._id);
+    setEditQuickReplyTitle(qr.title);
+    setEditQuickReplyBody(qr.body);
+    setEditQuickReplyCategory(qr.category || 'General');
+    setShowAddQuickReplyForm(false);
+  };
+
+  const handleUpdateQuickReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingQuickReplyId || !editQuickReplyTitle.trim() || !editQuickReplyBody.trim()) {
+      alert('Please fill in both a title and message text.');
+      return;
+    }
+    setIsUpdatingQuickReply(true);
+    try {
+      const updated = await updateQuickReplyApi(editingQuickReplyId, {
+        title: editQuickReplyTitle.trim(),
+        body: editQuickReplyBody.trim(),
+        category: editQuickReplyCategory.trim(),
+        channel: replyChannel,
+      });
+      setQuickReplies((prev) => prev.map((q) => (q._id === editingQuickReplyId ? updated : q)));
+      setEditingQuickReplyId(null);
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to update quick reply');
+    } finally {
+      setIsUpdatingQuickReply(false);
+    }
+  };
+
   const handleCreateQuickReply = async () => {
     if (!newQuickReplyTitle.trim() || !newQuickReplyBody.trim()) {
       alert('Please fill in both a title and message text for the quick reply.');
@@ -408,6 +449,7 @@ function UnifiedInboxContent() {
     try {
       await deleteQuickReplyApi(id);
       setQuickReplies((prev) => prev.filter((r) => r._id !== id));
+      if (editingQuickReplyId === id) setEditingQuickReplyId(null);
     } catch (err: any) {
       alert(err?.response?.data?.message || 'Failed to delete quick reply');
     }
@@ -738,7 +780,7 @@ function UnifiedInboxContent() {
           <div className="mt-1.5 space-y-1">
             {[
               { id: 'all', label: 'All Priorities' },
-              { id: 'urgent', label: '🔥 Urgent' },
+              { id: 'urgent', label: 'Urgent' },
               { id: 'high', label: 'High' },
               { id: 'medium', label: 'Medium' },
             ].map((p) => (
@@ -825,7 +867,10 @@ function UnifiedInboxContent() {
                   : 'bg-sage-100 text-sage-700 hover:bg-sage-200'
               }`}
             >
-              🔴 Unread {counts.unread > 0 ? `(${counts.unread})` : ''}
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block" />
+                Unread {counts.unread > 0 ? `(${counts.unread})` : ''}
+              </span>
             </button>
             <button
               type="button"
@@ -1009,7 +1054,7 @@ function UnifiedInboxContent() {
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
-                  <option value="urgent">🔥 Urgent</option>
+                  <option value="urgent">Urgent</option>
                 </select>
 
                 {/* Assignment selector (hidden on mobile) */}
@@ -1156,11 +1201,11 @@ function UnifiedInboxContent() {
                                 />
                                 <div className="p-3 text-xs leading-relaxed">
                                   <div className="flex items-center gap-1.5 text-emerald-300 font-bold mb-1.5 text-[11px]">
-                                    <Sparkles className="w-3.5 h-3.5" />
+                                    <Layers className="w-3.5 h-3.5" />
                                     <span>Misc Archive — Official Notification</span>
                                   </div>
                                   <p className="text-white/95">
-                                    Hi {activeConversation?.contactId?.name || 'there'}, greetings from Misc Archive! 🎉
+                                    Hi {activeConversation?.contactId?.name || 'there'}, greetings from Misc Archive.
                                   </p>
                                   <p className="mt-1.5 text-white/85 text-[11px]">
                                     We&apos;re excited to share our latest collection and special offers with you. Explore our attached catalog to discover more and check out the exclusive deals available.
@@ -1175,7 +1220,8 @@ function UnifiedInboxContent() {
                                       rel="noreferrer"
                                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-emerald-900 font-bold text-xs shadow hover:bg-emerald-50 transition"
                                     >
-                                      <span>🔗 Visit website</span>
+                                      <ExternalLink className="w-3.5 h-3.5" />
+                                      <span>Visit website</span>
                                     </a>
                                   </div>
                                 </div>
@@ -1185,7 +1231,7 @@ function UnifiedInboxContent() {
                           ) : msg.body?.includes('hello_world') ? (
                             <div className="space-y-1.5 text-left">
                               <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-400/40 text-xs leading-relaxed text-white/95">
-                                <p className="font-bold text-emerald-300 text-[11px] mb-1">👋 Welcome Greeting (hello_world)</p>
+                                <p className="font-bold text-emerald-300 text-[11px] mb-1">Welcome Greeting (hello_world)</p>
                                 <p>Welcome and congratulations!! This message demonstrates your ability to send a WhatsApp message notification from the Cloud API, hosted by Meta. Thank you for taking the time to test with us.</p>
                               </div>
                               <span className="text-[10px] text-white/60 block font-mono">[Template: hello_world]</span>
@@ -1293,16 +1339,13 @@ function UnifiedInboxContent() {
 
             {/* Approved Meta Templates Quick Bar (1-Click Send for Cold Contacts) */}
             {(replyChannel === 'whatsapp' || activeConversation?.channel === 'whatsapp') && (
-              <div className="px-3.5 py-2.5 bg-gradient-to-r from-emerald-50/90 via-teal-50/70 to-slate-50 border-t border-emerald-200/70 flex items-center justify-between gap-2.5 flex-wrap">
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="text-xs font-bold text-emerald-950">Approved Meta Templates:</span>
-                  <span className="text-[11px] text-emerald-700 hidden sm:inline">
-                    (Bypass 24-hr restriction • Deliver 24/7)
-                  </span>
+              <div className="px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 overflow-x-auto scrollbar-none flex-nowrap">
+                <div className="flex items-center gap-1.5 shrink-0 text-slate-700">
+                  <Layers className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span className="text-[11px] font-semibold">Meta Templates:</span>
                 </div>
 
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5 shrink-0">
                   {(availableTemplates.length > 0
                     ? availableTemplates
                     : [
@@ -1316,13 +1359,12 @@ function UnifiedInboxContent() {
                       onClick={() => handleSendTemplate(tmpl.name, tmpl.language)}
                       disabled={!activeConversationId || isSending}
                       title={`Instantly send ${tmpl.name} template with ${activeConversation?.contactId?.name || 'recipient'}'s name`}
-                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-emerald-300 text-emerald-900 hover:bg-emerald-700 hover:text-white hover:border-emerald-700 transition shadow-2xs flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
+                      className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-800 hover:bg-emerald-50 hover:text-emerald-900 hover:border-emerald-300 transition shadow-2xs flex items-center gap-1.5 shrink-0 active:scale-95 disabled:opacity-50"
                     >
-                      <span>{tmpl.name === 'misc_website_view' ? '🚀' : '👋'}</span>
-                      <span className="font-mono text-[11px]">{tmpl.name}</span>
+                      <span className="font-mono text-[10px]">{tmpl.name}</span>
                       {tmpl.buttons && tmpl.buttons.length > 0 && (
-                        <span className="text-[10px] px-1 py-0.2 rounded bg-emerald-100 text-emerald-800 font-sans font-bold">
-                          +Button
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-slate-100 text-slate-600 font-sans font-semibold">
+                          +{tmpl.buttons.length} btn
                         </span>
                       )}
                     </button>
@@ -1332,9 +1374,9 @@ function UnifiedInboxContent() {
                     type="button"
                     onClick={() => setShowTemplateModal(true)}
                     disabled={isSending}
-                    className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 hover:underline px-1.5 py-1 flex items-center gap-1"
+                    className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 hover:underline px-2 py-1 shrink-0 flex items-center gap-1"
                   >
-                    <span>All Templates ({availableTemplates.length || 2})</span>
+                    <span>All ({availableTemplates.length || 2})</span>
                     <span>→</span>
                   </button>
                 </div>
@@ -1416,58 +1458,123 @@ function UnifiedInboxContent() {
                         type="button"
                         onClick={() => setShowQuickRepliesPopover(!showQuickRepliesPopover)}
                         title="Choose predefined canned responses"
-                        className="text-[11px] font-medium px-2 py-0.5 rounded border border-amber-200 text-amber-800 bg-amber-50 hover:bg-amber-100 transition flex items-center gap-1"
+                        className="text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100 transition flex items-center gap-1"
                       >
-                        <Zap className="w-3 h-3 text-amber-600" />
+                        <MessageSquare className="w-3 h-3 text-slate-600" />
                         <span>Quick Replies ({quickReplies.length})</span>
                       </button>
 
                       {/* Quick Replies Popover */}
                       {showQuickRepliesPopover && (
-                        <div className="absolute left-0 bottom-full mb-1.5 w-80 bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-30 animate-in fade-in duration-100 max-h-96 flex flex-col">
+                        <div className="absolute left-0 bottom-full mb-1.5 w-80 max-w-[calc(100vw-32px)] bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-30 animate-in fade-in duration-100 max-h-96 flex flex-col">
                           <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
-                            <span className="font-bold text-xs text-slate-800 flex items-center gap-1">
-                              <Zap className="w-3.5 h-3.5 text-amber-500" /> Predefined Quick Replies
+                            <span className="font-bold text-xs text-slate-800 flex items-center gap-1.5">
+                              <MessageSquare className="w-3.5 h-3.5 text-brand-700" /> Predefined Quick Replies
                             </span>
                             <button
                               type="button"
-                              onClick={() => setShowQuickRepliesPopover(false)}
+                              onClick={() => {
+                                setShowQuickRepliesPopover(false);
+                                setEditingQuickReplyId(null);
+                              }}
                               className="text-slate-400 hover:text-slate-600"
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
 
-                          <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-56">
+                          <div className="flex-1 overflow-y-auto space-y-2 pr-1 max-h-56">
                             {isLoadingQuickReplies ? (
                               <p className="text-[11px] text-slate-400 p-2 text-center">Loading quick replies...</p>
                             ) : quickReplies.length === 0 ? (
                               <p className="text-[11px] text-slate-400 p-2 text-center">No quick replies created yet.</p>
                             ) : (
                               quickReplies.map((qr) => (
-                                <div
-                                  key={qr._id}
-                                  onClick={() => handleSelectQuickReply(qr.body)}
-                                  className="p-2 rounded-lg border border-slate-100 hover:border-amber-300 hover:bg-amber-50/50 cursor-pointer transition text-left group flex items-start justify-between gap-1"
-                                >
-                                  <div>
-                                    <div className="flex items-center gap-1.5">
-                                      <span className="text-xs font-semibold text-slate-800">{qr.title}</span>
-                                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 font-medium">
-                                        {qr.category || 'General'}
-                                      </span>
+                                editingQuickReplyId === qr._id ? (
+                                  <div key={qr._id} className="p-2.5 rounded-lg border border-brand-300 bg-brand-50/40 space-y-2 text-left">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-brand-800">Edit Quick Reply</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setEditingQuickReplyId(null)}
+                                        className="text-slate-400 hover:text-slate-600 text-xs"
+                                      >
+                                        <X className="w-3.5 h-3.5" />
+                                      </button>
                                     </div>
-                                    <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">{qr.body}</p>
+                                    <input
+                                      type="text"
+                                      placeholder="Title / Shortcut"
+                                      value={editQuickReplyTitle}
+                                      onChange={(e) => setEditQuickReplyTitle(e.target.value)}
+                                      className="w-full text-xs p-1.5 bg-white border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-brand-600 font-medium"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder="Category (e.g. Sales, Support)"
+                                      value={editQuickReplyCategory}
+                                      onChange={(e) => setEditQuickReplyCategory(e.target.value)}
+                                      className="w-full text-xs p-1.5 bg-white border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-600"
+                                    />
+                                    <textarea
+                                      rows={2}
+                                      placeholder="Reply message body..."
+                                      value={editQuickReplyBody}
+                                      onChange={(e) => setEditQuickReplyBody(e.target.value)}
+                                      className="w-full text-xs p-1.5 bg-white border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-brand-600"
+                                    />
+                                    <div className="flex justify-end gap-1.5 pt-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => setEditingQuickReplyId(null)}
+                                        className="px-2 py-0.5 text-[10px] text-slate-500 border border-slate-200 bg-white rounded"
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={handleUpdateQuickReply}
+                                        disabled={isUpdatingQuickReply}
+                                        className="px-2.5 py-0.5 text-[10px] bg-brand-800 text-white font-medium rounded hover:bg-brand-900 disabled:opacity-50"
+                                      >
+                                        {isUpdatingQuickReply ? 'Saving...' : 'Update'}
+                                      </button>
+                                    </div>
                                   </div>
-                                  <button
-                                    type="button"
-                                    onClick={(e) => handleDeleteQuickReply(qr._id, e)}
-                                    className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-600 p-1 transition"
-                                    title="Delete quick reply"
+                                ) : (
+                                  <div
+                                    key={qr._id}
+                                    className="p-2 rounded-lg border border-slate-100 hover:border-brand-300 hover:bg-slate-50 cursor-pointer transition text-left group flex items-start justify-between gap-1"
                                   >
-                                    <Trash2 className="w-3 h-3" />
-                                  </button>
-                                </div>
+                                    <div onClick={() => handleSelectQuickReply(qr.body)} className="flex-1 min-w-0 pr-1">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="text-xs font-semibold text-slate-800 truncate">{qr.title}</span>
+                                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 font-medium shrink-0">
+                                          {qr.category || 'General'}
+                                        </span>
+                                      </div>
+                                      <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">{qr.body}</p>
+                                    </div>
+                                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition shrink-0">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => handleStartEditQuickReply(qr, e)}
+                                        className="text-slate-400 hover:text-brand-700 p-1 rounded"
+                                        title="Edit quick reply"
+                                      >
+                                        <Edit3 className="w-3 h-3" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => handleDeleteQuickReply(qr._id, e)}
+                                        className="text-slate-400 hover:text-rose-600 p-1 rounded"
+                                        title="Delete quick reply"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                )
                               ))
                             )}
                           </div>
@@ -1481,14 +1588,14 @@ function UnifiedInboxContent() {
                                   placeholder="Shortcut / Title (e.g. Price Quote)"
                                   value={newQuickReplyTitle}
                                   onChange={(e) => setNewQuickReplyTitle(e.target.value)}
-                                  className="w-full text-xs p-1.5 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                  className="w-full text-xs p-1.5 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-brand-600"
                                 />
                                 <textarea
                                   rows={2}
                                   placeholder="Predefined message text..."
                                   value={newQuickReplyBody}
                                   onChange={(e) => setNewQuickReplyBody(e.target.value)}
-                                  className="w-full text-xs p-1.5 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                  className="w-full text-xs p-1.5 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-brand-600"
                                 />
                                 <div className="flex justify-end gap-1.5">
                                   <button
@@ -1502,7 +1609,7 @@ function UnifiedInboxContent() {
                                     type="button"
                                     onClick={handleCreateQuickReply}
                                     disabled={isSavingQuickReply}
-                                    className="px-2.5 py-0.5 text-[10px] bg-amber-600 text-white font-medium rounded hover:bg-amber-700"
+                                    className="px-2.5 py-0.5 text-[10px] bg-brand-800 text-white font-medium rounded hover:bg-brand-900"
                                   >
                                     {isSavingQuickReply ? 'Saving...' : 'Save Quick Reply'}
                                   </button>
@@ -1529,9 +1636,9 @@ function UnifiedInboxContent() {
                         onClick={() => setShowTemplateModal(true)}
                         disabled={isSending}
                         title="View and send Meta approved WhatsApp templates"
-                        className="text-[11px] font-medium px-2 py-0.5 rounded border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition flex items-center gap-1 shadow-xs"
+                        className="text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100 transition flex items-center gap-1"
                       >
-                        <Sparkles className="w-3 h-3 text-emerald-600" />
+                        <Layers className="w-3 h-3 text-emerald-600" />
                         <span>Meta Templates ({availableTemplates.length || 1})</span>
                       </button>
                     )}
@@ -1699,7 +1806,7 @@ function UnifiedInboxContent() {
                       onClick={() => setNewThreadData({ ...newThreadData, initialMessage: 'hello_world' })}
                       className="text-[11px] text-emerald-700 hover:text-emerald-800 font-medium underline flex items-center gap-1 cursor-pointer"
                     >
-                      <Sparkles className="w-2.5 h-2.5" /> Use "hello_world" starter template
+                      Use "hello_world" starter template
                     </button>
                   )}
                 </div>
@@ -1738,13 +1845,13 @@ function UnifiedInboxContent() {
       {/* WHATSAPP META TEMPLATES MODAL */}
       {/* ------------------------------------------------------------- */}
       {showTemplateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full border border-slate-200 p-6 space-y-4 max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/50 backdrop-blur-xs p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-xl shadow-2xl max-w-2xl w-full border border-slate-200 p-4 sm:p-6 space-y-4 max-h-[92vh] sm:max-h-[90vh] flex flex-col">
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-emerald-600" /> WhatsApp Meta Message Templates
+                    <Layers className="w-4 h-4 text-emerald-600" /> WhatsApp Meta Message Templates
                   </h3>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
                     {availableTemplates.length} Approved
@@ -1826,7 +1933,7 @@ function UnifiedInboxContent() {
                         {tmpl.headerFormat && (
                           <div className="flex items-center gap-2">
                             <span className="text-[10px] font-semibold text-emerald-800 bg-white/80 px-2 py-0.5 rounded border border-emerald-200">
-                              🖼️ Header ({tmpl.headerFormat})
+                              Header ({tmpl.headerFormat})
                             </span>
                             {tmpl.headerFormat === 'IMAGE' && (
                               <img
@@ -1850,7 +1957,8 @@ function UnifiedInboxContent() {
                                 key={bIdx}
                                 className="px-2.5 py-1 rounded-md bg-white border border-emerald-300 text-emerald-900 text-[11px] font-semibold flex items-center gap-1 shadow-2xs"
                               >
-                                <span>🔗 {btn.text}</span>
+                                <ExternalLink className="w-3 h-3 shrink-0" />
+                                <span>{btn.text}</span>
                                 {btn.url && (
                                   <span className="text-[9px] text-emerald-600 truncate max-w-[120px]">
                                     ({btn.url})

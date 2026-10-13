@@ -33,6 +33,11 @@ import {
   Building,
   Globe,
   User,
+  Camera,
+  ShieldCheck,
+  CheckCheck,
+  Layers,
+  Phone,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -52,6 +57,8 @@ import {
   getWhatsAppTemplatesApi,
   getWhatsAppBusinessProfileApi,
   updateWhatsAppBusinessProfileApi,
+  uploadWhatsAppProfilePictureApi,
+  getWhatsAppHealthApi,
 } from '@/lib/conversations';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -73,7 +80,7 @@ export default function BroadcastPage() {
   const [campaignName, setCampaignName] = useState('Festive Promotion & Catalog Blast');
   const [channel, setChannel] = useState<BroadcastChannel>('whatsapp');
   const [messageBody, setMessageBody] = useState(
-    'Hi {{Name}}, greeting from Acme Digital Media! 🎉\n\nWe are excited to share our latest product catalog and special discounts with you. Please review the attached document for exclusive deals.\n\nReply to this message anytime to chat with our executive!'
+    'Hi {{Name}}, greeting from Acme Digital Media.\n\nWe are excited to share our latest product catalog and special discounts with you. Please review the attached document for exclusive deals.\n\nReply to this message anytime to chat with our executive!'
   );
 
   // Meta Template Mode State
@@ -85,7 +92,7 @@ export default function BroadcastPage() {
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
   const [showFailureDetails, setShowFailureDetails] = useState(false);
 
-  // WhatsApp Business Profile State
+  // WhatsApp Business Profile & Health State
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileData, setProfileData] = useState<WhatsAppBusinessProfile>({
     about: '',
@@ -97,9 +104,13 @@ export default function BroadcastPage() {
     phoneNumber: '+91 79070 64848',
     verifiedName: 'miscarchive',
   });
+  const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [healthData, setHealthData] = useState<any>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileFeedback, setProfileFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const fetchProfile = async () => {
     try {
@@ -116,6 +127,17 @@ export default function BroadcastPage() {
         phoneNumber: data.phoneNumber || '+91 79070 64848',
         verifiedName: data.verifiedName || 'miscarchive',
       });
+      if (data.profile_picture_url) {
+        setProfilePicturePreview(data.profile_picture_url);
+      }
+
+      // Fetch live WhatsApp health metrics non-blockingly
+      try {
+        const health = await getWhatsAppHealthApi();
+        setHealthData(health);
+      } catch (e) {
+        // non-blocking
+      }
     } catch (err: any) {
       setProfileFeedback({
         type: 'error',
@@ -124,6 +146,44 @@ export default function BroadcastPage() {
     } finally {
       setIsLoadingProfile(false);
     }
+  };
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setProfileFeedback({ type: 'error', text: 'Please select an image file (JPEG, PNG, WEBP).' });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setProfileFeedback({ type: 'error', text: 'Image file size must be less than 5MB.' });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        setIsUploadingAvatar(true);
+        setProfileFeedback(null);
+        const base64Data = reader.result as string;
+        setProfilePicturePreview(base64Data);
+        await uploadWhatsAppProfilePictureApi(base64Data, file.type);
+        setProfileFeedback({
+          type: 'success',
+          text: 'Profile photo successfully uploaded and updated on Meta WhatsApp Business!',
+        });
+      } catch (err: any) {
+        setProfileFeedback({
+          type: 'error',
+          text: err.response?.data?.message || err.message || 'Failed to upload profile picture to Meta',
+        });
+      } finally {
+        setIsUploadingAvatar(false);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSaveProfile = async () => {
@@ -1111,7 +1171,7 @@ export default function BroadcastPage() {
                   <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-emerald-700" />
+                        <Layers className="w-4 h-4 text-emerald-700" />
                         <span className="text-xs font-bold text-emerald-950">
                           WhatsApp Dispatch Mode
                         </span>
@@ -1239,7 +1299,8 @@ export default function BroadcastPage() {
                                 <div className="flex items-center justify-between">
                                   {currentTmpl.headerFormat && (
                                     <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 w-fit">
-                                      <span>🖼️ Header Format: {currentTmpl.headerFormat}</span>
+                                      <ImageIcon className="w-3 h-3 text-emerald-600" />
+                                      <span>Header Format: {currentTmpl.headerFormat}</span>
                                     </div>
                                   )}
                                   <span className="text-[10px] text-emerald-700 font-medium">
@@ -1256,7 +1317,8 @@ export default function BroadcastPage() {
                                         key={bIdx}
                                         className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-300 text-emerald-900 text-[11px] font-semibold flex items-center gap-1"
                                       >
-                                        <span>🔗 {btn.text}</span>
+                                        <ExternalLink className="w-3 h-3 text-emerald-700" />
+                                        <span>{btn.text}</span>
                                         {btn.url && (
                                           <span className="text-[9px] text-emerald-600 truncate max-w-[120px]">
                                             ({btn.url})
@@ -1324,7 +1386,7 @@ export default function BroadcastPage() {
                               <div className="p-3.5 bg-emerald-50/80 border border-emerald-300/80 rounded-xl space-y-3 text-xs shadow-2xs">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                   <div className="flex items-center gap-1.5">
-                                    <Sparkles className="w-4 h-4 text-emerald-700" />
+                                    <Layers className="w-4 h-4 text-emerald-700" />
                                     <span className="font-bold text-emerald-950 text-xs">
                                       Dynamic Variables Assignment
                                     </span>
@@ -1405,7 +1467,7 @@ export default function BroadcastPage() {
                                 )}
 
                                 <div className="flex items-center justify-between text-[11px] text-emerald-900 pt-0.5">
-                                  <span>💡 Click <strong>Download Sample Excel</strong> above to get an Excel template pre-formatted with these exact columns.</span>
+                                  <span>Click <strong>Download Sample Excel</strong> above to get an Excel template pre-formatted with these exact columns.</span>
                                 </div>
                               </div>
                             </div>
@@ -1736,7 +1798,14 @@ export default function BroadcastPage() {
                                 key={bIdx}
                                 className="py-1.5 px-3 rounded-lg bg-white/90 border border-emerald-300 text-emerald-800 text-[11px] font-semibold text-center flex items-center justify-center gap-1.5 shadow-2xs"
                               >
-                                {btn.type === 'PHONE_NUMBER' ? '📞' : btn.type === 'URL' ? '🌐' : '💬'} {btn.text}
+                                {btn.type === 'PHONE_NUMBER' ? (
+                                  <Phone className="w-3 h-3 text-emerald-700 shrink-0" />
+                                ) : btn.type === 'URL' ? (
+                                  <ExternalLink className="w-3 h-3 text-emerald-700 shrink-0" />
+                                ) : (
+                                  <MessageSquare className="w-3 h-3 text-emerald-700 shrink-0" />
+                                )}
+                                <span>{btn.text}</span>
                               </div>
                             ))}
                           </div>
@@ -1746,7 +1815,7 @@ export default function BroadcastPage() {
                       {/* Metadata / Checkmark */}
                       <div className="flex items-center justify-end gap-1 text-[10px] text-slate-500">
                         <span>12:00 PM</span>
-                        <span className="text-blue-500 font-bold">✓✓</span>
+                        <CheckCheck className="w-3.5 h-3.5 text-blue-500" />
                       </div>
                     </div>
                   </div>
@@ -1766,8 +1835,8 @@ export default function BroadcastPage() {
               {/* Channel Tips Box */}
               <div className="mt-4 p-4 rounded-xl bg-indigo-50/70 border border-indigo-100 text-xs text-slate-600 space-y-1">
                 <p className="font-semibold text-indigo-950 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                  Broadcasting Pro-Tips
+                  <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                  Broadcasting Guidelines
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-slate-600 pl-1 text-[11px]">
                   <li>Phone numbers can be with or without country code (e.g. +91 or standard 10-digit).</li>
@@ -2231,21 +2300,21 @@ export default function BroadcastPage() {
 
       {/* WhatsApp Business Profile Manager Modal */}
       {showProfileModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150 my-8">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs p-0 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full p-4 sm:p-6 space-y-4 sm:space-y-5 animate-in fade-in zoom-in-95 duration-150 my-0 sm:my-8 max-h-[92vh] flex flex-col overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 sm:pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-500/20">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-600/20 shrink-0">
                   <Smartphone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
                     WhatsApp Business Profile
                     <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300 text-[10px]">
-                      Verified Meta Cloud API
+                      Verified Meta API
                     </Badge>
                   </h3>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-[11px] sm:text-xs text-slate-500">
                     Manage your public WhatsApp profile details displayed to your customers.
                   </p>
                 </div>
@@ -2258,6 +2327,15 @@ export default function BroadcastPage() {
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
+
+            {/* Hidden avatar input */}
+            <input
+              type="file"
+              ref={avatarInputRef}
+              onChange={handleAvatarFileChange}
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+            />
 
             {profileFeedback && (
               <div
@@ -2283,8 +2361,79 @@ export default function BroadcastPage() {
               </div>
             ) : (
               <div className="space-y-4">
+                {/* Profile Photo (Avatar) Uploader & Health Status */}
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <div className="relative group shrink-0">
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-emerald-500 bg-emerald-50 flex items-center justify-center shadow-xs">
+                        {profilePicturePreview ? (
+                          <img
+                            src={profilePicturePreview}
+                            alt="WhatsApp Avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-8 h-8 text-emerald-700" />
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={isUploadingAvatar}
+                        className="absolute bottom-0 right-0 p-1 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm border border-white"
+                        title="Change WhatsApp Profile Photo"
+                      >
+                        {isUploadingAvatar ? (
+                          <RefreshCw className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Camera className="w-3 h-3" />
+                        )}
+                      </button>
+                    </div>
+
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 block">WhatsApp Profile Photo</span>
+                      <span className="text-[10px] text-slate-500 block">Square JPG or PNG, max 5MB</span>
+                      <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={isUploadingAvatar}
+                        className="mt-1 text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 underline"
+                      >
+                        {isUploadingAvatar ? 'Uploading to Meta...' : 'Upload New Photo'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Live Health & Quality Status */}
+                  <div className="flex flex-col items-start sm:items-end w-full sm:w-auto text-xs border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-slate-400 font-medium">Quality Rating:</span>
+                      <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                        healthData?.qualityRating === 'RED'
+                          ? 'bg-rose-100 text-rose-800'
+                          : healthData?.qualityRating === 'YELLOW'
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-emerald-100 text-emerald-800'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          healthData?.qualityRating === 'RED'
+                            ? 'bg-rose-600'
+                            : healthData?.qualityRating === 'YELLOW'
+                            ? 'bg-amber-600'
+                            : 'bg-emerald-600'
+                        }`} />
+                        {healthData?.qualityRating || 'GREEN (Good)'}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 mt-0.5">
+                      Limit: {healthData?.messagingLimitTier?.replace('TIER_', '') || '1,000'} messages / 24h
+                    </span>
+                  </div>
+                </div>
+
                 {/* Account Header Badge */}
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="p-3 bg-white rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
                   <div>
                     <span className="text-slate-500 block text-[10px]">Connected Phone Number</span>
                     <span className="font-mono font-bold text-slate-900 text-sm">
@@ -2305,7 +2454,7 @@ export default function BroadcastPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                   {/* About / Tagline */}
                   <div className="md:col-span-2">
                     <label className="font-semibold text-slate-700 block mb-1">
@@ -2411,26 +2560,25 @@ export default function BroadcastPage() {
                   </div>
                 </div>
 
-                {/* Profile Photo & Display Name Notice */}
-                <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs space-y-1 text-amber-900">
-                  <p className="font-bold flex items-center gap-1.5 text-amber-950">
-                    <span>💡 How to Change Profile Picture (Avatar) & Display Name:</span>
+                {/* Verified Name and Sync Notice */}
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1 text-slate-700">
+                  <p className="font-semibold text-slate-900 flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Official Meta WhatsApp Business Verification</span>
                   </p>
-                  <p className="text-[11px] leading-relaxed text-amber-800">
-                    Meta verifies business identity strictly. To change your <strong>Profile Photo</strong> or <strong>Display Name</strong>, open the official Meta WhatsApp Manager portal directly:
+                  <p className="text-[11px] leading-relaxed text-slate-500">
+                    Profile photo, description, category, and bio sync directly with your connected phone number on Meta Cloud API. To modify your legal verified business display name, visit the official Meta WhatsApp Manager portal:
                   </p>
                   <div className="pt-1">
                     <a
                       href="https://business.facebook.com/wa/manage/phone-numbers/"
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-950 bg-amber-200/80 hover:bg-amber-300/80 px-2.5 py-1 rounded-md transition-colors"
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 underline"
                     >
-                      Open Meta WhatsApp Manager <ExternalLink className="w-3 h-3 ml-0.5" />
+                      <span>Open Meta WhatsApp Manager</span>
+                      <ExternalLink className="w-3 h-3" />
                     </a>
-                    <span className="text-[11px] text-amber-800 ml-2">
-                      (Select Phone Number &gt; Profile &gt; Upload Avatar)
-                    </span>
                   </div>
                 </div>
               </div>
