@@ -283,6 +283,8 @@ export interface WhatsAppTemplateItem {
   category: string;
   language: string;
   bodyText?: string;
+  headerFormat?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' | null;
+  buttons?: Array<{ type: string; text: string; url?: string; phone_number?: string }>;
   components?: any[];
 }
 

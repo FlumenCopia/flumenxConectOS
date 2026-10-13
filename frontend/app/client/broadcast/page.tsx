@@ -1043,6 +1043,44 @@ export default function BroadcastPage() {
                             ))
                           )}
                         </select>
+
+                        {/* Selected template interactive preview card */}
+                        {(() => {
+                          const currentTmpl = availableTemplates.find(
+                            (t) => t.name === selectedTemplateName
+                          );
+                          if (!currentTmpl) return null;
+                          return (
+                            <div className="p-3 bg-white border border-emerald-200 rounded-xl space-y-2 text-xs shadow-2xs">
+                              {currentTmpl.headerFormat && (
+                                <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 w-fit">
+                                  <span>🖼️ Header Format: {currentTmpl.headerFormat}</span>
+                                </div>
+                              )}
+                              <div className="text-slate-700 whitespace-pre-line leading-relaxed font-sans text-xs">
+                                {currentTmpl.bodyText}
+                              </div>
+                              {currentTmpl.buttons && currentTmpl.buttons.length > 0 && (
+                                <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+                                  {currentTmpl.buttons.map((btn, bIdx) => (
+                                    <div
+                                      key={bIdx}
+                                      className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-300 text-emerald-900 text-[11px] font-semibold flex items-center gap-1"
+                                    >
+                                      <span>🔗 {btn.text}</span>
+                                      {btn.url && (
+                                        <span className="text-[9px] text-emerald-600 truncate max-w-[120px]">
+                                          ({btn.url})
+                                        </span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+
                         <p className="text-[10px] text-emerald-800">
                           Pre-approved by Meta. This template will deliver to any recipient regardless of when they last messaged.
                         </p>

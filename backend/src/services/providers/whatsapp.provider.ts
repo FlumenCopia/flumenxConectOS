@@ -75,7 +75,40 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
 
     if (isTemplate) {
       const templateName = params.metadata?.templateName || this.config.defaultTemplateName || 'hello_world';
-      const templateLang = params.metadata?.templateLanguage || this.config.defaultTemplateLanguage || 'en_US';
+      const templateLang =
+        params.metadata?.templateLanguage ||
+        (templateName === 'misc_website_view' ? 'en' : this.config.defaultTemplateLanguage || 'en_US');
+
+      let components = params.metadata?.components;
+
+      if (!components && templateName === 'misc_website_view') {
+        const recipientName = params.metadata?.recipientName || 'Valued Customer';
+        let headerImg = params.attachments?.[0]?.url || 'https://connectos.flumenx.in/images/logo.png';
+        if (!headerImg.startsWith('http://') && !headerImg.startsWith('https://')) {
+          headerImg = `https://connectos.flumenx.in${headerImg.startsWith('/') ? '' : '/'}${headerImg}`;
+        }
+
+        components = [
+          {
+            type: 'header',
+            parameters: [
+              {
+                type: 'image',
+                image: { link: headerImg },
+              },
+            ],
+          },
+          {
+            type: 'body',
+            parameters: [
+              {
+                type: 'text',
+                text: recipientName,
+              },
+            ],
+          },
+        ];
+      }
 
       payload = {
         messaging_product: 'whatsapp',
@@ -87,6 +120,7 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
           language: {
             code: templateLang,
           },
+          ...(components ? { components } : {}),
         },
       };
     } else if (params.attachments && params.attachments.length > 0) {

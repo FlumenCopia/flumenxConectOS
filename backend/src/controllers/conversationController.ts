@@ -519,6 +519,8 @@ export const getWhatsAppTemplates = async (req: Request, res: Response, next: Ne
         category: t.category,
         language: t.language,
         bodyText: t.components?.find((c: any) => c.type === 'BODY')?.text || '',
+        buttons: t.components?.find((c: any) => c.type === 'BUTTONS')?.buttons || [],
+        headerFormat: t.components?.find((c: any) => c.type === 'HEADER')?.format || null,
         components: t.components,
       }));
 
