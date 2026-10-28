@@ -60,11 +60,23 @@ export class InstagramProvider implements ICommunicationProviderInterface {
     let messagePayload: Record<string, any>;
 
     if (isTemplate) {
-      const recipientName =
+      let recipientName =
         params.metadata?.variableValues?.['name'] ||
         params.metadata?.variableValues?.['1'] ||
         params.metadata?.recipientName ||
-        'Valued Customer';
+        '';
+
+      // Discard placeholder names so users never see robotic strings
+      if (
+        !recipientName ||
+        recipientName.startsWith('Instagram User') ||
+        recipientName === 'Valued Customer' ||
+        recipientName.toLowerCase().includes('user')
+      ) {
+        recipientName = '';
+      }
+
+      const greeting = recipientName ? `Hi ${recipientName}!` : 'Hi there!';
 
       const websiteUrl =
         params.metadata?.websiteUrl ||
@@ -84,7 +96,7 @@ export class InstagramProvider implements ICommunicationProviderInterface {
             elements: [
               {
                 title: 'Welcome to Misc Archive! ✨',
-                subtitle: `Hi ${recipientName}! Explore our services and special offers.`.slice(0, 80),
+                subtitle: `${greeting} Explore our services and special offers.`.slice(0, 80),
                 image_url: imageUrl,
                 default_action: {
                   type: 'web_url',

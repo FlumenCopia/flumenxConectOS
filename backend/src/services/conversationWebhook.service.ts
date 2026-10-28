@@ -482,9 +482,35 @@ export class ConversationWebhookService {
           continue;
         }
 
-        // Contact identification
+        // Contact identification: Fetch real profile name and username from Meta Graph API
+        let realName = '';
+        let igUsername = '';
+        let profilePic = '';
+
+        const token =
+          providerDoc.configuration?.pageAccessToken ||
+          providerDoc.configuration?.accessToken ||
+          process.env.META_PAGE_ACCESS_TOKEN;
+
+        if (token) {
+          try {
+            const profileRes = await fetch(
+              `https://graph.facebook.com/v21.0/${senderId}?fields=name,username,profile_pic&access_token=${token}`,
+              { signal: AbortSignal.timeout(3500) }
+            );
+            if (profileRes.ok) {
+              const profileData = (await profileRes.json()) as any;
+              realName = profileData.name || profileData.username || '';
+              igUsername = profileData.username || '';
+              profilePic = profileData.profile_pic || '';
+            }
+          } catch (profileErr) {
+            logger.warn(`[Instagram Profile] Could not fetch profile for ${senderId}:`, profileErr);
+          }
+        }
+
         const shortId = senderId.length > 4 ? senderId.slice(-4) : senderId;
-        const contactName = `Instagram User (${shortId})`;
+        const contactName = realName || (igUsername ? `@${igUsername}` : `Instagram User (${shortId})`);
 
         // Resolve or create Contact
         let contact = await Contact.findOne({
@@ -496,11 +522,20 @@ export class ConversationWebhookService {
           contact = await Contact.create({
             clientId: clientObjectId,
             name: contactName,
+            avatarUrl: profilePic || undefined,
             metadata: {
               instagramScopedId: senderId,
+              username: igUsername || undefined,
               source: 'instagram_direct',
             },
           });
+        } else if (realName && (contact.name.startsWith('Instagram User') || !contact.name)) {
+          contact.name = contactName;
+          if (profilePic) contact.avatarUrl = profilePic;
+          if (igUsername) {
+            contact.metadata = { ...(contact.metadata || {}), username: igUsername };
+          }
+          await contact.save();
         }
 
         // Resolve or create Conversation
@@ -569,6 +604,9 @@ export class ConversationWebhookService {
               "Hi, thanks for contacting FlumenX! We've received your message and appreciate your getting in touch. Explore our services at https://miscarchive.com/";
 
             const provider = await ProviderManager.getProvider(clientId, 'meta_instagram');
+            const recipientGreetingName =
+              contact.name && !contact.name.startsWith('Instagram User') ? contact.name : '';
+
             const sendResult = await provider.sendMessage({
               to: senderId,
               channel: 'meta_instagram',
@@ -576,7 +614,7 @@ export class ConversationWebhookService {
               metadata: {
                 type: 'template',
                 templateName: 'misc_website_view',
-                recipientName: contact.name,
+                recipientName: recipientGreetingName,
               },
             });
 
