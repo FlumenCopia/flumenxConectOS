@@ -10,7 +10,7 @@ async function run() {
 
     const instagramAccountId = '17841470625900032';
     const pageAccessToken =
-      'EAAXfy0sybgwBS7RHnlwXHHuJy9n0uLhs5vvNZC9PsvMJEwloBdAYtllFEITuPjEGtGRZBqJRSmAEXXxB3EhsTnlWnBSWtwHlWnQRfDrezLtm6r5yZAHHfdbkinKMI5juFOX7SP7CjC0CZAb2SH8HGZAg3sAtBFkFaaOfqPlSYbbVTnvQv0ZCfgQZA1BaTZAfDAUrbZCeGZCyfm2JUgK1SUet4ZC0Qc84pSIu3WUDePrcBBfoK2wqGzeQ3yjbWJqpAD4NtZAhQHZCGz1tSKQT6znmTNopTJTen0UOA547imwZDZD';
+      'EAAXfy0sybgwBS7ztiigOcN3pD8OdbywXQDSqyhXwV5WQr6VTZCtOheJYbIS8kByEUModZABoPiw1UsKZAvOnqkO6hbY2vJ6vRo43ZCSgoPnQvKl1OkfidwxeOj3yYZB3X55noGnik4JA2hYWY9LZAuu0I49LICxc4pGquWuiEXgDpu57linHu7MIDzR3Km56VZABplZBzjhqrvCZBug8ODBLYweNFkEAwhZCTeSDvYwhOaEbng7cFxBnEacPOG11OcffDC2qS5AuN0LHbTfgV9cqk51tRVlqcBZAMDmaAZDZD';
 
     for (const client of clients) {
       const provider = await CommunicationProvider.findOneAndUpdate(

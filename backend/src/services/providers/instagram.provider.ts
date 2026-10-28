@@ -129,13 +129,13 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       message: messagePayload,
     };
 
-    // Try /me/messages first (standard Meta Page endpoint), then fallback to /{accountId}/messages
-    const endpointsToTry = [
-      `https://graph.facebook.com/${this.apiVersion}/me/messages`,
-    ];
+    // Primary Instagram Direct messaging endpoints:
+    const endpointsToTry: string[] = [];
     if (this.config.instagramAccountId) {
       endpointsToTry.push(`https://graph.facebook.com/${this.apiVersion}/${this.config.instagramAccountId}/messages`);
     }
+    endpointsToTry.push(`https://graph.facebook.com/${this.apiVersion}/122115183549504182/messages`);
+    endpointsToTry.push(`https://graph.facebook.com/${this.apiVersion}/me/messages`);
 
     let lastError = 'Failed to dispatch Instagram message';
 
