@@ -32,11 +32,11 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       };
     }
 
-    if (!this.config.instagramAccountId || !this.config.pageAccessToken) {
+    if (!this.config.pageAccessToken) {
       return {
         success: false,
         deliveryStatus: 'failed',
-        failureReason: 'Instagram credentials missing (Account ID or Page Access Token).',
+        failureReason: 'Instagram Page Access Token is missing.',
       };
     }
 
@@ -48,8 +48,6 @@ export class InstagramProvider implements ICommunicationProviderInterface {
         externalMessageId: `mock_ig_${Date.now()}`,
       };
     }
-
-    const url = `https://graph.facebook.com/${this.apiVersion}/${this.config.instagramAccountId}/messages`;
 
     // Check if sending as a template message (e.g. misc_website_view)
     const isTemplate =
@@ -86,7 +84,7 @@ export class InstagramProvider implements ICommunicationProviderInterface {
             elements: [
               {
                 title: `Hello ${recipientName}! 👋`,
-                subtitle: 'Explore how FlumenX helps businesses build a stronger digital presence.',
+                subtitle: 'Explore our services at Misc Archive.',
                 image_url: imageUrl,
                 default_action: {
                   type: 'web_url',
@@ -131,40 +129,51 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       message: messagePayload,
     };
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.config.pageAccessToken}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const resData = (await response.json()) as any;
-
-      if (!response.ok || resData.error) {
-        logger.error('[InstagramProvider] Send error from Meta Graph API:', resData.error);
-        return {
-          success: false,
-          deliveryStatus: 'failed',
-          failureReason: resData.error?.message || `HTTP ${response.status} from Meta Graph API`,
-        };
-      }
-
-      return {
-        success: true,
-        deliveryStatus: 'delivered',
-        externalMessageId: resData.message_id || resData.recipient_id,
-      };
-    } catch (err: any) {
-      logger.error('[InstagramProvider] Network error sending Instagram message:', err);
-      return {
-        success: false,
-        deliveryStatus: 'failed',
-        failureReason: err.message || 'Network failure dispatching Instagram message',
-      };
+    // Try /me/messages first (standard Meta Page endpoint), then fallback to /{accountId}/messages
+    const endpointsToTry = [
+      `https://graph.facebook.com/${this.apiVersion}/me/messages`,
+    ];
+    if (this.config.instagramAccountId) {
+      endpointsToTry.push(`https://graph.facebook.com/${this.apiVersion}/${this.config.instagramAccountId}/messages`);
     }
+
+    let lastError = 'Failed to dispatch Instagram message';
+
+    for (const url of endpointsToTry) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.config.pageAccessToken}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const resData = (await response.json()) as any;
+
+        if (response.ok && !resData.error) {
+          logger.info(`[InstagramProvider] Message successfully delivered via ${url} -> recipient=${recipientId}`);
+          return {
+            success: true,
+            deliveryStatus: 'delivered',
+            externalMessageId: resData.message_id || resData.recipient_id,
+          };
+        }
+
+        lastError = resData.error?.message || `HTTP ${response.status} from ${url}`;
+        logger.warn(`[InstagramProvider] Send attempt via ${url} failed:`, resData.error || lastError);
+      } catch (err: any) {
+        lastError = err.message;
+        logger.warn(`[InstagramProvider] Network error attempting ${url}:`, err);
+      }
+    }
+
+    return {
+      success: false,
+      deliveryStatus: 'failed',
+      failureReason: lastError,
+    };
   }
 
   verifyWebhook(headers: Record<string, any>, rawBody: any, secret?: string): boolean {

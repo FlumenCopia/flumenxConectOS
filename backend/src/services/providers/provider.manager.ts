@@ -18,11 +18,21 @@ export class ProviderManager {
     channel: string
   ): Promise<ICommunicationProviderInterface> {
     try {
-      const configuredProvider = await CommunicationProvider.findOne({
+      // 1. Prioritize finding the provider specifically configured for this channel
+      let configuredProvider = await CommunicationProvider.findOne({
         clientId,
         status: 'active',
-        $or: [{ providerType: channel }, { isDefault: true }],
+        providerType: channel,
       });
+
+      // 2. Only fall back to default provider if channel-specific provider is not found
+      if (!configuredProvider) {
+        configuredProvider = await CommunicationProvider.findOne({
+          clientId,
+          status: 'active',
+          isDefault: true,
+        });
+      }
 
       if (configuredProvider) {
         switch (configuredProvider.providerType) {

@@ -558,8 +558,12 @@ export class ConversationWebhookService {
           deliveredAt: new Date(),
         });
 
-        // Instant Auto-Reply for First-Time Instagram Customers
-        if (isNewConversation) {
+        // Instant Auto-Reply for First-Time Instagram Customers or Greeting Triggers (hi, hy, hello, hey)
+        const isGreeting = ['hi', 'hy', 'hello', 'hey', 'start', 'test'].includes(
+          textBody.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
+        );
+
+        if (isNewConversation || isGreeting) {
           try {
             const autoReplyText =
               "Hi, thanks for contacting FlumenX! We've received your message and appreciate your getting in touch. Explore our services at https://miscarchive.com/";
