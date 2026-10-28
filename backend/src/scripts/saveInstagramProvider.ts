@@ -8,8 +8,10 @@ async function run() {
     await connectDatabase();
     const clients = await Client.find({ isArchived: false });
 
-    const instagramAccountId = '17841470625900032';
+    const instagramAccountId = process.env.META_INSTAGRAM_ACCOUNT_ID || '17841470625900032';
     const pageAccessToken =
+      process.env.META_PAGE_ACCESS_TOKEN ||
+      process.env.INSTAGRAM_PAGE_ACCESS_TOKEN ||
       'EAAXfy0sybgwBS7ztiigOcN3pD8OdbywXQDSqyhXwV5WQr6VTZCtOheJYbIS8kByEUModZABoPiw1UsKZAvOnqkO6hbY2vJ6vRo43ZCSgoPnQvKl1OkfidwxeOj3yYZB3X55noGnik4JA2hYWY9LZAuu0I49LICxc4pGquWuiEXgDpu57linHu7MIDzR3Km56VZABplZBzjhqrvCZBug8ODBLYweNFkEAwhZCTeSDvYwhOaEbng7cFxBnEacPOG11OcffDC2qS5AuN0LHbTfgV9cqk51tRVlqcBZAMDmaAZDZD';
 
     for (const client of clients) {

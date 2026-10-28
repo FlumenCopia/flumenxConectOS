@@ -10,7 +10,7 @@ export class ProviderManager {
 
   /**
    * Resolves the communication provider instance for a client and channel.
-   * If a real integration is configured and active in MongoDB, it is loaded.
+   * If a real integration is configured in MongoDB or .env, it is loaded.
    * Otherwise, safely falls back to the MockCommunicationProvider.
    */
   static async getProvider(
@@ -38,12 +38,14 @@ export class ProviderManager {
         switch (configuredProvider.providerType) {
           case 'whatsapp': {
             const cfg = configuredProvider.configuration || {};
-            if (cfg.phoneNumberId && cfg.accessToken) {
+            const phoneNumberId = cfg.phoneNumberId || process.env.WHATSAPP_PHONE_NUMBER_ID;
+            const accessToken = cfg.accessToken || process.env.WHATSAPP_ACCESS_TOKEN;
+            if (phoneNumberId && accessToken) {
               return new WhatsAppCloudProvider({
-                phoneNumberId: cfg.phoneNumberId,
-                accessToken: cfg.accessToken,
-                wabaId: cfg.wabaId,
-                appSecret: cfg.appSecret,
+                phoneNumberId,
+                accessToken,
+                wabaId: cfg.wabaId || process.env.WHATSAPP_WABA_ID,
+                appSecret: cfg.appSecret || process.env.META_APP_SECRET,
                 defaultTemplateName: cfg.defaultTemplateName,
                 defaultTemplateLanguage: cfg.defaultTemplateLanguage,
               });
@@ -54,10 +56,15 @@ export class ProviderManager {
 
           case 'meta_instagram': {
             const cfg = configuredProvider.configuration || {};
-            if (cfg.instagramAccountId && (cfg.pageAccessToken || cfg.accessToken)) {
+            const instagramAccountId =
+              cfg.instagramAccountId || process.env.META_INSTAGRAM_ACCOUNT_ID || '17841470625900032';
+            const pageAccessToken =
+              cfg.pageAccessToken || cfg.accessToken || process.env.META_PAGE_ACCESS_TOKEN || process.env.INSTAGRAM_PAGE_ACCESS_TOKEN;
+
+            if (instagramAccountId && pageAccessToken) {
               return new InstagramProvider({
-                instagramAccountId: cfg.instagramAccountId,
-                pageAccessToken: cfg.pageAccessToken || cfg.accessToken,
+                instagramAccountId,
+                pageAccessToken,
               });
             }
             logger.warn(`Instagram provider configured for client ${clientId} missing instagramAccountId or pageAccessToken; falling back to Mock Provider.`);
@@ -67,6 +74,18 @@ export class ProviderManager {
           case 'mock':
           default:
             return this.mockProvider;
+        }
+      }
+
+      // 3. Fallback to environment variables if no database document exists
+      if (channel === 'meta_instagram') {
+        const instagramAccountId = process.env.META_INSTAGRAM_ACCOUNT_ID || '17841470625900032';
+        const pageAccessToken = process.env.META_PAGE_ACCESS_TOKEN || process.env.INSTAGRAM_PAGE_ACCESS_TOKEN;
+        if (pageAccessToken) {
+          return new InstagramProvider({
+            instagramAccountId,
+            pageAccessToken,
+          });
         }
       }
     } catch (err) {
