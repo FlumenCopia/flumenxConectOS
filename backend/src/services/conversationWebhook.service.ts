@@ -573,6 +573,11 @@ export class ConversationWebhookService {
               to: senderId,
               channel: 'meta_instagram',
               body: autoReplyText,
+              metadata: {
+                type: 'template',
+                templateName: 'misc_website_view',
+                recipientName: contact.name,
+              },
             });
 
             if (sendResult.success) {
@@ -583,11 +588,11 @@ export class ConversationWebhookService {
                 senderName: 'FlumenX Assistant',
                 channel: 'meta_instagram',
                 direction: 'outbound',
-                body: autoReplyText,
+                body: `[Template: misc_website_view]`,
                 deliveryStatus: 'sent',
                 deliveredAt: new Date(),
               });
-              conversation.lastMessageSnippet = autoReplyText.slice(0, 120);
+              conversation.lastMessageSnippet = `[Template: misc_website_view]`;
               await conversation.save();
             }
           } catch (autoErr) {

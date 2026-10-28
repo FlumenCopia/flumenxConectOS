@@ -83,8 +83,8 @@ export class InstagramProvider implements ICommunicationProviderInterface {
             template_type: 'generic',
             elements: [
               {
-                title: `Hello ${recipientName}! 👋`,
-                subtitle: 'Explore our services at Misc Archive.',
+                title: 'Welcome to Misc Archive! ✨',
+                subtitle: `Hi ${recipientName}! Explore our services and special offers.`.slice(0, 80),
                 image_url: imageUrl,
                 default_action: {
                   type: 'web_url',
