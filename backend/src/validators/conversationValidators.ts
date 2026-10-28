@@ -10,7 +10,7 @@ export const createConversationSchema = z
     contactPhone: z.string().optional(),
     leadId: z.string().regex(objectIdRegex, 'Invalid lead ID format').optional().or(z.literal('')),
     subject: z.string().trim().min(1).default('Direct Conversation'),
-    channel: z.enum(['email', 'sms', 'whatsapp', 'internal', 'other']).default('whatsapp'),
+    channel: z.enum(['email', 'sms', 'whatsapp', 'internal', 'meta_instagram', 'other']).default('whatsapp'),
     priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
     initialMessage: z.string().trim().optional(),
     tags: z.array(z.string().trim()).default([]),
@@ -26,7 +26,7 @@ export const createConversationSchema = z
 
 export const sendMessageSchema = z.object({
   body: z.string().trim().min(1, 'Message body cannot be empty'),
-  channel: z.enum(['email', 'sms', 'whatsapp', 'internal', 'other']).optional(),
+  channel: z.enum(['email', 'sms', 'whatsapp', 'internal', 'meta_instagram', 'other']).optional(),
   idempotencyKey: z.string().trim().optional(),
   metadata: z.record(z.any()).optional(),
   attachments: z
@@ -81,7 +81,7 @@ export const updateContactSchema = z.object({
 });
 
 export const inboundWebhookSchema = z.object({
-  channel: z.enum(['email', 'sms', 'whatsapp', 'internal', 'other']),
+  channel: z.enum(['email', 'sms', 'whatsapp', 'internal', 'meta_instagram', 'other']),
   externalMessageId: z.string().trim().min(1, 'External message ID is required for idempotency'),
   from: z.object({
     name: z.string().trim().default('Inbound Contact'),

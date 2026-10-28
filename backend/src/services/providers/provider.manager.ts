@@ -1,6 +1,7 @@
 import { ICommunicationProviderInterface } from './provider.interface';
 import { MockCommunicationProvider } from './mock.provider';
 import { WhatsAppCloudProvider } from './whatsapp.provider';
+import { InstagramProvider } from './instagram.provider';
 import { CommunicationProvider } from '../../models/CommunicationProvider';
 import { logger } from '../../config/logger';
 
@@ -38,6 +39,18 @@ export class ProviderManager {
               });
             }
             logger.warn(`WhatsApp provider configured for client ${clientId} missing phoneNumberId or accessToken; falling back to Mock Provider.`);
+            return this.mockProvider;
+          }
+
+          case 'meta_instagram': {
+            const cfg = configuredProvider.configuration || {};
+            if (cfg.instagramAccountId && (cfg.pageAccessToken || cfg.accessToken)) {
+              return new InstagramProvider({
+                instagramAccountId: cfg.instagramAccountId,
+                pageAccessToken: cfg.pageAccessToken || cfg.accessToken,
+              });
+            }
+            logger.warn(`Instagram provider configured for client ${clientId} missing instagramAccountId or pageAccessToken; falling back to Mock Provider.`);
             return this.mockProvider;
           }
 

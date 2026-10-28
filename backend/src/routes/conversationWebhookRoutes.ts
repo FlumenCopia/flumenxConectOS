@@ -10,9 +10,9 @@ const router = Router();
 router.get('/', verifyWebhookChallenge);
 router.get('/whatsapp', verifyWebhookChallenge);
 
-// Conditional validation: Meta WhatsApp payloads bypass internal schema
+// Conditional validation: Meta WhatsApp and Instagram payloads bypass internal schema
 const conditionalValidate = (req: Request, res: Response, next: NextFunction) => {
-  if (req.body?.object === 'whatsapp_business_account') {
+  if (req.body?.object === 'whatsapp_business_account' || req.body?.object === 'instagram') {
     return next();
   }
   return validate(inboundWebhookSchema)(req, res, next);

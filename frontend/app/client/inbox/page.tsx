@@ -465,7 +465,7 @@ function UnifiedInboxContent() {
     try {
       const newMsg = await sendMessageApi(activeConversationId, {
         body: `[Template: ${templateName}]`,
-        channel: 'whatsapp',
+        channel: replyChannel === 'meta_instagram' ? 'meta_instagram' : 'whatsapp',
         metadata: {
           type: 'template',
           templateName,
@@ -755,6 +755,7 @@ function UnifiedInboxContent() {
             {[
               { id: 'all', label: 'All Channels' },
               { id: 'whatsapp', label: 'WhatsApp' },
+              { id: 'meta_instagram', label: 'Instagram' },
               { id: 'email', label: 'Email' },
               { id: 'sms', label: 'SMS' },
             ].map((ch) => (
@@ -907,6 +908,7 @@ function UnifiedInboxContent() {
             >
               <option value="all">All Channels</option>
               <option value="whatsapp">WhatsApp</option>
+              <option value="meta_instagram">Instagram</option>
               <option value="email">Email</option>
               <option value="sms">SMS</option>
             </select>
@@ -1431,6 +1433,7 @@ function UnifiedInboxContent() {
                       className="text-xs font-semibold px-2 py-0.5 bg-slate-50 border border-slate-200 rounded text-slate-800"
                     >
                       <option value="whatsapp">WhatsApp</option>
+                      <option value="meta_instagram">Instagram</option>
                       <option value="email">Email</option>
                       <option value="sms">SMS</option>
                       <option value="internal">Internal Note</option>
@@ -1629,13 +1632,13 @@ function UnifiedInboxContent() {
                       )}
                     </div>
 
-                    {/* WhatsApp Meta Templates Modal Trigger */}
-                    {replyChannel === 'whatsapp' && (
+                    {/* Meta Templates Modal Trigger */}
+                    {(replyChannel === 'whatsapp' || replyChannel === 'meta_instagram') && (
                       <button
                         type="button"
                         onClick={() => setShowTemplateModal(true)}
                         disabled={isSending}
-                        title="View and send Meta approved WhatsApp templates"
+                        title="View and send Meta approved templates"
                         className="text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100 transition flex items-center gap-1"
                       >
                         <Layers className="w-3 h-3 text-emerald-600" />

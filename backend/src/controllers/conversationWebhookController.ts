@@ -42,6 +42,16 @@ export const handleInboundWebhook = async (req: Request, res: Response, next: Ne
       });
     }
 
+    // 1b. Check if Meta Instagram Graph API webhook format
+    if (req.body?.object === 'instagram') {
+      const instagramResult = await ConversationWebhookService.processInstagramWebhook(req.body);
+      return res.status(200).json({
+        success: true,
+        message: 'Meta Instagram webhook acknowledged and processed',
+        data: instagramResult,
+      });
+    }
+
     // 2. Standard internal / custom webhook format
     const result = await ConversationWebhookService.processInboundWebhook(
       req.headers,
