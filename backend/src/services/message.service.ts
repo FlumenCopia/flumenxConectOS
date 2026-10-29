@@ -100,9 +100,11 @@ export class MessageService {
     const recipientTarget =
       channel === 'email'
         ? contact?.email || 'customer@example.com'
-      : channel === 'meta_instagram'
-      ? (contact?.metadata?.instagramScopedId as string) || contact?.phone || 'instagram-user'
-      : contact?.phone || 'customer-phone';
+        : channel === 'meta_instagram'
+        ? (contact?.metadata?.instagramScopedId as string) || contact?.phone || 'instagram-user'
+        : channel === 'meta_messenger'
+        ? (contact?.metadata?.messengerScopedId as string) || (contact?.metadata?.facebookScopedId as string) || (contact?.metadata?.recipientId as string) || contact?.phone || ''
+        : contact?.phone || 'customer-phone';
 
     // 5. Create Message in pending state
     const message = await Message.create({
