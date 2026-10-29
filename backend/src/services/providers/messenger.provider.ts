@@ -150,13 +150,12 @@ export class MessengerProvider implements ICommunicationProviderInterface {
       message: messagePayload,
     };
 
-    // Endpoints for Facebook Messenger API:
+    // Primary endpoint for Facebook Messenger API:
+    // System User tokens require the explicit Page ID endpoint. Meta's /me/messages is not supported for System Users.
+    const pageId = this.config.pageId?.trim() || process.env.META_PAGE_ID?.trim() || '1383901031476683';
     const endpointsToTry: string[] = [
-      `https://graph.facebook.com/${this.apiVersion}/me/messages`,
+      `https://graph.facebook.com/${this.apiVersion}/${pageId}/messages`,
     ];
-    if (this.config.pageId) {
-      endpointsToTry.unshift(`https://graph.facebook.com/${this.apiVersion}/${this.config.pageId}/messages`);
-    }
 
     let lastError = 'Failed to dispatch Messenger message';
 

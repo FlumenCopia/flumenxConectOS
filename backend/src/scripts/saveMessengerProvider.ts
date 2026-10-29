@@ -13,7 +13,7 @@ async function run() {
     const pageAccessToken =
       process.env.META_PAGE_ACCESS_TOKEN ||
       process.env.MESSENGER_PAGE_ACCESS_TOKEN ||
-    'EAAXfy0sybgwBSZBjuiOyO6sZBjoZCmDyeK7dvpwxhCZAFE5WDI7KXeBW540CZC6c2FRl7M2CVBR4opYRbDdpFpwJPVpgsQzkM41mRPVPR1isUp9hkMDKoy3230AlNmI4rvJMzkEIWlFVyYEctDshaG8Oa2rQrAGDev8yT4PfFLlJr14yu4P5OD4ocRwgHbQZDZD';
+      'EAAXfy0sybgwBS4KH0bwhFGwZBOMbaryzntk8wzZB9HbEcL1wTOyQHURZCrOW8BybbVIvCqAlheXDg42bOL7S5sGF7ZAaZASmJYqbBQYNYBZCuTbcPYRsio3MkjtZCZAeyy8FpUPsvxNeZCGRLZBn8yIjPVaYT5RjUZBeBhQmULagteqY7UZB2ACZATtXW5V4aI0yfAZAtqP4uQ';
 
     for (const client of clients) {
       const provider = await CommunicationProvider.findOneAndUpdate(
