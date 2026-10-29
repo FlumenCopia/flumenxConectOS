@@ -86,13 +86,14 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       const imageUrl =
         params.attachments?.[0]?.url ||
         params.metadata?.headerImageUrl ||
-        'https://connectos.flumenx.in/images/logo.png';
+        'https://miscarchive.com/assets/images/42.png';
 
       messagePayload = {
         attachment: {
           type: 'template',
           payload: {
             template_type: 'generic',
+            image_aspect_ratio: 'square',
             elements: [
               {
                 title: 'Welcome to Misc Archive! ✨',
