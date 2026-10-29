@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
 
-export type ConversationChannel = 'email' | 'sms' | 'whatsapp' | 'internal' | 'meta_instagram' | 'other';
+export type ConversationChannel = 'email' | 'sms' | 'whatsapp' | 'internal' | 'meta_instagram' | 'meta_messenger' | 'other';
 export type ConversationStatus = 'open' | 'pending' | 'resolved' | 'archived';
 export type ConversationPriority = 'low' | 'medium' | 'high' | 'urgent';
 
@@ -49,7 +49,7 @@ const ConversationSchema = new Schema<IConversation>(
     },
     channel: {
       type: String,
-      enum: ['email', 'sms', 'whatsapp', 'internal', 'meta_instagram', 'other'],
+      enum: ['email', 'sms', 'whatsapp', 'internal', 'meta_instagram', 'meta_messenger', 'other'],
       required: true,
       default: 'whatsapp',
       index: true,

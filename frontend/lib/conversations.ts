@@ -1,6 +1,6 @@
 import { apiClient, ApiResponse } from './api';
 
-export type ConversationChannel = 'email' | 'sms' | 'whatsapp' | 'internal' | 'meta_instagram' | 'other';
+export type ConversationChannel = 'email' | 'sms' | 'whatsapp' | 'internal' | 'meta_instagram' | 'meta_messenger' | 'other';
 export type ConversationStatus = 'open' | 'pending' | 'resolved' | 'archived';
 export type ConversationPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type DeliveryStatus = 'pending' | 'sent' | 'delivered' | 'failed' | 'read';

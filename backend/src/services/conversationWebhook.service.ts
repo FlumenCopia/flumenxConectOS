@@ -5,6 +5,7 @@ import { Conversation, IConversation } from '../models/Conversation';
 import { Contact } from '../models/Contact';
 import { ClientWebhook } from '../models/ClientWebhook';
 import { CommunicationProvider } from '../models/CommunicationProvider';
+import { Client } from '../models/Client';
 import { ContactService } from './contact.service';
 import { ConversationActivityService } from './conversationActivity.service';
 import { EventDispatcher } from './eventDispatcher.service';
@@ -664,6 +665,285 @@ export class ConversationWebhookService {
               message: message.toObject ? message.toObject() : message,
               contact: contact.toObject ? contact.toObject() : contact,
               channel: 'meta_instagram',
+              body: textBody,
+            },
+          });
+        } catch (err) {
+          // Non-fatal
+        }
+
+        results.push({ type: 'message_created', messageId: message._id, conversationId: conversation._id });
+      }
+    }
+
+    return { handled: true, results };
+  }
+
+  /**
+   * Processes Meta Facebook Messenger incoming webhook payload (object: 'page')
+   */
+  static async processMessengerWebhook(body: any) {
+    if (!body || body.object !== 'page' || !Array.isArray(body.entry)) {
+      return { handled: false, reason: 'Invalid or non-page Meta webhook format' };
+    }
+
+    const results: any[] = [];
+
+    for (const entry of body.entry) {
+      const pageId = entry.id;
+
+      let providerDoc = null;
+      if (pageId) {
+        providerDoc = await CommunicationProvider.findOne({
+          providerType: 'meta_messenger',
+          $or: [
+            { 'configuration.pageId': pageId },
+            { 'configuration.facebookPageId': pageId },
+          ],
+          status: 'active',
+        });
+      }
+
+      if (!providerDoc) {
+        providerDoc = await CommunicationProvider.findOne({
+          providerType: 'meta_messenger',
+          status: 'active',
+        });
+      }
+
+      if (!providerDoc) {
+        // Fallback to client if Meta Page Access Token is configured in .env
+        const defaultClient = await Client.findOne({ isArchived: false });
+        if (defaultClient && process.env.META_PAGE_ACCESS_TOKEN) {
+          providerDoc = {
+            clientId: defaultClient._id,
+            configuration: {
+              pageId: pageId || process.env.META_PAGE_ID || '1383901031476683',
+              pageAccessToken: process.env.META_PAGE_ACCESS_TOKEN,
+            },
+          } as any;
+        }
+      }
+
+      if (!providerDoc) {
+        logger.warn(`No active Messenger provider found for incoming Meta webhook (pageId=${pageId})`);
+        continue;
+      }
+
+      const clientId = providerDoc.clientId.toString();
+      const clientObjectId = providerDoc.clientId;
+
+      const messagingEvents: any[] = [];
+      if (Array.isArray(entry.messaging)) {
+        messagingEvents.push(...entry.messaging);
+      } else if (Array.isArray(entry.changes)) {
+        for (const change of entry.changes) {
+          if (change.field === 'messages' && change.value) {
+            messagingEvents.push(change.value);
+          }
+        }
+      }
+
+      for (const event of messagingEvents) {
+        const senderId = event.sender?.id;
+        const msg = event.message;
+
+        // Skip non-message events, deliveries without content, self-sent echoes
+        if (!senderId || !msg || senderId === pageId || msg.is_echo) continue;
+
+        const textBody = msg.text || (msg.attachments?.length ? '[Attachment / Media]' : '');
+        if (!textBody) continue;
+
+        const externalMessageId = msg.mid || `fb_msg_${Date.now()}_${senderId}`;
+
+        // Idempotency Check
+        const existingMessage = await Message.findOne({
+          clientId: clientObjectId,
+          externalMessageId,
+        });
+
+        if (existingMessage) {
+          logger.info(`Meta Messenger duplicate inbound detected: ${externalMessageId}`);
+          continue;
+        }
+
+        // Contact identification: Fetch real name from Meta Graph API
+        let realName = '';
+        let profilePic = '';
+
+        const token =
+          providerDoc.configuration?.pageAccessToken ||
+          providerDoc.configuration?.accessToken ||
+          process.env.META_PAGE_ACCESS_TOKEN;
+
+        if (token) {
+          try {
+            const profileRes = await fetch(
+              `https://graph.facebook.com/v21.0/${senderId}?fields=first_name,last_name,name,profile_pic&access_token=${token}`,
+              { signal: AbortSignal.timeout(3500) }
+            );
+            if (profileRes.ok) {
+              const profileData = (await profileRes.json()) as any;
+              realName =
+                profileData.name ||
+                (profileData.first_name ? `${profileData.first_name} ${profileData.last_name || ''}`.trim() : '');
+              profilePic = profileData.profile_pic || '';
+            }
+          } catch (profileErr) {
+            logger.warn(`[Messenger Profile] Could not fetch profile for ${senderId}:`, profileErr);
+          }
+        }
+
+        const shortId = senderId.length > 4 ? senderId.slice(-4) : senderId;
+        const contactName = realName || `Facebook User (${shortId})`;
+
+        // Resolve or create Contact
+        let contact = await Contact.findOne({
+          clientId: clientObjectId,
+          'metadata.messengerScopedId': senderId,
+        });
+
+        if (!contact) {
+          contact = await Contact.create({
+            clientId: clientObjectId,
+            name: contactName,
+            avatarUrl: profilePic || undefined,
+            metadata: {
+              messengerScopedId: senderId,
+              source: 'facebook_messenger',
+            },
+          });
+        } else if (realName && (contact.name.startsWith('Facebook User') || !contact.name)) {
+          contact.name = contactName;
+          if (profilePic) contact.avatarUrl = profilePic;
+          await contact.save();
+        }
+
+        // Resolve or create Conversation
+        let conversation = await Conversation.findOne({
+          clientId: clientObjectId,
+          contactId: contact._id,
+          channel: { $in: ['meta_messenger', 'other'] },
+          isArchived: false,
+        });
+
+        const isNewConversation = !conversation;
+
+        if (!conversation) {
+          conversation = await Conversation.create({
+            clientId: clientObjectId,
+            contactId: contact._id,
+            leadId: contact.leadId,
+            subject: `Messenger chat with ${contact.name}`,
+            channel: 'meta_messenger',
+            status: 'open',
+            priority: 'medium',
+            lastMessageAt: new Date(),
+            lastMessageSnippet: textBody.slice(0, 120),
+            unreadCount: 1,
+          });
+
+          await ConversationActivityService.log({
+            clientId,
+            conversationId: conversation._id.toString(),
+            action: 'conversation_created',
+            title: 'Inbound Messenger conversation started',
+          });
+        } else {
+          conversation.unreadCount += 1;
+          conversation.lastMessageAt = new Date();
+          conversation.lastMessageSnippet = textBody.slice(0, 120);
+          if (conversation.status === 'resolved') {
+            conversation.status = 'open';
+          }
+          await conversation.save();
+        }
+
+        // Create Message
+        const message = await Message.create({
+          clientId: clientObjectId,
+          conversationId: conversation._id,
+          senderType: 'contact',
+          senderName: contact.name,
+          channel: 'meta_messenger',
+          direction: 'inbound',
+          body: textBody,
+          deliveryStatus: 'delivered',
+          externalMessageId,
+          deliveredAt: new Date(),
+        });
+
+        // Instant Auto-Reply for First-Time Customers or Greeting Triggers (hi, hy, hello, hey)
+        const isGreeting = ['hi', 'hy', 'hello', 'hey', 'start', 'test'].includes(
+          textBody.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
+        );
+
+        if (isNewConversation || isGreeting) {
+          try {
+            const autoReplyText =
+              "Hi, thanks for contacting FlumenX! We've received your message and appreciate your getting in touch. Explore our services at https://miscarchive.com/";
+
+            const provider = await ProviderManager.getProvider(clientId, 'meta_messenger');
+            const recipientGreetingName =
+              contact.name && !contact.name.startsWith('Facebook User') ? contact.name : '';
+
+            const sendResult = await provider.sendMessage({
+              to: senderId,
+              channel: 'meta_messenger',
+              body: autoReplyText,
+              metadata: {
+                type: 'template',
+                templateName: 'misc_website_view',
+                recipientName: recipientGreetingName,
+              },
+            });
+
+            if (sendResult.success) {
+              await Message.create({
+                clientId: clientObjectId,
+                conversationId: conversation._id,
+                senderType: 'bot',
+                senderName: 'FlumenX Assistant',
+                channel: 'meta_messenger',
+                direction: 'outbound',
+                body: `[Template: misc_website_view]`,
+                deliveryStatus: 'sent',
+                deliveredAt: new Date(),
+              });
+              conversation.lastMessageSnippet = `[Template: misc_website_view]`;
+              await conversation.save();
+            }
+          } catch (autoErr) {
+            logger.warn('[Messenger AutoReply] Failed to dispatch automated welcome:', autoErr);
+          }
+        }
+
+        // Log activity
+        await ConversationActivityService.log({
+          clientId,
+          conversationId: conversation._id.toString(),
+          action: 'message_received',
+          title: 'Messenger message received',
+          details: {
+            channel: 'meta_messenger',
+            from: contact.name,
+            externalMessageId,
+          },
+        });
+
+        // Dispatch workflow trigger event
+        try {
+          await EventDispatcher.dispatch({
+            clientId,
+            eventType: 'conversation.received',
+            eventId: `msg_inbound_${message._id}`,
+            entityId: conversation._id.toString(),
+            entityType: 'conversation',
+            payload: {
+              conversation: conversation.toObject ? conversation.toObject() : conversation,
+              message: message.toObject ? message.toObject() : message,
+              contact: contact.toObject ? contact.toObject() : contact,
+              channel: 'meta_messenger',
               body: textBody,
             },
           });

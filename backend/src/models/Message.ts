@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
 
 export type MessageSenderType = 'user' | 'contact' | 'system' | 'bot';
-export type MessageChannel = 'email' | 'sms' | 'whatsapp' | 'internal' | 'meta_instagram' | 'other';
+export type MessageChannel = 'email' | 'sms' | 'whatsapp' | 'internal' | 'meta_instagram' | 'meta_messenger' | 'other';
 export type MessageDirection = 'inbound' | 'outbound';
 export type DeliveryStatus = 'pending' | 'sent' | 'delivered' | 'failed' | 'read';
 
@@ -88,7 +88,7 @@ const MessageSchema = new Schema<IMessage>(
     },
     channel: {
       type: String,
-      enum: ['email', 'sms', 'whatsapp', 'internal', 'meta_instagram', 'other'],
+      enum: ['email', 'sms', 'whatsapp', 'internal', 'meta_instagram', 'meta_messenger', 'other'],
       required: true,
     },
     direction: {

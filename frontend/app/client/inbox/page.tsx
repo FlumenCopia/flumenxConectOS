@@ -465,7 +465,7 @@ function UnifiedInboxContent() {
     try {
       const newMsg = await sendMessageApi(activeConversationId, {
         body: `[Template: ${templateName}]`,
-        channel: replyChannel === 'meta_instagram' ? 'meta_instagram' : 'whatsapp',
+        channel: replyChannel === 'meta_instagram' ? 'meta_instagram' : replyChannel === 'meta_messenger' ? 'meta_messenger' : 'whatsapp',
         metadata: {
           type: 'template',
           templateName,
@@ -621,6 +621,10 @@ function UnifiedInboxContent() {
     switch (ch) {
       case 'whatsapp':
         return <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">WhatsApp</span>;
+      case 'meta_instagram':
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">Instagram</span>;
+      case 'meta_messenger':
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200">Messenger</span>;
       case 'email':
         return <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">Email</span>;
       case 'sms':
@@ -756,6 +760,7 @@ function UnifiedInboxContent() {
               { id: 'all', label: 'All Channels' },
               { id: 'whatsapp', label: 'WhatsApp' },
               { id: 'meta_instagram', label: 'Instagram' },
+              { id: 'meta_messenger', label: 'Messenger' },
               { id: 'email', label: 'Email' },
               { id: 'sms', label: 'SMS' },
             ].map((ch) => (
@@ -909,6 +914,7 @@ function UnifiedInboxContent() {
               <option value="all">All Channels</option>
               <option value="whatsapp">WhatsApp</option>
               <option value="meta_instagram">Instagram</option>
+              <option value="meta_messenger">Messenger</option>
               <option value="email">Email</option>
               <option value="sms">SMS</option>
             </select>
@@ -1434,6 +1440,7 @@ function UnifiedInboxContent() {
                     >
                       <option value="whatsapp">WhatsApp</option>
                       <option value="meta_instagram">Instagram</option>
+                      <option value="meta_messenger">Messenger</option>
                       <option value="email">Email</option>
                       <option value="sms">SMS</option>
                       <option value="internal">Internal Note</option>
@@ -1633,7 +1640,7 @@ function UnifiedInboxContent() {
                     </div>
 
                     {/* Meta Templates Modal Trigger */}
-                    {(replyChannel === 'whatsapp' || replyChannel === 'meta_instagram') && (
+                    {(replyChannel === 'whatsapp' || replyChannel === 'meta_instagram' || replyChannel === 'meta_messenger') && (
                       <button
                         type="button"
                         onClick={() => setShowTemplateModal(true)}

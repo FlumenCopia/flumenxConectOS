@@ -52,6 +52,16 @@ export const handleInboundWebhook = async (req: Request, res: Response, next: Ne
       });
     }
 
+    // 1c. Check if Meta Facebook Messenger webhook format
+    if (req.body?.object === 'page') {
+      const messengerResult = await ConversationWebhookService.processMessengerWebhook(req.body);
+      return res.status(200).json({
+        success: true,
+        message: 'Meta Messenger webhook acknowledged and processed',
+        data: messengerResult,
+      });
+    }
+
     // 2. Standard internal / custom webhook format
     const result = await ConversationWebhookService.processInboundWebhook(
       req.headers,

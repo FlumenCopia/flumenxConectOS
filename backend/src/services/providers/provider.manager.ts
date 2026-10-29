@@ -2,6 +2,7 @@ import { ICommunicationProviderInterface } from './provider.interface';
 import { MockCommunicationProvider } from './mock.provider';
 import { WhatsAppCloudProvider } from './whatsapp.provider';
 import { InstagramProvider } from './instagram.provider';
+import { MessengerProvider } from './messenger.provider';
 import { CommunicationProvider } from '../../models/CommunicationProvider';
 import { logger } from '../../config/logger';
 
@@ -71,6 +72,22 @@ export class ProviderManager {
             return this.mockProvider;
           }
 
+          case 'meta_messenger': {
+            const cfg = configuredProvider.configuration || {};
+            const pageId = cfg.pageId || process.env.META_PAGE_ID || '1383901031476683';
+            const pageAccessToken =
+              cfg.pageAccessToken || cfg.accessToken || process.env.META_PAGE_ACCESS_TOKEN;
+
+            if (pageAccessToken) {
+              return new MessengerProvider({
+                pageId,
+                pageAccessToken,
+              });
+            }
+            logger.warn(`Messenger provider configured for client ${clientId} missing pageAccessToken; falling back to Mock Provider.`);
+            return this.mockProvider;
+          }
+
           case 'mock':
           default:
             return this.mockProvider;
@@ -84,6 +101,17 @@ export class ProviderManager {
         if (pageAccessToken) {
           return new InstagramProvider({
             instagramAccountId,
+            pageAccessToken,
+          });
+        }
+      }
+
+      if (channel === 'meta_messenger') {
+        const pageId = process.env.META_PAGE_ID || '1383901031476683';
+        const pageAccessToken = process.env.META_PAGE_ACCESS_TOKEN;
+        if (pageAccessToken) {
+          return new MessengerProvider({
+            pageId,
             pageAccessToken,
           });
         }
