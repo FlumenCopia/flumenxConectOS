@@ -12,7 +12,7 @@ async function run() {
     const pageAccessToken =
       process.env.META_PAGE_ACCESS_TOKEN ||
       process.env.INSTAGRAM_PAGE_ACCESS_TOKEN ||
-      'EAAXfy0sybgwBS7ztiigOcN3pD8OdbywXQDSqyhXwV5WQr6VTZCtOheJYbIS8kByEUModZABoPiw1UsKZAvOnqkO6hbY2vJ6vRo43ZCSgoPnQvKl1OkfidwxeOj3yYZB3X55noGnik4JA2hYWY9LZAuu0I49LICxc4pGquWuiEXgDpu57linHu7MIDzR3Km56VZABplZBzjhqrvCZBug8ODBLYweNFkEAwhZCTeSDvYwhOaEbng7cFxBnEacPOG11OcffDC2qS5AuN0LHbTfgV9cqk51tRVlqcBZAMDmaAZDZD';
+      'EAAXfy0sybgwBSZCLDeQL7Fj33mFD2gYtPTkLooqrNgnbfEj6JvlCyL5RBP3lV5ZBIVj2WTaIsdwRRU87PDYXS1DIstlu2pNalzpJa27br49cZBBZCLpKOjaLT6u4GtJfgEh91ZCQBeJlZB4vpttw4AFYFGZCqjTMTScUk7tXTR57pqVIK4aKRCxgUYGvAx66c8mrT14H6RLr2J47gVCu3vZBJG14coOGgrglId1HQV0HFZBmqgZAzWYNsZCpWpkH5OW3ALrqsdnPgt0YOCvSoGH9VAdLAQykdaNMLOIgtsZD';
 
     for (const client of clients) {
       const provider = await CommunicationProvider.findOneAndUpdate(
