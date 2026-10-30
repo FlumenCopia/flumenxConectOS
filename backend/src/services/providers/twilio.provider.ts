@@ -25,18 +25,23 @@ export class TwilioProvider implements ICommunicationProviderInterface {
 
   async sendMessage(params: IProviderSendMessageParams): Promise<IProviderSendResult> {
     let recipientPhone = params.to?.trim() || '';
+    const digitsOnly = recipientPhone.replace(/\D/g, '');
 
-    if (!recipientPhone) {
+    if (!recipientPhone || digitsOnly.length < 7 || recipientPhone.includes('customer-phone')) {
       return {
         success: false,
         deliveryStatus: 'failed',
-        failureReason: 'Recipient phone number is required for SMS.',
+        failureReason: 'Recipient contact does not have a valid phone number for SMS delivery.',
       };
     }
 
-    // Format phone with leading + if country code is missing
-    if (!recipientPhone.startsWith('+')) {
-      recipientPhone = `+${recipientPhone}`;
+    // Format phone with leading + and default country code if missing
+    if (recipientPhone.startsWith('+')) {
+      recipientPhone = `+${digitsOnly}`;
+    } else if (digitsOnly.length === 10) {
+      recipientPhone = `+91${digitsOnly}`;
+    } else {
+      recipientPhone = `+${digitsOnly}`;
     }
 
     if (!this.config.accountSid || !this.config.authToken || !this.config.fromNumber) {

@@ -20,15 +20,24 @@ export class ProviderManager {
     channel: string
   ): Promise<ICommunicationProviderInterface> {
     try {
+      const normalizedChannel = (channel || '').toLowerCase().trim();
+
+      // Map channel to corresponding providerType(s)
+      const targetProviderTypes =
+        normalizedChannel === 'sms' || normalizedChannel === 'twilio'
+          ? ['twilio', 'sms']
+          : [normalizedChannel];
+
       // 1. Prioritize finding the provider specifically configured for this channel
       let configuredProvider = await CommunicationProvider.findOne({
         clientId,
         status: 'active',
-        providerType: channel,
+        providerType: { $in: targetProviderTypes },
       });
 
-      // 2. Only fall back to default provider if channel-specific provider is not found
-      if (!configuredProvider) {
+      // 2. Only fall back to default provider if NOT an explicit channel like SMS, Instagram, Messenger, or Email
+      const distinctChannels = ['sms', 'twilio', 'meta_instagram', 'meta_messenger', 'email'];
+      if (!configuredProvider && !distinctChannels.includes(normalizedChannel)) {
         configuredProvider = await CommunicationProvider.findOne({
           clientId,
           status: 'active',
@@ -89,7 +98,8 @@ export class ProviderManager {
             return this.mockProvider;
           }
 
-          case 'twilio': {
+          case 'twilio':
+          case 'sms' as any: {
             const cfg = configuredProvider.configuration || {};
             const accountSid = cfg.accountSid || process.env.TWILIO_ACCOUNT_SID;
             const authToken = cfg.authToken || process.env.TWILIO_AUTH_TOKEN;
@@ -113,7 +123,7 @@ export class ProviderManager {
       }
 
       // 3. Fallback to environment variables if no database document exists
-      if (channel === 'meta_instagram') {
+      if (normalizedChannel === 'meta_instagram') {
         const instagramAccountId = process.env.META_INSTAGRAM_ACCOUNT_ID || '17841470625900032';
         const pageAccessToken = process.env.META_PAGE_ACCESS_TOKEN || process.env.INSTAGRAM_PAGE_ACCESS_TOKEN;
         if (pageAccessToken) {
@@ -124,7 +134,7 @@ export class ProviderManager {
         }
       }
 
-      if (channel === 'meta_messenger') {
+      if (normalizedChannel === 'meta_messenger') {
         const pageId = process.env.META_PAGE_ID || '1383901031476683';
         const pageAccessToken = process.env.META_PAGE_ACCESS_TOKEN;
         if (pageAccessToken) {
@@ -135,7 +145,7 @@ export class ProviderManager {
         }
       }
 
-      if (channel === 'sms' || channel === 'twilio') {
+      if (normalizedChannel === 'sms' || normalizedChannel === 'twilio') {
         const accountSid = process.env.TWILIO_ACCOUNT_SID;
         const authToken = process.env.TWILIO_AUTH_TOKEN;
         const fromNumber = process.env.TWILIO_FROM_NUMBER;
