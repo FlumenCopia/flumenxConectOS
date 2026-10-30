@@ -15,7 +15,7 @@ const conditionalValidate = (req: Request, res: Response, next: NextFunction) =>
   if (
     req.body?.object === 'whatsapp_business_account' ||
     req.body?.object === 'instagram' ||
-    req.body?.object === 'page'
+    req.body?.object === 'page' || (req.body?.AccountSid && req.body?.MessageSid)
   ) {
     return next();
   }

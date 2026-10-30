@@ -62,6 +62,13 @@ export const handleInboundWebhook = async (req: Request, res: Response, next: Ne
       });
     }
 
+    // 1d. Check if Twilio SMS webhook format (AccountSid & MessageSid present)
+    if (req.body?.AccountSid && req.body?.MessageSid) {
+      const twilioResult = await ConversationWebhookService.processTwilioWebhook(req.body);
+      res.type('text/xml');
+      return res.status(200).send('<Response></Response>');
+    }
+
     // 2. Standard internal / custom webhook format
     const result = await ConversationWebhookService.processInboundWebhook(
       req.headers,

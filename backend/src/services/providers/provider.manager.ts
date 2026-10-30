@@ -3,6 +3,7 @@ import { MockCommunicationProvider } from './mock.provider';
 import { WhatsAppCloudProvider } from './whatsapp.provider';
 import { InstagramProvider } from './instagram.provider';
 import { MessengerProvider } from './messenger.provider';
+import { TwilioProvider } from './twilio.provider';
 import { CommunicationProvider } from '../../models/CommunicationProvider';
 import { logger } from '../../config/logger';
 
@@ -88,6 +89,23 @@ export class ProviderManager {
             return this.mockProvider;
           }
 
+          case 'twilio': {
+            const cfg = configuredProvider.configuration || {};
+            const accountSid = cfg.accountSid || process.env.TWILIO_ACCOUNT_SID;
+            const authToken = cfg.authToken || process.env.TWILIO_AUTH_TOKEN;
+            const fromNumber = cfg.fromNumber || process.env.TWILIO_FROM_NUMBER;
+
+            if (accountSid && authToken && fromNumber) {
+              return new TwilioProvider({
+                accountSid,
+                authToken,
+                fromNumber,
+              });
+            }
+            logger.warn(`Twilio provider configured for client ${clientId} missing accountSid, authToken, or fromNumber; falling back to Mock Provider.`);
+            return this.mockProvider;
+          }
+
           case 'mock':
           default:
             return this.mockProvider;
@@ -113,6 +131,19 @@ export class ProviderManager {
           return new MessengerProvider({
             pageId,
             pageAccessToken,
+          });
+        }
+      }
+
+      if (channel === 'sms' || channel === 'twilio') {
+        const accountSid = process.env.TWILIO_ACCOUNT_SID;
+        const authToken = process.env.TWILIO_AUTH_TOKEN;
+        const fromNumber = process.env.TWILIO_FROM_NUMBER;
+        if (accountSid && authToken && fromNumber) {
+          return new TwilioProvider({
+            accountSid,
+            authToken,
+            fromNumber,
           });
         }
       }

@@ -957,4 +957,162 @@ export class ConversationWebhookService {
 
     return { handled: true, results };
   }
+
+  /**
+   * Processes Twilio Inbound SMS Webhook
+   */
+  static async processTwilioWebhook(body: any) {
+    if (!body || !body.MessageSid || !body.From) {
+      return { handled: false, reason: 'Invalid Twilio SMS webhook format' };
+    }
+
+    const senderPhone = (body.From || '').trim();
+    const twilioPhone = (body.To || '').trim();
+    const textBody = (body.Body || '').trim();
+    const messageSid = body.MessageSid;
+
+    // Resolve Provider / Client
+    let providerDoc = null;
+    if (twilioPhone) {
+      providerDoc = await CommunicationProvider.findOne({
+        providerType: 'twilio',
+        'configuration.fromNumber': twilioPhone,
+        status: 'active',
+      });
+    }
+
+    if (!providerDoc) {
+      providerDoc = await CommunicationProvider.findOne({
+        providerType: 'twilio',
+        status: 'active',
+      });
+    }
+
+    let clientObjectId: any;
+    let clientId: string;
+
+    if (providerDoc) {
+      clientId = providerDoc.clientId.toString();
+      clientObjectId = providerDoc.clientId;
+    } else {
+      const defaultClient = await Client.findOne({ isArchived: false });
+      if (!defaultClient) {
+        logger.warn(`No active client found to associate Twilio SMS from ${senderPhone}`);
+        return { handled: false, reason: 'No client found' };
+      }
+      clientId = defaultClient._id.toString();
+      clientObjectId = defaultClient._id;
+    }
+
+    // Check for duplicate message
+    const existingMsg = await Message.findOne({ externalMessageId: messageSid });
+    if (existingMsg) {
+      logger.info(`[Twilio Webhook] Duplicate SMS message ${messageSid} skipped.`);
+      return { handled: true, duplicate: true, messageId: existingMsg._id };
+    }
+
+    // Contact resolution
+    const shortPhone = senderPhone.length > 4 ? senderPhone.slice(-4) : senderPhone;
+    const contactName = `SMS Contact (${shortPhone})`;
+
+    let contact = await Contact.findOne({
+      clientId: clientObjectId,
+      phone: senderPhone,
+    });
+
+    if (!contact) {
+      contact = await Contact.create({
+        clientId: clientObjectId,
+        name: contactName,
+        phone: senderPhone,
+        metadata: {
+          twilioFrom: senderPhone,
+          source: 'twilio_sms',
+        },
+      });
+    }
+
+    // Resolve or create Conversation
+    let conversation = await Conversation.findOne({
+      clientId: clientObjectId,
+      contactId: contact._id,
+      channel: 'sms',
+      status: { $in: ['open', 'pending'] },
+    });
+
+    if (!conversation) {
+      conversation = await Conversation.create({
+        clientId: clientObjectId,
+        contactId: contact._id,
+        channel: 'sms',
+        status: 'open',
+        priority: 'medium',
+        lastMessageSnippet: textBody.slice(0, 120),
+        lastMessageAt: new Date(),
+        unreadCount: 1,
+      });
+    } else {
+      conversation.lastMessageSnippet = textBody.slice(0, 120);
+      conversation.lastMessageAt = new Date();
+      conversation.unreadCount = (conversation.unreadCount || 0) + 1;
+      await conversation.save();
+    }
+
+    // Create Inbound Message
+    const message = await Message.create({
+      clientId: clientObjectId,
+      conversationId: conversation._id,
+      senderType: 'contact',
+      senderId: contact._id,
+      senderName: contact.name,
+      channel: 'sms',
+      direction: 'inbound',
+      body: textBody,
+      deliveryStatus: 'delivered',
+      externalMessageId: messageSid,
+      sentAt: new Date(),
+      deliveredAt: new Date(),
+      metadata: {
+        twilioSid: messageSid,
+        from: senderPhone,
+        to: twilioPhone,
+      },
+    });
+
+    // Record activity
+    await ConversationActivityService.log({
+      clientId,
+      conversationId: conversation._id.toString(),
+      action: 'message_received',
+      title: 'SMS message received',
+      details: {
+        channel: 'sms',
+        from: senderPhone,
+        messageId: message._id.toString(),
+      },
+    });
+
+    // Dispatch workflow trigger event
+    try {
+      await EventDispatcher.dispatch({
+        clientId,
+        eventType: 'conversation.received',
+        eventId: `sms_inbound_${message._id}`,
+        entityId: conversation._id.toString(),
+        entityType: 'conversation',
+        payload: {
+          conversation: conversation.toObject ? conversation.toObject() : conversation,
+          message: message.toObject ? message.toObject() : message,
+          contact: contact.toObject ? contact.toObject() : contact,
+          channel: 'sms',
+          body: textBody,
+        },
+      });
+    } catch (err) {
+      // Non-fatal
+    }
+
+    logger.info(`[Twilio Webhook] Inbound SMS from ${senderPhone} processed -> Conversation: ${conversation._id}`);
+    return { handled: true, messageId: message._id, conversationId: conversation._id };
+  }
 }
