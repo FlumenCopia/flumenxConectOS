@@ -366,6 +366,53 @@ export class ConversationWebhookService {
               deliveredAt: new Date(),
             });
 
+            // Instant Auto-Reply for WhatsApp
+            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+            const recentBotReply = await Message.findOne({
+              conversationId: conversation._id,
+              senderType: 'bot',
+              createdAt: { $gte: tenMinutesAgo },
+            });
+
+            if (!recentBotReply) {
+              try {
+                const provider = await ProviderManager.getProvider(clientId, 'whatsapp');
+                const recipientName =
+                  contact.name && !contact.name.startsWith('+') ? contact.name : 'Valued Customer';
+                const autoReplyText = `Hi ${recipientName}, thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
+
+                const sendResult = await provider.sendMessage({
+                  to: contact.phone || `+${fromPhone}`,
+                  channel: 'whatsapp',
+                  body: autoReplyText,
+                  metadata: {
+                    type: 'template',
+                    templateName: 'misc_website_view',
+                    recipientName,
+                  },
+                });
+
+                if (sendResult.success) {
+                  await Message.create({
+                    clientId: clientObjectId,
+                    conversationId: conversation._id,
+                    senderType: 'bot',
+                    senderName: 'FlumenX Assistant',
+                    channel: 'whatsapp',
+                    direction: 'outbound',
+                    body: `[Template: misc_website_view]`,
+                    deliveryStatus: 'sent',
+                    deliveredAt: new Date(),
+                  });
+                  conversation.lastMessageSnippet = `[Template: misc_website_view]`;
+                  await conversation.save();
+                  logger.info(`[WhatsApp AutoReply] Automated reply dispatched to ${fromPhone}`);
+                }
+              } catch (autoErr) {
+                logger.warn('[WhatsApp AutoReply] Failed to dispatch automated reply:', autoErr);
+              }
+            }
+
             // Log activity
             await ConversationActivityService.log({
               clientId,
@@ -594,19 +641,22 @@ export class ConversationWebhookService {
           deliveredAt: new Date(),
         });
 
-        // Instant Auto-Reply for First-Time Instagram Customers or Greeting Triggers (hi, hy, hello, hey)
-        const isGreeting = ['hi', 'hy', 'hello', 'hey', 'start', 'test'].includes(
-          textBody.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
-        );
+        // Instant Auto-Reply for Inbound Instagram Messages (auto-replies to any customer message; 10-min cooldown prevents spam loops)
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+        const recentBotReply = await Message.findOne({
+          conversationId: conversation._id,
+          senderType: 'bot',
+          createdAt: { $gte: tenMinutesAgo },
+        });
 
-        if (isNewConversation || isGreeting) {
+        if (!recentBotReply) {
           try {
-            const autoReplyText =
-              "Hi, thanks for contacting FlumenX! We've received your message and appreciate your getting in touch. Explore our services at https://miscarchive.com/";
-
-            const provider = await ProviderManager.getProvider(clientId, 'meta_instagram');
             const recipientGreetingName =
               contact.name && !contact.name.startsWith('Instagram User') ? contact.name : '';
+            const greetingWord = recipientGreetingName ? `Hi ${recipientGreetingName}!` : 'Hi there!';
+            const autoReplyText = `${greetingWord} Thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
+
+            const provider = await ProviderManager.getProvider(clientId, 'meta_instagram');
 
             const sendResult = await provider.sendMessage({
               to: senderId,
@@ -633,6 +683,9 @@ export class ConversationWebhookService {
               });
               conversation.lastMessageSnippet = `[Template: misc_website_view]`;
               await conversation.save();
+              logger.info(`[Instagram AutoReply] Automated reply successfully dispatched to ${senderId}`);
+            } else {
+              logger.warn(`[Instagram AutoReply] Provider dispatch failed for ${senderId}:`, sendResult.failureReason);
             }
           } catch (autoErr) {
             logger.warn('[Instagram AutoReply] Failed to dispatch automated welcome:', autoErr);
@@ -873,19 +926,22 @@ export class ConversationWebhookService {
           deliveredAt: new Date(),
         });
 
-        // Instant Auto-Reply for First-Time Customers or Greeting Triggers (hi, hy, hello, hey)
-        const isGreeting = ['hi', 'hy', 'hello', 'hey', 'start', 'test'].includes(
-          textBody.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
-        );
+        // Instant Auto-Reply for Inbound Messenger Messages (auto-replies to any customer message; 10-min cooldown prevents spam loops)
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+        const recentBotReply = await Message.findOne({
+          conversationId: conversation._id,
+          senderType: 'bot',
+          createdAt: { $gte: tenMinutesAgo },
+        });
 
-        if (isNewConversation || isGreeting) {
+        if (!recentBotReply) {
           try {
-            const autoReplyText =
-              "Hi, thanks for contacting FlumenX! We've received your message and appreciate your getting in touch. Explore our services at https://miscarchive.com/";
-
-            const provider = await ProviderManager.getProvider(clientId, 'meta_messenger');
             const recipientGreetingName =
               contact.name && !contact.name.startsWith('Facebook User') ? contact.name : '';
+            const greetingWord = recipientGreetingName ? `Hi ${recipientGreetingName}!` : 'Hi there!';
+            const autoReplyText = `${greetingWord} Thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
+
+            const provider = await ProviderManager.getProvider(clientId, 'meta_messenger');
 
             const sendResult = await provider.sendMessage({
               to: senderId,
@@ -912,6 +968,9 @@ export class ConversationWebhookService {
               });
               conversation.lastMessageSnippet = `[Template: misc_website_view]`;
               await conversation.save();
+              logger.info(`[Messenger AutoReply] Automated reply successfully dispatched to ${senderId}`);
+            } else {
+              logger.warn(`[Messenger AutoReply] Provider dispatch failed for ${senderId}:`, sendResult.failureReason);
             }
           } catch (autoErr) {
             logger.warn('[Messenger AutoReply] Failed to dispatch automated welcome:', autoErr);
@@ -1078,6 +1137,47 @@ export class ConversationWebhookService {
         to: twilioPhone,
       },
     });
+
+    // Instant Auto-Reply for Inbound SMS Messages (10-minute cooldown prevents duplicate loops)
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    const recentBotReply = await Message.findOne({
+      conversationId: conversation._id,
+      senderType: 'bot',
+      createdAt: { $gte: tenMinutesAgo },
+    });
+
+    if (!recentBotReply) {
+      try {
+        const provider = await ProviderManager.getProvider(clientId, 'sms');
+        const autoReplyText =
+          "Hi, thanks for contacting FlumenX! We've received your SMS and our team will get back to you shortly.";
+
+        const sendResult = await provider.sendMessage({
+          to: senderPhone,
+          channel: 'sms',
+          body: autoReplyText,
+        });
+
+        if (sendResult.success) {
+          await Message.create({
+            clientId: clientObjectId,
+            conversationId: conversation._id,
+            senderType: 'bot',
+            senderName: 'FlumenX Assistant',
+            channel: 'sms',
+            direction: 'outbound',
+            body: autoReplyText,
+            deliveryStatus: 'sent',
+            deliveredAt: new Date(),
+          });
+          conversation.lastMessageSnippet = autoReplyText;
+          await conversation.save();
+          logger.info(`[SMS AutoReply] Automated SMS reply dispatched to ${senderPhone}`);
+        }
+      } catch (autoErr) {
+        logger.warn('[SMS AutoReply] Failed to dispatch automated SMS reply:', autoErr);
+      }
+    }
 
     // Record activity
     await ConversationActivityService.log({
