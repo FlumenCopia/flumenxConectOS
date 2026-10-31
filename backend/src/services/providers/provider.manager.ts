@@ -68,9 +68,14 @@ export class ProviderManager {
           case 'meta_instagram': {
             const cfg = configuredProvider.configuration || {};
             const instagramAccountId =
-              cfg.instagramAccountId || process.env.META_INSTAGRAM_ACCOUNT_ID || '17841470625900032';
+              process.env.META_INSTAGRAM_ACCOUNT_ID ||
+              cfg.instagramAccountId ||
+              '17841470625900032';
             const pageAccessToken =
-              cfg.pageAccessToken || cfg.accessToken || process.env.META_PAGE_ACCESS_TOKEN || process.env.INSTAGRAM_PAGE_ACCESS_TOKEN;
+              process.env.META_PAGE_ACCESS_TOKEN ||
+              process.env.INSTAGRAM_PAGE_ACCESS_TOKEN ||
+              cfg.pageAccessToken ||
+              cfg.accessToken;
 
             if (instagramAccountId && pageAccessToken) {
               return new InstagramProvider({
@@ -84,9 +89,15 @@ export class ProviderManager {
 
           case 'meta_messenger': {
             const cfg = configuredProvider.configuration || {};
-            const pageId = cfg.pageId || process.env.META_PAGE_ID || '1383901031476683';
+            const pageId =
+              process.env.META_PAGE_ID ||
+              cfg.pageId ||
+              '1383901031476683';
             const pageAccessToken =
-              cfg.pageAccessToken || cfg.accessToken || process.env.META_PAGE_ACCESS_TOKEN;
+              process.env.META_PAGE_ACCESS_TOKEN ||
+              process.env.MESSENGER_PAGE_ACCESS_TOKEN ||
+              cfg.pageAccessToken ||
+              cfg.accessToken;
 
             if (pageAccessToken) {
               return new MessengerProvider({

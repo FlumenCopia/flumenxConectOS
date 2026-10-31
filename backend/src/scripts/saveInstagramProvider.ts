@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { connectDatabase, disconnectDatabase } from '../config/db';
 import { CommunicationProvider } from '../models/CommunicationProvider';
 import { Client } from '../models/Client';
@@ -8,11 +11,16 @@ async function run() {
     await connectDatabase();
     const clients = await Client.find({ isArchived: false });
 
-    const instagramAccountId = process.env.META_INSTAGRAM_ACCOUNT_ID || '17841470625900032';
+    const instagramAccountId =
+      process.env.META_INSTAGRAM_ACCOUNT_ID || '17841470625900032';
     const pageAccessToken =
       process.env.META_PAGE_ACCESS_TOKEN ||
-      process.env.INSTAGRAM_PAGE_ACCESS_TOKEN ||
-      'EAAXfy0sybgwBSZCLDeQL7Fj33mFD2gYtPTkLooqrNgnbfEj6JvlCyL5RBP3lV5ZBIVj2WTaIsdwRRU87PDYXS1DIstlu2pNalzpJa27br49cZBBZCLpKOjaLT6u4GtJfgEh91ZCQBeJlZB4vpttw4AFYFGZCqjTMTScUk7tXTR57pqVIK4aKRCxgUYGvAx66c8mrT14H6RLr2J47gVCu3vZBJG14coOGgrglId1HQV0HFZBmqgZAzWYNsZCpWpkH5OW3ALrqsdnPgt0YOCvSoGH9VAdLAQykdaNMLOIgtsZD';
+      process.env.INSTAGRAM_PAGE_ACCESS_TOKEN;
+
+    if (!pageAccessToken) {
+      logger.error('META_PAGE_ACCESS_TOKEN or INSTAGRAM_PAGE_ACCESS_TOKEN must be set in .env');
+      process.exit(1);
+    }
 
     for (const client of clients) {
       const provider = await CommunicationProvider.findOneAndUpdate(
@@ -32,7 +40,9 @@ async function run() {
         },
         { upsert: true, new: true }
       );
-      logger.info(`[✓] Configured Instagram Provider for client ${client.name} (${client.slug}) -> Provider ID: ${provider._id}`);
+      logger.info(
+        `[✓] Configured Instagram Provider for client ${client.name} (${client.slug}) -> Provider ID: ${provider._id}`
+      );
     }
 
     logger.info('Instagram provider configured successfully across workspaces!');

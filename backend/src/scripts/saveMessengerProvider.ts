@@ -1,4 +1,7 @@
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { connectDatabase, disconnectDatabase } from '../config/db';
 import { CommunicationProvider } from '../models/CommunicationProvider';
 import { Client } from '../models/Client';
@@ -12,8 +15,12 @@ async function run() {
     const pageId = process.env.META_PAGE_ID || '1383901031476683';
     const pageAccessToken =
       process.env.META_PAGE_ACCESS_TOKEN ||
-      process.env.MESSENGER_PAGE_ACCESS_TOKEN ||
-      'EAAXfy0sybgwBS4KH0bwhFGwZBOMbaryzntk8wzZB9HbEcL1wTOyQHURZCrOW8BybbVIvCqAlheXDg42bOL7S5sGF7ZAaZASmJYqbBQYNYBZCuTbcPYRsio3MkjtZCZAeyy8FpUPsvxNeZCGRLZBn8yIjPVaYT5RjUZBeBhQmULagteqY7UZB2ACZATtXW5V4aI0yfAZAtqP4uQ';
+      process.env.MESSENGER_PAGE_ACCESS_TOKEN;
+
+    if (!pageAccessToken) {
+      logger.error('META_PAGE_ACCESS_TOKEN must be set in .env');
+      process.exit(1);
+    }
 
     for (const client of clients) {
       const provider = await CommunicationProvider.findOneAndUpdate(
