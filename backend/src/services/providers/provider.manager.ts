@@ -4,6 +4,8 @@ import { WhatsAppCloudProvider } from './whatsapp.provider';
 import { InstagramProvider } from './instagram.provider';
 import { MessengerProvider } from './messenger.provider';
 import { TwilioProvider } from './twilio.provider';
+import { ResendProvider } from './resend.provider';
+import { SmtpProvider } from './smtp.provider';
 import { CommunicationProvider } from '../../models/CommunicationProvider';
 import { logger } from '../../config/logger';
 
@@ -26,6 +28,8 @@ export class ProviderManager {
       const targetProviderTypes =
         normalizedChannel === 'sms' || normalizedChannel === 'twilio'
           ? ['twilio', 'sms']
+          : normalizedChannel === 'email' || normalizedChannel === 'smtp' || normalizedChannel === 'resend'
+          ? ['smtp', 'resend', 'email']
           : [normalizedChannel];
 
       // 1. Prioritize finding the provider specifically configured for this channel
@@ -36,7 +40,7 @@ export class ProviderManager {
       });
 
       // 2. Only fall back to default provider if NOT an explicit channel like SMS, Instagram, Messenger, or Email
-      const distinctChannels = ['sms', 'twilio', 'meta_instagram', 'meta_messenger', 'email'];
+      const distinctChannels = ['sms', 'twilio', 'meta_instagram', 'meta_messenger', 'email', 'smtp', 'resend'];
       if (!configuredProvider && !distinctChannels.includes(normalizedChannel)) {
         configuredProvider = await CommunicationProvider.findOne({
           clientId,
@@ -127,6 +131,53 @@ export class ProviderManager {
             return this.mockProvider;
           }
 
+          case 'smtp': {
+            const cfg = configuredProvider.configuration || {};
+            const user = cfg.user || process.env.SMTP_USER || 'flumenxmarketing@gmail.com';
+            const pass = cfg.pass || process.env.SMTP_PASS;
+            if (user && pass) {
+              return new SmtpProvider({
+                host: cfg.host || process.env.SMTP_HOST,
+                port: cfg.port || (process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined),
+                secure: cfg.secure !== undefined ? cfg.secure : (process.env.SMTP_SECURE === 'true'),
+                user,
+                pass,
+                fromName: cfg.fromName || process.env.SMTP_FROM_NAME,
+                fromEmail: cfg.fromEmail || process.env.SMTP_FROM_EMAIL || user,
+              });
+            }
+            logger.warn(`SMTP provider configured for client ${clientId} missing user or pass; falling back to Mock Provider.`);
+            return this.mockProvider;
+          }
+
+          case 'resend':
+          case 'email' as any: {
+            const cfg = configuredProvider.configuration || {};
+            if (cfg.user && (cfg.pass || process.env.SMTP_PASS)) {
+              return new SmtpProvider({
+                host: cfg.host || process.env.SMTP_HOST,
+                port: cfg.port || (process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined),
+                secure: cfg.secure !== undefined ? cfg.secure : (process.env.SMTP_SECURE === 'true'),
+                user: cfg.user,
+                pass: cfg.pass || process.env.SMTP_PASS,
+                fromName: cfg.fromName || process.env.SMTP_FROM_NAME,
+                fromEmail: cfg.fromEmail || process.env.SMTP_FROM_EMAIL || cfg.user,
+              });
+            }
+
+            const apiKey = cfg.apiKey || process.env.RESEND_API_KEY;
+            const fromEmail = cfg.fromEmail || process.env.RESEND_FROM_EMAIL;
+
+            if (apiKey) {
+              return new ResendProvider({
+                apiKey,
+                fromEmail,
+              });
+            }
+            logger.warn(`Email provider configured for client ${clientId} missing credentials; falling back to Mock Provider.`);
+            return this.mockProvider;
+          }
+
           case 'mock':
           default:
             return this.mockProvider;
@@ -165,6 +216,31 @@ export class ProviderManager {
             accountSid,
             authToken,
             fromNumber,
+          });
+        }
+      }
+
+      if (normalizedChannel === 'email' || normalizedChannel === 'smtp' || normalizedChannel === 'resend') {
+        const smtpUser = process.env.SMTP_USER || 'flumenxmarketing@gmail.com';
+        const smtpPass = process.env.SMTP_PASS;
+        if (smtpUser && smtpPass) {
+          return new SmtpProvider({
+            host: process.env.SMTP_HOST || 'smtp.gmail.com',
+            port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 465,
+            secure: process.env.SMTP_SECURE !== 'false',
+            user: smtpUser,
+            pass: smtpPass,
+            fromName: process.env.SMTP_FROM_NAME || 'FlumenX ConnectOS',
+            fromEmail: process.env.SMTP_FROM_EMAIL || smtpUser,
+          });
+        }
+
+        const apiKey = process.env.RESEND_API_KEY;
+        const fromEmail = process.env.RESEND_FROM_EMAIL;
+        if (apiKey) {
+          return new ResendProvider({
+            apiKey,
+            fromEmail,
           });
         }
       }

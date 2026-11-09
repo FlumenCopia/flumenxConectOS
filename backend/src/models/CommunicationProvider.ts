@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
 
-export type ProviderType = 'mock' | 'resend' | 'twilio' | 'whatsapp' | 'meta_instagram' | 'meta_messenger' | 'custom_webhook';
+export type ProviderType = 'mock' | 'resend' | 'smtp' | 'twilio' | 'whatsapp' | 'meta_instagram' | 'meta_messenger' | 'custom_webhook';
 export type ProviderStatus = 'active' | 'inactive' | 'error';
 
 export interface ICommunicationProvider extends Document {
@@ -27,7 +27,7 @@ const CommunicationProviderSchema = new Schema<ICommunicationProvider>(
     },
     providerType: {
       type: String,
-      enum: ['mock', 'resend', 'twilio', 'whatsapp', 'meta_instagram', 'meta_messenger', 'custom_webhook'],
+      enum: ['mock', 'resend', 'smtp', 'twilio', 'whatsapp', 'meta_instagram', 'meta_messenger', 'custom_webhook'],
       required: true,
       default: 'mock',
     },
