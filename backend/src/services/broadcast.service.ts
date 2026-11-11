@@ -92,9 +92,7 @@ export class BroadcastService {
       channel: data.channel || 'whatsapp',
       messageBody: data.messageBody.trim(),
       templateName: data.templateName?.trim(),
-      templateLanguage:
-        data.templateLanguage?.trim() ||
-        (data.templateName?.startsWith('misc_') ? 'en' : 'en_US'),
+      templateLanguage: data.templateLanguage?.trim() || 'en_US',
       templateVariables: data.templateVariables,
       attachment: data.attachment,
       totalRecipients: validRecipients.length,
@@ -175,9 +173,7 @@ export class BroadcastService {
               ? {
                   type: 'template',
                   templateName: campaign.templateName,
-                  templateLanguage:
-                    campaign.templateLanguage ||
-                    (campaign.templateName.startsWith('misc_') ? 'en' : 'en_US'),
+                  templateLanguage: campaign.templateLanguage || 'en_US',
                   recipientName: rec.name,
                   variableValues: recipientVariableValues,
                 }

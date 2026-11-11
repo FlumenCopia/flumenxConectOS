@@ -4,6 +4,11 @@ import {
   IProviderSendResult,
 } from './provider.interface';
 import { logger } from '../../config/logger';
+import {
+  buildTwilioWebhookUrl,
+  resolveTwilioWebhookBaseUrl,
+  verifyTwilioRequestSignature,
+} from '../../utils/crypto';
 
 export interface ITwilioProviderConfig {
   accountSid: string;
@@ -126,8 +131,51 @@ export class TwilioProvider implements ICommunicationProviderInterface {
     }
   }
 
+  /**
+   * Verifies incoming Twilio webhook requests against X-Twilio-Signature.
+   */
   verifyWebhook(headers: Record<string, any>, rawBody: any, secret?: string): boolean {
-    return true;
+    const authToken = secret !== undefined ? secret.trim() : this.config.authToken;
+    if (!authToken) {
+      return false;
+    }
+
+    const sigHeader = headers?.['x-twilio-signature'] ?? headers?.['X-Twilio-Signature'];
+    const explicitUrl = headers?.['x-twilio-webhook-url'] ?? headers?.['X-Twilio-Webhook-Url'];
+    const pathOrUrl =
+      typeof explicitUrl === 'string' && explicitUrl.trim() ? explicitUrl.trim() : '';
+
+    let verificationUrl = '';
+    if (pathOrUrl.startsWith('https://') || pathOrUrl.startsWith('http://')) {
+      verificationUrl = pathOrUrl;
+    } else if (pathOrUrl) {
+      const baseResolution = resolveTwilioWebhookBaseUrl();
+      if (!baseResolution.valid || !baseResolution.baseUrl) {
+        return false;
+      }
+      verificationUrl = buildTwilioWebhookUrl(baseResolution.baseUrl, pathOrUrl);
+    } else {
+      return false;
+    }
+
+    const contentTypeHeader = headers?.['content-type'] ?? headers?.['Content-Type'];
+    const isStructured =
+      rawBody &&
+      typeof rawBody === 'object' &&
+      !Buffer.isBuffer(rawBody) &&
+      ('body' in rawBody || 'rawBody' in rawBody);
+
+    return verifyTwilioRequestSignature({
+      url: verificationUrl,
+      signatureHeader: sigHeader,
+      authToken,
+      contentType:
+        typeof contentTypeHeader === 'string'
+          ? contentTypeHeader
+          : 'application/x-www-form-urlencoded',
+      body: isStructured ? rawBody.body : rawBody,
+      rawBody: isStructured ? rawBody.rawBody : Buffer.isBuffer(rawBody) ? rawBody : undefined,
+    }).valid;
   }
 
   async processWebhook(headers: Record<string, any>, body: any): Promise<any> {

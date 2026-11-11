@@ -8,6 +8,7 @@ import { ResendProvider } from './resend.provider';
 import { SmtpProvider } from './smtp.provider';
 import { CommunicationProvider } from '../../models/CommunicationProvider';
 import { logger } from '../../config/logger';
+import { decryptProviderConfiguration } from '../../utils/crypto';
 
 export class ProviderManager {
   private static mockProvider = new MockCommunicationProvider();
@@ -50,19 +51,21 @@ export class ProviderManager {
       }
 
       if (configuredProvider) {
+        const cfg = decryptProviderConfiguration(configuredProvider.configuration || {});
+
         switch (configuredProvider.providerType) {
           case 'whatsapp': {
-            const cfg = configuredProvider.configuration || {};
-            const phoneNumberId = cfg.phoneNumberId || process.env.WHATSAPP_PHONE_NUMBER_ID;
-            const accessToken = cfg.accessToken || process.env.WHATSAPP_ACCESS_TOKEN;
+            const phoneNumberId = cfg.phoneNumberId;
+            const accessToken = cfg.accessToken;
             if (phoneNumberId && accessToken) {
               return new WhatsAppCloudProvider({
                 phoneNumberId,
                 accessToken,
-                wabaId: cfg.wabaId || process.env.WHATSAPP_WABA_ID,
-                appSecret: cfg.appSecret || process.env.META_APP_SECRET,
+                wabaId: cfg.wabaId,
+                appSecret: cfg.appSecret,
                 defaultTemplateName: cfg.defaultTemplateName,
                 defaultTemplateLanguage: cfg.defaultTemplateLanguage,
+                defaultHeaderImageUrl: cfg.defaultHeaderImageUrl,
               });
             }
             logger.warn(`WhatsApp provider configured for client ${clientId} missing phoneNumberId or accessToken; falling back to Mock Provider.`);
@@ -70,16 +73,8 @@ export class ProviderManager {
           }
 
           case 'meta_instagram': {
-            const cfg = configuredProvider.configuration || {};
-            const instagramAccountId =
-              process.env.META_INSTAGRAM_ACCOUNT_ID ||
-              cfg.instagramAccountId ||
-              '17841470625900032';
-            const pageAccessToken =
-              process.env.META_PAGE_ACCESS_TOKEN ||
-              process.env.INSTAGRAM_PAGE_ACCESS_TOKEN ||
-              cfg.pageAccessToken ||
-              cfg.accessToken;
+            const instagramAccountId = cfg.instagramAccountId;
+            const pageAccessToken = cfg.pageAccessToken || cfg.accessToken;
 
             if (instagramAccountId && pageAccessToken) {
               return new InstagramProvider({
@@ -92,33 +87,24 @@ export class ProviderManager {
           }
 
           case 'meta_messenger': {
-            const cfg = configuredProvider.configuration || {};
-            const pageId =
-              process.env.META_PAGE_ID ||
-              cfg.pageId ||
-              '1383901031476683';
-            const pageAccessToken =
-              process.env.META_PAGE_ACCESS_TOKEN ||
-              process.env.MESSENGER_PAGE_ACCESS_TOKEN ||
-              cfg.pageAccessToken ||
-              cfg.accessToken;
+            const pageId = cfg.pageId || cfg.facebookPageId;
+            const pageAccessToken = cfg.pageAccessToken || cfg.accessToken;
 
-            if (pageAccessToken) {
+            if (pageId && pageAccessToken) {
               return new MessengerProvider({
                 pageId,
                 pageAccessToken,
               });
             }
-            logger.warn(`Messenger provider configured for client ${clientId} missing pageAccessToken; falling back to Mock Provider.`);
+            logger.warn(`Messenger provider configured for client ${clientId} missing pageId or pageAccessToken; falling back to Mock Provider.`);
             return this.mockProvider;
           }
 
           case 'twilio':
           case 'sms' as any: {
-            const cfg = configuredProvider.configuration || {};
-            const accountSid = cfg.accountSid || process.env.TWILIO_ACCOUNT_SID;
-            const authToken = cfg.authToken || process.env.TWILIO_AUTH_TOKEN;
-            const fromNumber = cfg.fromNumber || process.env.TWILIO_FROM_NUMBER;
+            const accountSid = cfg.accountSid;
+            const authToken = cfg.authToken;
+            const fromNumber = cfg.fromNumber;
 
             if (accountSid && authToken && fromNumber) {
               return new TwilioProvider({
@@ -132,18 +118,17 @@ export class ProviderManager {
           }
 
           case 'smtp': {
-            const cfg = configuredProvider.configuration || {};
-            const user = cfg.user || process.env.SMTP_USER || 'flumenxmarketing@gmail.com';
-            const pass = cfg.pass || process.env.SMTP_PASS;
+            const user = cfg.user;
+            const pass = cfg.pass;
             if (user && pass) {
               return new SmtpProvider({
-                host: cfg.host || process.env.SMTP_HOST,
-                port: cfg.port || (process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined),
-                secure: cfg.secure !== undefined ? cfg.secure : (process.env.SMTP_SECURE === 'true'),
+                host: cfg.host,
+                port: cfg.port ? Number(cfg.port) : undefined,
+                secure: cfg.secure,
                 user,
                 pass,
-                fromName: cfg.fromName || process.env.SMTP_FROM_NAME,
-                fromEmail: cfg.fromEmail || process.env.SMTP_FROM_EMAIL || user,
+                fromName: cfg.fromName,
+                fromEmail: cfg.fromEmail || user,
               });
             }
             logger.warn(`SMTP provider configured for client ${clientId} missing user or pass; falling back to Mock Provider.`);
@@ -152,21 +137,20 @@ export class ProviderManager {
 
           case 'resend':
           case 'email' as any: {
-            const cfg = configuredProvider.configuration || {};
-            if (cfg.user && (cfg.pass || process.env.SMTP_PASS)) {
+            if (cfg.user && cfg.pass) {
               return new SmtpProvider({
-                host: cfg.host || process.env.SMTP_HOST,
-                port: cfg.port || (process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : undefined),
-                secure: cfg.secure !== undefined ? cfg.secure : (process.env.SMTP_SECURE === 'true'),
+                host: cfg.host,
+                port: cfg.port ? Number(cfg.port) : undefined,
+                secure: cfg.secure,
                 user: cfg.user,
-                pass: cfg.pass || process.env.SMTP_PASS,
-                fromName: cfg.fromName || process.env.SMTP_FROM_NAME,
-                fromEmail: cfg.fromEmail || process.env.SMTP_FROM_EMAIL || cfg.user,
+                pass: cfg.pass,
+                fromName: cfg.fromName,
+                fromEmail: cfg.fromEmail || cfg.user,
               });
             }
 
-            const apiKey = cfg.apiKey || process.env.RESEND_API_KEY;
-            const fromEmail = cfg.fromEmail || process.env.RESEND_FROM_EMAIL;
+            const apiKey = cfg.apiKey;
+            const fromEmail = cfg.fromEmail;
 
             if (apiKey) {
               return new ResendProvider({
@@ -181,67 +165,6 @@ export class ProviderManager {
           case 'mock':
           default:
             return this.mockProvider;
-        }
-      }
-
-      // 3. Fallback to environment variables if no database document exists
-      if (normalizedChannel === 'meta_instagram') {
-        const instagramAccountId = process.env.META_INSTAGRAM_ACCOUNT_ID || '17841470625900032';
-        const pageAccessToken = process.env.META_PAGE_ACCESS_TOKEN || process.env.INSTAGRAM_PAGE_ACCESS_TOKEN;
-        if (pageAccessToken) {
-          return new InstagramProvider({
-            instagramAccountId,
-            pageAccessToken,
-          });
-        }
-      }
-
-      if (normalizedChannel === 'meta_messenger') {
-        const pageId = process.env.META_PAGE_ID || '1383901031476683';
-        const pageAccessToken = process.env.META_PAGE_ACCESS_TOKEN;
-        if (pageAccessToken) {
-          return new MessengerProvider({
-            pageId,
-            pageAccessToken,
-          });
-        }
-      }
-
-      if (normalizedChannel === 'sms' || normalizedChannel === 'twilio') {
-        const accountSid = process.env.TWILIO_ACCOUNT_SID;
-        const authToken = process.env.TWILIO_AUTH_TOKEN;
-        const fromNumber = process.env.TWILIO_FROM_NUMBER;
-        if (accountSid && authToken && fromNumber) {
-          return new TwilioProvider({
-            accountSid,
-            authToken,
-            fromNumber,
-          });
-        }
-      }
-
-      if (normalizedChannel === 'email' || normalizedChannel === 'smtp' || normalizedChannel === 'resend') {
-        const smtpUser = process.env.SMTP_USER || 'flumenxmarketing@gmail.com';
-        const smtpPass = process.env.SMTP_PASS;
-        if (smtpUser && smtpPass) {
-          return new SmtpProvider({
-            host: process.env.SMTP_HOST || 'smtp.gmail.com',
-            port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 465,
-            secure: process.env.SMTP_SECURE !== 'false',
-            user: smtpUser,
-            pass: smtpPass,
-            fromName: process.env.SMTP_FROM_NAME || 'FlumenX ConnectOS',
-            fromEmail: process.env.SMTP_FROM_EMAIL || smtpUser,
-          });
-        }
-
-        const apiKey = process.env.RESEND_API_KEY;
-        const fromEmail = process.env.RESEND_FROM_EMAIL;
-        if (apiKey) {
-          return new ResendProvider({
-            apiKey,
-            fromEmail,
-          });
         }
       }
     } catch (err) {

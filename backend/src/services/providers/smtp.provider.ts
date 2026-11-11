@@ -29,7 +29,7 @@ export class SmtpProvider implements ICommunicationProviderInterface {
       user: config.user?.trim() || '',
       pass: config.pass?.trim() || '',
       fromName: config.fromName?.trim() || 'FlumenX ConnectOS',
-      fromEmail: config.fromEmail?.trim() || config.user?.trim() || 'flumenxmarketing@gmail.com',
+      fromEmail: config.fromEmail?.trim() || config.user?.trim() || '',
     };
 
     this.transporter = nodemailer.createTransport({

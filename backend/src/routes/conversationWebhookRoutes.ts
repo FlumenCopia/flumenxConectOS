@@ -1,6 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { handleInboundWebhook, verifyWebhookChallenge } from '../controllers/conversationWebhookController';
 import { webhookRateLimiter } from '../middleware/rateLimit';
+import { requireValidMetaWebhookSignature } from '../middleware/metaWebhookAuth';
+import { requireValidTwilioWebhookSignature } from '../middleware/twilioWebhookAuth';
 import { validate } from '../middleware/validate';
 import { inboundWebhookSchema } from '../validators/conversationValidators';
 
@@ -23,7 +25,7 @@ const conditionalValidate = (req: Request, res: Response, next: NextFunction) =>
 };
 
 // POST: Inbound webhook ingestion with rate limit
-router.post('/', webhookRateLimiter, conditionalValidate, handleInboundWebhook);
-router.post('/whatsapp', webhookRateLimiter, conditionalValidate, handleInboundWebhook);
+router.post('/', webhookRateLimiter, requireValidMetaWebhookSignature, requireValidTwilioWebhookSignature, conditionalValidate, handleInboundWebhook);
+router.post('/whatsapp', webhookRateLimiter, requireValidMetaWebhookSignature, requireValidTwilioWebhookSignature, conditionalValidate, handleInboundWebhook);
 
 export default router;

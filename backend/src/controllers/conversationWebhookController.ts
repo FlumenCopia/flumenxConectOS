@@ -1,27 +1,43 @@
 import { Request, Response, NextFunction } from 'express';
 import { ConversationWebhookService } from '../services/conversationWebhook.service';
-import { sendSuccess } from '../utils/response';
+import { sendError, sendSuccess } from '../utils/response';
 import { logger } from '../config/logger';
+import { verifyMetaVerifyToken } from '../utils/crypto';
 
 /**
  * Handles GET verification handshake from Meta (hub.mode, hub.challenge, hub.verify_token)
  */
 export const verifyWebhookChallenge = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const configuredVerifyToken = (process.env.META_VERIFY_TOKEN || '').trim();
+    if (!configuredVerifyToken) {
+      logger.error('[Webhook] Meta verification handshake rejected: META_VERIFY_TOKEN is not configured.');
+      return sendError(res, 'Meta webhook verification token is not configured', 503);
+    }
+
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
-    if (mode === 'subscribe' && challenge) {
-      logger.info(`[Webhook] Meta verification handshake succeeded with verify_token=${token}`);
-      // Meta strictly expects plain-text response containing the exact challenge value
-      return res.status(200).send(challenge);
+    if (mode !== 'subscribe') {
+      logger.warn('[Webhook] Meta verification handshake rejected: invalid or missing hub.mode.');
+      return sendError(res, 'Invalid Meta webhook verification mode', 400);
     }
 
-    return res.status(200).json({
-      status: 'active',
-      message: 'FlumenX ConectOS Messaging Webhook Endpoint is online and listening',
-    });
+    if (typeof challenge !== 'string' || challenge.length === 0) {
+      logger.warn('[Webhook] Meta verification handshake rejected: missing hub.challenge.');
+      return sendError(res, 'Missing Meta webhook challenge parameter', 400);
+    }
+
+    const tokenVerification = verifyMetaVerifyToken(token, configuredVerifyToken);
+    if (!tokenVerification.valid) {
+      logger.warn(`[Webhook] Meta verification handshake rejected (${tokenVerification.reason}).`);
+      return sendError(res, 'Invalid or missing Meta webhook verify token', 403);
+    }
+
+    logger.info('[Webhook] Meta verification handshake succeeded.');
+    // Meta strictly expects plain-text response containing the exact challenge value
+    return res.status(200).type('text/plain').send(challenge);
   } catch (error) {
     return next(error);
   }
@@ -64,7 +80,10 @@ export const handleInboundWebhook = async (req: Request, res: Response, next: Ne
 
     // 1d. Check if Twilio SMS webhook format (AccountSid & MessageSid present)
     if (req.body?.AccountSid && req.body?.MessageSid) {
-      const twilioResult = await ConversationWebhookService.processTwilioWebhook(req.body);
+      const twilioResult = await ConversationWebhookService.processTwilioWebhook(
+        req.body,
+        req.verifiedTwilioProvider
+      );
       res.type('text/xml');
       return res.status(200).send('<Response></Response>');
     }

@@ -9,6 +9,8 @@ declare global {
       auth?: JwtPayload;
       resolvedClientId?: string;
       clientMembership?: IClientMembership;
+      rawBody?: Buffer;
+      verifiedTwilioProvider?: any;
     }
   }
 }

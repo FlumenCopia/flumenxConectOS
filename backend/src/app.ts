@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from 'express';
+import { IncomingMessage, ServerResponse } from 'http';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { env } from './config/env';
@@ -8,6 +9,16 @@ import apiRouter from './routes';
 import { sendError } from './utils/response';
 
 import publicFormRoutes from './routes/publicFormRoutes';
+
+interface RawBodyIncomingMessage extends IncomingMessage {
+  rawBody?: Buffer;
+}
+
+const captureRawBody = (req: IncomingMessage, _res: ServerResponse, buf: Buffer): void => {
+  if (Buffer.isBuffer(buf) && buf.length > 0) {
+    (req as RawBodyIncomingMessage).rawBody = buf;
+  }
+};
 
 const app: Application = express();
 
@@ -44,9 +55,9 @@ app.use(
 
 import path from 'path';
 
-// Body and Cookie Parsers (supports image and PDF base64 payloads)
-app.use(express.json({ limit: '25mb' }));
-app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+// Body and Cookie Parsers (supports image and PDF base64 payloads; captures raw bytes for webhook HMAC verification)
+app.use(express.json({ limit: '25mb', verify: captureRawBody }));
+app.use(express.urlencoded({ extended: true, limit: '25mb', verify: captureRawBody }));
 app.use(cookieParser());
 
 // Serve static uploads (broadcast media attachments, images, PDFs)

@@ -6,6 +6,11 @@ import { LeadActivityService } from './leadActivity.service';
 import { AuditService } from './audit.service';
 import { TaskAutoFollowupService } from './taskAutoFollowup.service';
 import { AppError } from '../middleware/errorHandler';
+import {
+  hashWebhookSecret,
+  validateWebhookTimestampValue,
+  verifyWebhookSecretHash,
+} from '../utils/crypto';
 
 export interface WebhookIntakeContext {
   ip?: string;
@@ -18,7 +23,7 @@ export class LeadWebhookService {
    * Hashes a raw secret using SHA-256.
    */
   private static hashSecret(rawSecret: string): string {
-    return crypto.createHash('sha256').update(rawSecret).digest('hex');
+    return hashWebhookSecret(rawSecret);
   }
 
   /**
@@ -207,22 +212,6 @@ export class LeadWebhookService {
       throw new AppError('Missing webhook authentication credentials (key or secret).', 401);
     }
 
-    // Replay attack and timestamp check (if timestamp header provided)
-    if (ctx.timestampHeader) {
-      const ts = Number(ctx.timestampHeader);
-      if (isNaN(ts) || Math.abs(Date.now() - ts) > 5 * 60 * 1000) {
-        await AuditService.log({
-          action: 'webhook.replay_rejected',
-          resourceType: 'webhook',
-          ipAddress: ctx.ip,
-          userAgent: ctx.userAgent,
-          success: false,
-          metadata: { keyId, providedTimestamp: ctx.timestampHeader },
-        });
-        throw new AppError('Webhook request timestamp expired or invalid. Replay rejected.', 400);
-      }
-    }
-
     const webhook = await ClientWebhook.findOne({ keyId }).select('+secretHash');
     if (!webhook || webhook.status !== 'active') {
       await AuditService.log({
@@ -236,8 +225,7 @@ export class LeadWebhookService {
       throw new AppError('Invalid or inactive webhook credential.', 401);
     }
 
-    const incomingHash = this.hashSecret(rawSecret);
-    if (!this.secureCompare(incomingHash, webhook.secretHash)) {
+    if (!verifyWebhookSecretHash(rawSecret, webhook.secretHash)) {
       await AuditService.log({
         action: 'webhook.invalid_secret',
         resourceType: 'webhook',
@@ -249,6 +237,24 @@ export class LeadWebhookService {
         metadata: { keyId },
       });
       throw new AppError('Invalid webhook secret.', 401);
+    }
+
+    // Replay attack and timestamp check (whenever timestamp header is supplied)
+    if (ctx.timestampHeader !== undefined) {
+      const tsCheck = validateWebhookTimestampValue(ctx.timestampHeader, 5 * 60 * 1000);
+      if (!tsCheck.valid) {
+        await AuditService.log({
+          action: 'webhook.replay_rejected',
+          resourceType: 'webhook',
+          resourceId: webhook._id.toString(),
+          clientId: webhook.clientId.toString(),
+          ipAddress: ctx.ip,
+          userAgent: ctx.userAgent,
+          success: false,
+          metadata: { keyId, reason: tsCheck.reason || 'invalid_timestamp' },
+        });
+        throw new AppError('Webhook request timestamp expired or invalid. Replay rejected.', 400);
+      }
     }
 
     // Strict tenant boundary: the lead is ALWAYS bound to webhook.clientId

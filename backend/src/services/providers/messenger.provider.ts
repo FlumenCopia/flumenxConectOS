@@ -4,6 +4,7 @@ import {
   IProviderSendResult,
 } from './provider.interface';
 import { logger } from '../../config/logger';
+import { verifyMetaWebhookHeaders } from '../../utils/crypto';
 
 export interface IMessengerProviderConfig {
   pageId?: string;
@@ -36,11 +37,11 @@ export class MessengerProvider implements ICommunicationProviderInterface {
       };
     }
 
-    if (!this.config.pageAccessToken) {
+    if (!this.config.pageId || !this.config.pageAccessToken) {
       return {
         success: false,
         deliveryStatus: 'failed',
-        failureReason: 'Facebook Page Access Token is missing.',
+        failureReason: 'Facebook Page ID and Page Access Token are required.',
       };
     }
 
@@ -55,24 +56,28 @@ export class MessengerProvider implements ICommunicationProviderInterface {
       };
     }
 
-    // Check if sending as a template message (e.g. misc_website_view)
-    const isTemplate =
-      params.metadata?.type === 'template' ||
-      params.metadata?.templateName ||
-      params.body?.trim() === '[TEMPLATE:misc_website_view]' ||
-      params.body?.trim() === 'misc_website_view' ||
-      params.body?.includes('[Template:');
+    const websiteUrl =
+      params.metadata?.websiteUrl ||
+      params.metadata?.buttons?.[0]?.url ||
+      '';
+    const imageUrl =
+      params.attachments?.[0]?.url ||
+      params.metadata?.headerImageUrl ||
+      '';
+    const hasTemplateCard = Boolean(
+      (params.metadata?.type === 'template' || params.metadata?.templateName) &&
+      websiteUrl
+    );
 
     let messagePayload: Record<string, any>;
 
-    if (isTemplate) {
+    if (hasTemplateCard) {
       let recipientName =
         params.metadata?.variableValues?.['name'] ||
         params.metadata?.variableValues?.['1'] ||
         params.metadata?.recipientName ||
         '';
 
-      // Discard placeholder names so users never see robotic strings
       if (
         !recipientName ||
         recipientName.startsWith('Facebook User') ||
@@ -84,16 +89,10 @@ export class MessengerProvider implements ICommunicationProviderInterface {
       }
 
       const greeting = recipientName ? `Hi ${recipientName}!` : 'Hi there!';
-
-      const websiteUrl =
-        params.metadata?.websiteUrl ||
-        params.metadata?.buttons?.[0]?.url ||
-        'https://miscarchive.com/';
-
-      const imageUrl =
-        params.attachments?.[0]?.url ||
-        params.metadata?.headerImageUrl ||
-        'https://miscarchive.com/assets/images/42.png';
+      const cardTitle = params.metadata?.templateTitle || 'Explore More';
+      const cardSubtitle =
+        params.metadata?.templateSubtitle ||
+        `${greeting} View details and connect with our team.`.slice(0, 80);
 
       messagePayload = {
         attachment: {
@@ -103,9 +102,9 @@ export class MessengerProvider implements ICommunicationProviderInterface {
             image_aspect_ratio: 'square',
             elements: [
               {
-                title: 'Welcome to Misc Archive! ✨',
-                subtitle: `${greeting} Explore our services and special offers.`.slice(0, 80),
-                image_url: imageUrl,
+                title: cardTitle,
+                subtitle: cardSubtitle,
+                ...(imageUrl ? { image_url: imageUrl } : {}),
                 default_action: {
                   type: 'web_url',
                   url: websiteUrl,
@@ -114,7 +113,7 @@ export class MessengerProvider implements ICommunicationProviderInterface {
                   {
                     type: 'web_url',
                     url: websiteUrl,
-                    title: 'Visit website',
+                    title: params.metadata?.buttons?.[0]?.title || 'Visit website',
                   },
                 ],
               },
@@ -150,9 +149,7 @@ export class MessengerProvider implements ICommunicationProviderInterface {
       message: messagePayload,
     };
 
-    // Primary endpoint for Facebook Messenger API:
-    // System User tokens require the explicit Page ID endpoint. Meta's /me/messages is not supported for System Users.
-    const pageId = this.config.pageId?.trim() || process.env.META_PAGE_ID?.trim() || '1383901031476683';
+    const pageId = this.config.pageId.trim();
     const endpointsToTry: string[] = [
       `https://graph.facebook.com/${this.apiVersion}/${pageId}/messages`,
     ];
@@ -197,7 +194,7 @@ export class MessengerProvider implements ICommunicationProviderInterface {
   }
 
   verifyWebhook(headers: Record<string, any>, rawBody: any, secret?: string): boolean {
-    return true;
+    return verifyMetaWebhookHeaders(headers, rawBody, secret);
   }
 
   async processWebhook(headers: Record<string, any>, body: any): Promise<any> {

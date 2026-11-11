@@ -68,7 +68,7 @@ import {
   ConversationStatus,
   ConversationPriority,
   WhatsAppTemplateItem,
-  getWhatsAppTemplatesApi,
+  getWhatsAppTemplatesInfoApi,
   QuickReplyItem,
   getQuickRepliesApi,
   createQuickReplyApi,
@@ -78,8 +78,10 @@ import {
   UploadAttachmentResult,
 } from '@/lib/conversations';
 import { getWorkspaceTeamApi, ClientMemberItem } from '@/lib/clients';
+import { useAuth } from '@/hooks/useAuth';
 
 function UnifiedInboxContent() {
+  const { activeClient, activeClientId } = useAuth();
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [activeConversation, setActiveConversation] = useState<ConversationItem | null>(null);
@@ -115,20 +117,28 @@ function UnifiedInboxContent() {
 
   // WhatsApp Templates
   const [availableTemplates, setAvailableTemplates] = useState<WhatsAppTemplateItem[]>([]);
+  const [templatesConfigured, setTemplatesConfigured] = useState(false);
+  const [waWabaId, setWaWabaId] = useState<string | null>(null);
+  const [templatesError, setTemplatesError] = useState<string | null>(null);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
 
   const loadTemplates = useCallback(async () => {
+    if (!activeClientId) return;
     setIsLoadingTemplates(true);
+    setTemplatesError(null);
     try {
-      const data = await getWhatsAppTemplatesApi();
-      setAvailableTemplates(data);
-    } catch {
-      // keep fallback
+      const info = await getWhatsAppTemplatesInfoApi();
+      setAvailableTemplates(info.templates || []);
+      setTemplatesConfigured(Boolean(info.configured));
+      setWaWabaId(info.wabaId || null);
+    } catch (err: any) {
+      setAvailableTemplates([]);
+      setTemplatesError(err?.response?.data?.message || 'Failed to sync WhatsApp templates from Meta');
     } finally {
       setIsLoadingTemplates(false);
     }
-  }, []);
+  }, [activeClientId]);
 
   useEffect(() => {
     loadTemplates();
@@ -460,7 +470,7 @@ function UnifiedInboxContent() {
     if (!activeConversationId || isSending) return;
     setIsSending(true);
     setShowTemplateModal(false);
-    const lang = templateLanguage || (templateName === 'misc_website_view' ? 'en' : 'en_US');
+    const lang = templateLanguage || 'en_US';
     const recipientName = activeConversation?.contactId?.name || 'Valued Customer';
     try {
       const newMsg = await sendMessageApi(activeConversationId, {
@@ -1198,51 +1208,23 @@ function UnifiedInboxContent() {
                             </div>
                           )}
 
-                          {msg.body?.includes('misc_website_view') ? (
-                            <div className="space-y-2 text-left">
-                              <div className="rounded-xl overflow-hidden border border-emerald-400/40 bg-emerald-950/30">
-                                <img
-                                  src="https://connectos.flumenx.in/images/logo.png"
-                                  alt="Misc Archive"
-                                  className="w-full max-h-36 object-contain bg-white/10 p-2"
-                                  onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                                />
-                                <div className="p-3 text-xs leading-relaxed">
-                                  <div className="flex items-center gap-1.5 text-emerald-300 font-bold mb-1.5 text-[11px]">
-                                    <Layers className="w-3.5 h-3.5" />
-                                    <span>Misc Archive — Official Notification</span>
-                                  </div>
-                                  <p className="text-white/95">
-                                    Hi {activeConversation?.contactId?.name || 'there'}, greetings from Misc Archive.
-                                  </p>
-                                  <p className="mt-1.5 text-white/85 text-[11px]">
-                                    We&apos;re excited to share our latest collection and special offers with you. Explore our attached catalog to discover more and check out the exclusive deals available.
-                                  </p>
-                                  <p className="mt-1.5 text-white/75 text-[10px]">
-                                    Have any questions? Simply reply to this message, and our team will be happy to assist you!
-                                  </p>
-                                  <div className="mt-2.5 pt-2 border-t border-white/20">
-                                    <a
-                                      href="https://miscarchive.com/"
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-emerald-900 font-bold text-xs shadow hover:bg-emerald-50 transition"
-                                    >
-                                      <ExternalLink className="w-3.5 h-3.5" />
-                                      <span>Visit website</span>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                              <span className="text-[10px] text-white/60 block font-mono">[Template: misc_website_view]</span>
-                            </div>
-                          ) : msg.body?.includes('hello_world') ? (
+                          {msg.body?.includes('hello_world') ? (
                             <div className="space-y-1.5 text-left">
                               <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-400/40 text-xs leading-relaxed text-white/95">
                                 <p className="font-bold text-emerald-300 text-[11px] mb-1">Welcome Greeting (hello_world)</p>
                                 <p>Welcome and congratulations!! This message demonstrates your ability to send a WhatsApp message notification from the Cloud API, hosted by Meta. Thank you for taking the time to test with us.</p>
                               </div>
                               <span className="text-[10px] text-white/60 block font-mono">[Template: hello_world]</span>
+                            </div>
+                          ) : msg.body?.startsWith('[Template:') ? (
+                            <div className="space-y-1.5 text-left">
+                              <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-400/40 text-xs leading-relaxed text-white/95">
+                                <div className="flex items-center gap-1.5 text-emerald-300 font-bold mb-1 text-[11px]">
+                                  <Layers className="w-3.5 h-3.5" />
+                                  <span>{activeClient?.clientName || 'Workspace'} — Template Message</span>
+                                </div>
+                                <p className="font-mono text-xs">{msg.body}</p>
+                              </div>
                             </div>
                           ) : msg.body ? (
                             <p className="whitespace-pre-line">{msg.body}</p>
@@ -1353,41 +1335,59 @@ function UnifiedInboxContent() {
                   <span className="text-[11px] font-semibold">Meta Templates:</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {(availableTemplates.length > 0
-                    ? availableTemplates
-                    : [
-                        { id: 'misc_website_view', name: 'misc_website_view', language: 'en', buttons: [{ text: 'Visit website' }] },
-                        { id: 'hello_world', name: 'hello_world', language: 'en_US', buttons: [] },
-                      ]
-                  ).map((tmpl) => (
-                    <button
-                      key={tmpl.id || tmpl.name}
-                      type="button"
-                      onClick={() => handleSendTemplate(tmpl.name, tmpl.language)}
-                      disabled={!activeConversationId || isSending}
-                      title={`Instantly send ${tmpl.name} template with ${activeConversation?.contactId?.name || 'recipient'}'s name`}
-                      className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-800 hover:bg-emerald-50 hover:text-emerald-900 hover:border-emerald-300 transition shadow-2xs flex items-center gap-1.5 shrink-0 active:scale-95 disabled:opacity-50"
+                {!templatesConfigured && !isLoadingTemplates && !templatesError ? (
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500 shrink-0">
+                    <span>WhatsApp Cloud API is not configured for this workspace.</span>
+                    <Link
+                      href="/client/integrations"
+                      className="font-semibold text-emerald-800 hover:underline shrink-0"
                     >
-                      <span className="font-mono text-[10px]">{tmpl.name}</span>
-                      {tmpl.buttons && tmpl.buttons.length > 0 && (
-                        <span className="text-[9px] px-1 py-0.2 rounded bg-slate-100 text-slate-600 font-sans font-semibold">
-                          +{tmpl.buttons.length} btn
-                        </span>
-                      )}
+                      Configure in Integrations →
+                    </Link>
+                  </div>
+                ) : templatesError ? (
+                  <div className="flex items-center gap-2 text-[11px] text-rose-700 shrink-0">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate max-w-xs">{templatesError}</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowTemplateModal(true)}
+                      className="font-semibold text-emerald-800 hover:underline shrink-0"
+                    >
+                      Details
                     </button>
-                  ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {availableTemplates.map((tmpl) => (
+                      <button
+                        key={tmpl.id || tmpl.name}
+                        type="button"
+                        onClick={() => handleSendTemplate(tmpl.name, tmpl.language)}
+                        disabled={!activeConversationId || isSending}
+                        title={`Instantly send ${tmpl.name} template with ${activeConversation?.contactId?.name || 'recipient'}'s name`}
+                        className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-800 hover:bg-emerald-50 hover:text-emerald-900 hover:border-emerald-300 transition shadow-2xs flex items-center gap-1.5 shrink-0 active:scale-95 disabled:opacity-50"
+                      >
+                        <span className="font-mono text-[10px]">{tmpl.name}</span>
+                        {tmpl.buttons && tmpl.buttons.length > 0 && (
+                          <span className="text-[9px] px-1 py-0.2 rounded bg-slate-100 text-slate-600 font-sans font-semibold">
+                            +{tmpl.buttons.length} btn
+                          </span>
+                        )}
+                      </button>
+                    ))}
 
-                  <button
-                    type="button"
-                    onClick={() => setShowTemplateModal(true)}
-                    disabled={isSending}
-                    className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 hover:underline px-2 py-1 shrink-0 flex items-center gap-1"
-                  >
-                    <span>All ({availableTemplates.length || 2})</span>
-                    <span>→</span>
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowTemplateModal(true)}
+                      disabled={isSending}
+                      className="text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 hover:underline px-2 py-1 shrink-0 flex items-center gap-1"
+                    >
+                      <span>All ({availableTemplates.length})</span>
+                      <span>→</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1894,17 +1894,29 @@ function UnifiedInboxContent() {
             {/* Quick banner with Meta manager link */}
             <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg flex items-center justify-between text-xs text-emerald-900">
               <span className="text-[11px]">
-                Want to create a new custom template with buttons or media?
+                {templatesConfigured
+                  ? 'Want to create a new custom template with buttons or media?'
+                  : 'Connect your WhatsApp Cloud API provider in Integrations to sync Meta templates.'}
               </span>
-              <a
-                href="https://business.facebook.com/wa/manage/message-templates/?waba_id=2381123346055633"
-                target="_blank"
-                rel="noreferrer"
-                className="font-semibold text-emerald-800 hover:underline flex items-center gap-1 shrink-0 ml-2 text-[11px]"
-              >
-                <span>Meta Template Manager</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+              {waWabaId ? (
+                <a
+                  href={`https://business.facebook.com/wa/manage/message-templates/?waba_id=${encodeURIComponent(waWabaId)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-emerald-800 hover:underline flex items-center gap-1 shrink-0 ml-2 text-[11px]"
+                >
+                  <span>Meta Template Manager</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              ) : (
+                <Link
+                  href="/client/integrations"
+                  className="font-semibold text-emerald-800 hover:underline flex items-center gap-1 shrink-0 ml-2 text-[11px]"
+                >
+                  <span>Open Integrations</span>
+                  <ChevronRight className="w-3 h-3" />
+                </Link>
+              )}
             </div>
 
             {/* Templates List */}
@@ -1914,9 +1926,27 @@ function UnifiedInboxContent() {
                   <RotateCw className="w-5 h-5 animate-spin mx-auto text-emerald-600 mb-2" />
                   Fetching approved templates from Meta WhatsApp Cloud API...
                 </div>
+              ) : templatesError ? (
+                <div className="p-6 text-center text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl space-y-2">
+                  <AlertCircle className="w-5 h-5 mx-auto text-rose-600" />
+                  <p className="font-semibold">Unable to fetch Meta templates</p>
+                  <p className="text-[11px]">{templatesError}</p>
+                </div>
+              ) : !templatesConfigured ? (
+                <div className="p-8 text-center text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                  <Layers className="w-6 h-6 mx-auto text-slate-400" />
+                  <p className="font-semibold text-slate-700">WhatsApp Integration Not Configured</p>
+                  <p>
+                    Configure your WhatsApp Phone Number ID, WABA ID, and Access Token under{' '}
+                    <Link href="/client/integrations" className="text-emerald-700 font-semibold underline">
+                      Integrations
+                    </Link>
+                    .
+                  </p>
+                </div>
               ) : availableTemplates.length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-400">
-                  No approved templates found in Meta. You can use the standard <code>hello_world</code> template.
+                  No approved templates found in Meta for this workspace.
                 </div>
               ) : (
                 availableTemplates.map((tmpl) => (
@@ -1945,13 +1975,6 @@ function UnifiedInboxContent() {
                             <span className="text-[10px] font-semibold text-emerald-800 bg-white/80 px-2 py-0.5 rounded border border-emerald-200">
                               Header ({tmpl.headerFormat})
                             </span>
-                            {tmpl.headerFormat === 'IMAGE' && (
-                              <img
-                                src="https://connectos.flumenx.in/images/logo.png"
-                                alt="Header preview"
-                                className="h-10 w-auto object-contain rounded bg-white p-0.5 border border-emerald-200"
-                              />
-                            )}
                           </div>
                         )}
                         <div className="font-sans">

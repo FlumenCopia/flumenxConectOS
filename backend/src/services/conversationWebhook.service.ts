@@ -12,6 +12,12 @@ import { EventDispatcher } from './eventDispatcher.service';
 import { AppError } from '../middleware/errorHandler';
 import { logger } from '../config/logger';
 import { ProviderManager } from './providers/provider.manager';
+import {
+  decryptProviderSecret,
+  hashWebhookSecret,
+  validateWebhookTimestampValue,
+  verifyWebhookSecretHash,
+} from '../utils/crypto';
 
 // 5-minute replay window (300 seconds)
 const MAX_TIMESTAMP_DRIFT_MS = 300 * 1000;
@@ -31,52 +37,117 @@ export class ConversationWebhookService {
       attachments?: Array<{ name: string; url: string; size?: number; mimeType?: string }>;
       timestamp?: string | number;
     },
-    providedClientId?: string
+    providedClientId?: unknown
   ): Promise<{ success: boolean; duplicate: boolean; messageId: string; conversationId: string }> {
-    const rawSecret = headers['x-webhook-secret'] || headers['x-mock-secret'];
+    const getHeaderEntry = (
+      headerMap: Record<string, any>,
+      targetName: string
+    ): { present: boolean; value: unknown } => {
+      if (!headerMap || typeof headerMap !== 'object') {
+        return { present: false, value: undefined };
+      }
+      const lowerTarget = targetName.toLowerCase();
+      for (const [k, v] of Object.entries(headerMap)) {
+        if (k.toLowerCase() === lowerTarget) {
+          return { present: true, value: v };
+        }
+      }
+      return { present: false, value: undefined };
+    };
+
+    const isIsolatedTestEnvironment = (): boolean => process.env.NODE_ENV === 'test';
+
+    const webhookSecretEntry = getHeaderEntry(headers, 'x-webhook-secret');
+    const mockSecretEntry = isIsolatedTestEnvironment()
+      ? getHeaderEntry(headers, 'x-mock-secret')
+      : { present: false, value: undefined };
+
+    let rawSecret = '';
+    if (typeof webhookSecretEntry.value === 'string' && webhookSecretEntry.value.trim()) {
+      rawSecret = webhookSecretEntry.value.trim();
+    } else if (
+      isIsolatedTestEnvironment() &&
+      typeof mockSecretEntry.value === 'string' &&
+      mockSecretEntry.value.trim()
+    ) {
+      rawSecret = mockSecretEntry.value.trim();
+    }
+
     if (!rawSecret) {
       throw new AppError('Webhook secret missing. Provide X-Webhook-Secret header.', 401);
     }
 
-    // 1. Verify Secret & Resolve Client
-    const secretHash = crypto.createHash('sha256').update(rawSecret).digest('hex');
-    let resolvedClientId = providedClientId;
+    // 1. Verify Secret Strictly Against Both Credential Collections & Derive Workspace Exclusively from Single Match
+    const secretHash = hashWebhookSecret(rawSecret);
+    const [webhookDocs, providerDocs] = await Promise.all([
+      ClientWebhook.find({ secretHash, status: 'active' }).select('+secretHash'),
+      CommunicationProvider.find({
+        webhookSecretHash: secretHash,
+        status: 'active',
+      }).select('+webhookSecretHash'),
+    ]);
 
-    // Check in ClientWebhook or CommunicationProvider
-    if (!resolvedClientId) {
-      const webhookDoc = await ClientWebhook.findOne({ secretHash, status: 'active' });
-      if (webhookDoc) {
-        resolvedClientId = webhookDoc.clientId.toString();
-        webhookDoc.lastUsedAt = new Date();
-        await webhookDoc.save();
-      } else {
-        const providerDoc = await CommunicationProvider.findOne({ webhookSecretHash: secretHash, status: 'active' });
-        if (providerDoc) {
-          resolvedClientId = providerDoc.clientId.toString();
-        }
-      }
+    const validWebhookMatches = webhookDocs.filter(
+      (doc) => typeof doc.secretHash === 'string' && verifyWebhookSecretHash(rawSecret, doc.secretHash)
+    );
+    const validProviderMatches = providerDocs.filter(
+      (doc) =>
+        typeof doc.webhookSecretHash === 'string' &&
+        verifyWebhookSecretHash(rawSecret, doc.webhookSecretHash)
+    );
+
+    const totalMatches = validWebhookMatches.length + validProviderMatches.length;
+    if (totalMatches > 1) {
+      throw new AppError('Ambiguous webhook credential match.', 401);
+    }
+    if (totalMatches === 0) {
+      throw new AppError('Invalid or inactive webhook secret.', 401);
     }
 
-    if (!resolvedClientId) {
-      throw new AppError('Invalid or inactive webhook secret.', 401);
+    let resolvedClientId = '';
+    let matchedWebhookDoc: any = null;
+    if (validWebhookMatches.length === 1) {
+      matchedWebhookDoc = validWebhookMatches[0];
+      resolvedClientId = matchedWebhookDoc.clientId.toString();
+    } else {
+      resolvedClientId = validProviderMatches[0].clientId.toString();
+    }
+
+    // Never allow URL query ?clientId= to bypass authentication or override resolved workspace
+    if (providedClientId !== undefined) {
+      const normalizedProvidedClientId =
+        typeof providedClientId === 'string' ? providedClientId.trim() : '';
+      if (!normalizedProvidedClientId || normalizedProvidedClientId !== resolvedClientId) {
+        throw new AppError(
+          'Webhook clientId does not match authenticated credential workspace.',
+          403
+        );
+      }
     }
 
     const clientObjectId = new mongoose.Types.ObjectId(resolvedClientId);
 
-    // 2. Replay Attack Defense (Timestamp Freshness)
-    const timestampHeader = headers['x-webhook-timestamp'] || payload.timestamp;
-    if (timestampHeader) {
-      const parsedTime = typeof timestampHeader === 'number'
-        ? (timestampHeader < 1e12 ? timestampHeader * 1000 : timestampHeader)
-        : isNaN(Number(timestampHeader))
-        ? Date.parse(timestampHeader)
-        : Number(timestampHeader) < 1e12
-        ? Number(timestampHeader) * 1000
-        : Number(timestampHeader);
-
-      if (isNaN(parsedTime) || Math.abs(Date.now() - parsedTime) > MAX_TIMESTAMP_DRIFT_MS) {
+    // 2. Replay Attack Defense (Timestamp Freshness) — checked before any DB writes
+    const timestampHeaderEntry = getHeaderEntry(headers, 'x-webhook-timestamp');
+    if (timestampHeaderEntry.present) {
+      const headerCheck = validateWebhookTimestampValue(
+        timestampHeaderEntry.value,
+        MAX_TIMESTAMP_DRIFT_MS
+      );
+      if (!headerCheck.valid) {
         throw new AppError('Webhook request timestamp expired or invalid. Replay rejected.', 400);
       }
+    }
+    if (payload.timestamp !== undefined) {
+      const bodyCheck = validateWebhookTimestampValue(payload.timestamp, MAX_TIMESTAMP_DRIFT_MS);
+      if (!bodyCheck.valid) {
+        throw new AppError('Webhook request timestamp expired or invalid. Replay rejected.', 400);
+      }
+    }
+
+    if (matchedWebhookDoc) {
+      matchedWebhookDoc.lastUsedAt = new Date();
+      await matchedWebhookDoc.save();
     }
 
     // 3. Idempotency Check
@@ -218,23 +289,14 @@ export class ConversationWebhookService {
 
         const phoneNumberId = value.metadata?.phone_number_id;
 
-        // Resolve client workspace owning this phone number ID
-        let providerDoc = null;
-        if (phoneNumberId) {
-          providerDoc = await CommunicationProvider.findOne({
-            'configuration.phoneNumberId': phoneNumberId,
-            providerType: 'whatsapp',
-            status: 'active',
-          });
-        }
-
-        if (!providerDoc) {
-          // Fallback to any active WhatsApp provider
-          providerDoc = await CommunicationProvider.findOne({
-            providerType: 'whatsapp',
-            status: 'active',
-          });
-        }
+        // Resolve client workspace strictly owning this phone number ID
+        const providerDoc = phoneNumberId
+          ? await CommunicationProvider.findOne({
+              'configuration.phoneNumberId': phoneNumberId,
+              providerType: 'whatsapp',
+              status: 'active',
+            })
+          : null;
 
         if (!providerDoc) {
           logger.warn(`No active WhatsApp provider found for incoming Meta webhook (phone_number_id=${phoneNumberId})`);
@@ -366,50 +428,61 @@ export class ConversationWebhookService {
               deliveredAt: new Date(),
             });
 
-            // Instant Auto-Reply for WhatsApp
-            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-            const recentBotReply = await Message.findOne({
-              conversationId: conversation._id,
-              senderType: 'bot',
-              createdAt: { $gte: tenMinutesAgo },
-            });
+            // Optional Workspace-Configured Auto-Reply for WhatsApp (10-min cooldown prevents loops)
+            if (providerDoc.configuration?.autoReplyEnabled === true) {
+              const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+              const recentBotReply = await Message.findOne({
+                conversationId: conversation._id,
+                senderType: 'bot',
+                createdAt: { $gte: tenMinutesAgo },
+              });
 
-            if (!recentBotReply) {
-              try {
-                const provider = await ProviderManager.getProvider(clientId, 'whatsapp');
-                const recipientName =
-                  contact.name && !contact.name.startsWith('+') ? contact.name : 'Valued Customer';
-                const autoReplyText = `Hi ${recipientName}, thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
+              if (!recentBotReply) {
+                try {
+                  const provider = await ProviderManager.getProvider(clientId, 'whatsapp');
+                  const recipientName =
+                    contact.name && !contact.name.startsWith('+') ? contact.name : 'Valued Customer';
+                  const configuredTemplateName = providerDoc.configuration?.autoReplyTemplateName;
+                  const configuredMessage =
+                    providerDoc.configuration?.autoReplyMessage ||
+                    `Hi ${recipientName}, thanks for contacting us! We've received your message and our team will get back to you shortly.`;
 
-                const sendResult = await provider.sendMessage({
-                  to: contact.phone || `+${fromPhone}`,
-                  channel: 'whatsapp',
-                  body: autoReplyText,
-                  metadata: {
-                    type: 'template',
-                    templateName: 'misc_website_view',
-                    recipientName,
-                  },
-                });
-
-                if (sendResult.success) {
-                  await Message.create({
-                    clientId: clientObjectId,
-                    conversationId: conversation._id,
-                    senderType: 'bot',
-                    senderName: 'FlumenX Assistant',
+                  const sendResult = await provider.sendMessage({
+                    to: contact.phone || `+${fromPhone}`,
                     channel: 'whatsapp',
-                    direction: 'outbound',
-                    body: `[Template: misc_website_view]`,
-                    deliveryStatus: 'sent',
-                    deliveredAt: new Date(),
+                    body: configuredMessage,
+                    metadata: configuredTemplateName
+                      ? {
+                          type: 'template',
+                          templateName: configuredTemplateName,
+                          templateLanguage: providerDoc.configuration?.autoReplyTemplateLanguage || 'en_US',
+                          recipientName,
+                        }
+                      : undefined,
                   });
-                  conversation.lastMessageSnippet = `[Template: misc_website_view]`;
-                  await conversation.save();
-                  logger.info(`[WhatsApp AutoReply] Automated reply dispatched to ${fromPhone}`);
+
+                  if (sendResult.success) {
+                    const storedSnippet = configuredTemplateName
+                      ? `[Template: ${configuredTemplateName}]`
+                      : configuredMessage;
+                    await Message.create({
+                      clientId: clientObjectId,
+                      conversationId: conversation._id,
+                      senderType: 'bot',
+                      senderName: 'Assistant',
+                      channel: 'whatsapp',
+                      direction: 'outbound',
+                      body: storedSnippet,
+                      deliveryStatus: 'sent',
+                      deliveredAt: new Date(),
+                    });
+                    conversation.lastMessageSnippet = storedSnippet.slice(0, 120);
+                    await conversation.save();
+                    logger.info(`[WhatsApp AutoReply] Automated reply dispatched to ${fromPhone}`);
+                  }
+                } catch (autoErr) {
+                  logger.warn('[WhatsApp AutoReply] Failed to dispatch automated reply:', autoErr);
                 }
-              } catch (autoErr) {
-                logger.warn('[WhatsApp AutoReply] Failed to dispatch automated reply:', autoErr);
               }
             }
 
@@ -469,23 +542,14 @@ export class ConversationWebhookService {
     for (const entry of body.entry) {
       const accountId = entry.id; // Instagram Business Account ID
 
-      // Resolve communication provider for client workspace
-      let providerDoc = null;
-      if (accountId) {
-        providerDoc = await CommunicationProvider.findOne({
-          'configuration.instagramAccountId': accountId,
-          providerType: 'meta_instagram',
-          status: 'active',
-        });
-      }
-
-      if (!providerDoc) {
-        // Fallback to any active Instagram provider
-        providerDoc = await CommunicationProvider.findOne({
-          providerType: 'meta_instagram',
-          status: 'active',
-        });
-      }
+      // Resolve communication provider strictly for this Instagram Business Account ID
+      const providerDoc = accountId
+        ? await CommunicationProvider.findOne({
+            'configuration.instagramAccountId': accountId,
+            providerType: 'meta_instagram',
+            status: 'active',
+          })
+        : null;
 
       if (!providerDoc) {
         logger.warn(`No active Instagram provider found for incoming Meta webhook (account_id=${accountId})`);
@@ -535,16 +599,18 @@ export class ConversationWebhookService {
         let igUsername = '';
         let profilePic = '';
 
-        const token =
-          providerDoc.configuration?.pageAccessToken ||
-          providerDoc.configuration?.accessToken ||
-          process.env.META_PAGE_ACCESS_TOKEN;
+        const token = decryptProviderSecret(
+          providerDoc.configuration?.pageAccessToken || providerDoc.configuration?.accessToken
+        );
 
         if (token) {
           try {
             const profileRes = await fetch(
-              `https://graph.facebook.com/v21.0/${senderId}?fields=name,username,profile_pic&access_token=${token}`,
-              { signal: AbortSignal.timeout(3500) }
+              `https://graph.facebook.com/v21.0/${encodeURIComponent(senderId)}?fields=name,username,profile_pic`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+                signal: AbortSignal.timeout(3500),
+              }
             );
             if (profileRes.ok) {
               const profileData = (await profileRes.json()) as any;
@@ -641,54 +707,63 @@ export class ConversationWebhookService {
           deliveredAt: new Date(),
         });
 
-        // Instant Auto-Reply for Inbound Instagram Messages (auto-replies to any customer message; 10-min cooldown prevents spam loops)
-        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-        const recentBotReply = await Message.findOne({
-          conversationId: conversation._id,
-          senderType: 'bot',
-          createdAt: { $gte: tenMinutesAgo },
-        });
+        // Optional Workspace-Configured Auto-Reply for Inbound Instagram Messages (10-min cooldown)
+        if (providerDoc.configuration?.autoReplyEnabled === true) {
+          const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+          const recentBotReply = await Message.findOne({
+            conversationId: conversation._id,
+            senderType: 'bot',
+            createdAt: { $gte: tenMinutesAgo },
+          });
 
-        if (!recentBotReply) {
-          try {
-            const recipientGreetingName =
-              contact.name && !contact.name.startsWith('Instagram User') ? contact.name : '';
-            const greetingWord = recipientGreetingName ? `Hi ${recipientGreetingName}!` : 'Hi there!';
-            const autoReplyText = `${greetingWord} Thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
+          if (!recentBotReply) {
+            try {
+              const recipientGreetingName =
+                contact.name && !contact.name.startsWith('Instagram User') ? contact.name : '';
+              const greetingWord = recipientGreetingName ? `Hi ${recipientGreetingName}!` : 'Hi there!';
+              const autoReplyText =
+                providerDoc.configuration?.autoReplyMessage ||
+                `${greetingWord} Thanks for contacting us! We've received your message and our team will get back to you shortly.`;
 
-            const provider = await ProviderManager.getProvider(clientId, 'meta_instagram');
+              const provider = await ProviderManager.getProvider(clientId, 'meta_instagram');
+              const websiteUrl = providerDoc.configuration?.websiteUrl;
 
-            const sendResult = await provider.sendMessage({
-              to: senderId,
-              channel: 'meta_instagram',
-              body: autoReplyText,
-              metadata: {
-                type: 'template',
-                templateName: 'misc_website_view',
-                recipientName: recipientGreetingName,
-              },
-            });
-
-            if (sendResult.success) {
-              await Message.create({
-                clientId: clientObjectId,
-                conversationId: conversation._id,
-                senderType: 'bot',
-                senderName: 'FlumenX Assistant',
+              const sendResult = await provider.sendMessage({
+                to: senderId,
                 channel: 'meta_instagram',
-                direction: 'outbound',
-                body: `[Template: misc_website_view]`,
-                deliveryStatus: 'sent',
-                deliveredAt: new Date(),
+                body: autoReplyText,
+                metadata: websiteUrl
+                  ? {
+                      type: 'template',
+                      templateName: providerDoc.configuration?.autoReplyTemplateName || 'welcome',
+                      websiteUrl,
+                      headerImageUrl: providerDoc.configuration?.defaultHeaderImageUrl,
+                      recipientName: recipientGreetingName,
+                    }
+                  : undefined,
               });
-              conversation.lastMessageSnippet = `[Template: misc_website_view]`;
-              await conversation.save();
-              logger.info(`[Instagram AutoReply] Automated reply successfully dispatched to ${senderId}`);
-            } else {
-              logger.warn(`[Instagram AutoReply] Provider dispatch failed for ${senderId}:`, sendResult.failureReason);
+
+              if (sendResult.success) {
+                await Message.create({
+                  clientId: clientObjectId,
+                  conversationId: conversation._id,
+                  senderType: 'bot',
+                  senderName: 'Assistant',
+                  channel: 'meta_instagram',
+                  direction: 'outbound',
+                  body: autoReplyText,
+                  deliveryStatus: 'sent',
+                  deliveredAt: new Date(),
+                });
+                conversation.lastMessageSnippet = autoReplyText.slice(0, 120);
+                await conversation.save();
+                logger.info(`[Instagram AutoReply] Automated reply successfully dispatched to ${senderId}`);
+              } else {
+                logger.warn(`[Instagram AutoReply] Provider dispatch failed for ${senderId}:`, sendResult.failureReason);
+              }
+            } catch (autoErr) {
+              logger.warn('[Instagram AutoReply] Failed to dispatch automated welcome:', autoErr);
             }
-          } catch (autoErr) {
-            logger.warn('[Instagram AutoReply] Failed to dispatch automated welcome:', autoErr);
           }
         }
 
@@ -745,38 +820,16 @@ export class ConversationWebhookService {
     for (const entry of body.entry) {
       const pageId = entry.id;
 
-      let providerDoc = null;
-      if (pageId) {
-        providerDoc = await CommunicationProvider.findOne({
-          providerType: 'meta_messenger',
-          $or: [
-            { 'configuration.pageId': pageId },
-            { 'configuration.facebookPageId': pageId },
-          ],
-          status: 'active',
-        });
-      }
-
-      if (!providerDoc) {
-        providerDoc = await CommunicationProvider.findOne({
-          providerType: 'meta_messenger',
-          status: 'active',
-        });
-      }
-
-      if (!providerDoc) {
-        // Fallback to client if Meta Page Access Token is configured in .env
-        const defaultClient = await Client.findOne({ isArchived: false });
-        if (defaultClient && process.env.META_PAGE_ACCESS_TOKEN) {
-          providerDoc = {
-            clientId: defaultClient._id,
-            configuration: {
-              pageId: pageId || process.env.META_PAGE_ID || '1383901031476683',
-              pageAccessToken: process.env.META_PAGE_ACCESS_TOKEN,
-            },
-          } as any;
-        }
-      }
+      const providerDoc = pageId
+        ? await CommunicationProvider.findOne({
+            providerType: 'meta_messenger',
+            $or: [
+              { 'configuration.pageId': pageId },
+              { 'configuration.facebookPageId': pageId },
+            ],
+            status: 'active',
+          })
+        : null;
 
       if (!providerDoc) {
         logger.warn(`No active Messenger provider found for incoming Meta webhook (pageId=${pageId})`);
@@ -824,16 +877,18 @@ export class ConversationWebhookService {
         let realName = '';
         let profilePic = '';
 
-        const token =
-          providerDoc.configuration?.pageAccessToken ||
-          providerDoc.configuration?.accessToken ||
-          process.env.META_PAGE_ACCESS_TOKEN;
+        const token = decryptProviderSecret(
+          providerDoc.configuration?.pageAccessToken || providerDoc.configuration?.accessToken
+        );
 
         if (token) {
           try {
             const profileRes = await fetch(
-              `https://graph.facebook.com/v21.0/${senderId}?fields=first_name,last_name,name,profile_pic&access_token=${token}`,
-              { signal: AbortSignal.timeout(3500) }
+              `https://graph.facebook.com/v21.0/${encodeURIComponent(senderId)}?fields=first_name,last_name,name,profile_pic`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+                signal: AbortSignal.timeout(3500),
+              }
             );
             if (profileRes.ok) {
               const profileData = (await profileRes.json()) as any;
@@ -926,54 +981,63 @@ export class ConversationWebhookService {
           deliveredAt: new Date(),
         });
 
-        // Instant Auto-Reply for Inbound Messenger Messages (auto-replies to any customer message; 10-min cooldown prevents spam loops)
-        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-        const recentBotReply = await Message.findOne({
-          conversationId: conversation._id,
-          senderType: 'bot',
-          createdAt: { $gte: tenMinutesAgo },
-        });
+        // Optional Workspace-Configured Auto-Reply for Inbound Messenger Messages (10-min cooldown)
+        if (providerDoc.configuration?.autoReplyEnabled === true) {
+          const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+          const recentBotReply = await Message.findOne({
+            conversationId: conversation._id,
+            senderType: 'bot',
+            createdAt: { $gte: tenMinutesAgo },
+          });
 
-        if (!recentBotReply) {
-          try {
-            const recipientGreetingName =
-              contact.name && !contact.name.startsWith('Facebook User') ? contact.name : '';
-            const greetingWord = recipientGreetingName ? `Hi ${recipientGreetingName}!` : 'Hi there!';
-            const autoReplyText = `${greetingWord} Thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
+          if (!recentBotReply) {
+            try {
+              const recipientGreetingName =
+                contact.name && !contact.name.startsWith('Facebook User') ? contact.name : '';
+              const greetingWord = recipientGreetingName ? `Hi ${recipientGreetingName}!` : 'Hi there!';
+              const autoReplyText =
+                providerDoc.configuration?.autoReplyMessage ||
+                `${greetingWord} Thanks for contacting us! We've received your message and our team will get back to you shortly.`;
 
-            const provider = await ProviderManager.getProvider(clientId, 'meta_messenger');
+              const provider = await ProviderManager.getProvider(clientId, 'meta_messenger');
+              const websiteUrl = providerDoc.configuration?.websiteUrl;
 
-            const sendResult = await provider.sendMessage({
-              to: senderId,
-              channel: 'meta_messenger',
-              body: autoReplyText,
-              metadata: {
-                type: 'template',
-                templateName: 'misc_website_view',
-                recipientName: recipientGreetingName,
-              },
-            });
-
-            if (sendResult.success) {
-              await Message.create({
-                clientId: clientObjectId,
-                conversationId: conversation._id,
-                senderType: 'bot',
-                senderName: 'FlumenX Assistant',
+              const sendResult = await provider.sendMessage({
+                to: senderId,
                 channel: 'meta_messenger',
-                direction: 'outbound',
-                body: `[Template: misc_website_view]`,
-                deliveryStatus: 'sent',
-                deliveredAt: new Date(),
+                body: autoReplyText,
+                metadata: websiteUrl
+                  ? {
+                      type: 'template',
+                      templateName: providerDoc.configuration?.autoReplyTemplateName || 'welcome',
+                      websiteUrl,
+                      headerImageUrl: providerDoc.configuration?.defaultHeaderImageUrl,
+                      recipientName: recipientGreetingName,
+                    }
+                  : undefined,
               });
-              conversation.lastMessageSnippet = `[Template: misc_website_view]`;
-              await conversation.save();
-              logger.info(`[Messenger AutoReply] Automated reply successfully dispatched to ${senderId}`);
-            } else {
-              logger.warn(`[Messenger AutoReply] Provider dispatch failed for ${senderId}:`, sendResult.failureReason);
+
+              if (sendResult.success) {
+                await Message.create({
+                  clientId: clientObjectId,
+                  conversationId: conversation._id,
+                  senderType: 'bot',
+                  senderName: 'Assistant',
+                  channel: 'meta_messenger',
+                  direction: 'outbound',
+                  body: autoReplyText,
+                  deliveryStatus: 'sent',
+                  deliveredAt: new Date(),
+                });
+                conversation.lastMessageSnippet = autoReplyText.slice(0, 120);
+                await conversation.save();
+                logger.info(`[Messenger AutoReply] Automated reply successfully dispatched to ${senderId}`);
+              } else {
+                logger.warn(`[Messenger AutoReply] Provider dispatch failed for ${senderId}:`, sendResult.failureReason);
+              }
+            } catch (autoErr) {
+              logger.warn('[Messenger AutoReply] Failed to dispatch automated welcome:', autoErr);
             }
-          } catch (autoErr) {
-            logger.warn('[Messenger AutoReply] Failed to dispatch automated welcome:', autoErr);
           }
         }
 
@@ -1020,7 +1084,97 @@ export class ConversationWebhookService {
   /**
    * Processes Twilio Inbound SMS Webhook
    */
-  static async processTwilioWebhook(body: any) {
+  /**
+   * Resolves the single candidate active Twilio provider and its decrypted workspace Auth Token
+   * from incoming webhook fields (`To` and `AccountSid`). Fails closed when unmapped or ambiguous.
+   */
+  static async resolveTwilioProviderCandidate(body: any): Promise<{
+    status: 'matched' | 'invalid_payload' | 'not_found' | 'ambiguous' | 'missing_auth_token';
+    providerDoc?: any;
+    authToken?: string;
+  }> {
+    const normalizeAddress = (value: unknown): string => {
+      if (typeof value !== 'string') return '';
+      const trimmed = value.trim();
+      if (!trimmed) return '';
+      const lower = trimmed.toLowerCase();
+      if (lower.startsWith('whatsapp:')) {
+        const numberPart = trimmed.slice('whatsapp:'.length).replace(/[\s()-]/g, '');
+        return numberPart ? `whatsapp:${numberPart}` : '';
+      }
+      return trimmed.replace(/[\s()-]/g, '');
+    };
+
+    const accountSid = typeof body?.AccountSid === 'string' ? body.AccountSid.trim() : '';
+    const messageSid = typeof body?.MessageSid === 'string' ? body.MessageSid.trim() : '';
+    if (!accountSid || !messageSid) {
+      return { status: 'invalid_payload' };
+    }
+
+    const normalizedTo = normalizeAddress(body?.To);
+    const activeProviders = await CommunicationProvider.find({
+      providerType: 'twilio',
+      status: 'active',
+    })
+      .select('clientId configuration status')
+      .lean();
+
+    let matches: any[] = [];
+
+    if (normalizedTo) {
+      matches = activeProviders.filter((doc: any) => {
+        const cfgFrom = normalizeAddress(doc.configuration?.fromNumber);
+        const cfgAccountSid =
+          typeof doc.configuration?.accountSid === 'string' ? doc.configuration.accountSid.trim() : '';
+        if (!cfgFrom || cfgFrom !== normalizedTo) {
+          return false;
+        }
+        if (cfgAccountSid && cfgAccountSid !== accountSid) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    if (matches.length === 0 && accountSid) {
+      matches = activeProviders.filter((doc: any) => {
+        const cfgAccountSid =
+          typeof doc.configuration?.accountSid === 'string' ? doc.configuration.accountSid.trim() : '';
+        return Boolean(cfgAccountSid && cfgAccountSid === accountSid);
+      });
+    }
+
+    if (matches.length === 0) {
+      return { status: 'not_found' };
+    }
+
+    if (matches.length > 1) {
+      return { status: 'ambiguous' };
+    }
+
+    const providerDoc = matches[0];
+    let authToken = '';
+    try {
+      authToken = decryptProviderSecret(providerDoc.configuration?.authToken).trim();
+    } catch {
+      return { status: 'missing_auth_token' };
+    }
+
+    if (!authToken) {
+      return { status: 'missing_auth_token' };
+    }
+
+    return {
+      status: 'matched',
+      providerDoc,
+      authToken,
+    };
+  }
+
+  /**
+   * Processes native Twilio Programmable SMS Webhooks (form-urlencoded or JSON)
+   */
+  static async processTwilioWebhook(body: any, verifiedProviderDoc?: any) {
     if (!body || !body.MessageSid || !body.From) {
       return { handled: false, reason: 'Invalid Twilio SMS webhook format' };
     }
@@ -1028,43 +1182,30 @@ export class ConversationWebhookService {
     const senderPhone = (body.From || '').trim();
     const twilioPhone = (body.To || '').trim();
     const textBody = (body.Body || '').trim();
-    const messageSid = body.MessageSid;
+    const messageSid = String(body.MessageSid).trim();
 
-    // Resolve Provider / Client
-    let providerDoc = null;
-    if (twilioPhone) {
-      providerDoc = await CommunicationProvider.findOne({
-        providerType: 'twilio',
-        'configuration.fromNumber': twilioPhone,
-        status: 'active',
-      });
-    }
-
+    let providerDoc = verifiedProviderDoc || null;
     if (!providerDoc) {
-      providerDoc = await CommunicationProvider.findOne({
-        providerType: 'twilio',
-        status: 'active',
-      });
-    }
-
-    let clientObjectId: any;
-    let clientId: string;
-
-    if (providerDoc) {
-      clientId = providerDoc.clientId.toString();
-      clientObjectId = providerDoc.clientId;
-    } else {
-      const defaultClient = await Client.findOne({ isArchived: false });
-      if (!defaultClient) {
-        logger.warn(`No active client found to associate Twilio SMS from ${senderPhone}`);
-        return { handled: false, reason: 'No client found' };
+      const resolution = await this.resolveTwilioProviderCandidate(body);
+      if (resolution.status === 'ambiguous') {
+        logger.warn('[Twilio Webhook] Ambiguous active Twilio provider configuration rejected');
+        return { handled: false, reason: 'Ambiguous Twilio provider configuration' };
       }
-      clientId = defaultClient._id.toString();
-      clientObjectId = defaultClient._id;
+      if (resolution.status !== 'matched' || !resolution.providerDoc) {
+        logger.warn('[Twilio Webhook] No matching active Twilio provider found for incoming SMS webhook');
+        return { handled: false, reason: 'No matching active Twilio provider found' };
+      }
+      providerDoc = resolution.providerDoc;
     }
 
-    // Check for duplicate message
-    const existingMsg = await Message.findOne({ externalMessageId: messageSid });
+    const clientId = providerDoc.clientId.toString();
+    const clientObjectId = providerDoc.clientId;
+
+    // Check for duplicate message (strictly scoped to workspace clientId)
+    const existingMsg = await Message.findOne({
+      clientId: clientObjectId,
+      externalMessageId: messageSid,
+    });
     if (existingMsg) {
       logger.info(`[Twilio Webhook] Duplicate SMS message ${messageSid} skipped.`);
       return { handled: true, duplicate: true, messageId: existingMsg._id };
@@ -1138,44 +1279,46 @@ export class ConversationWebhookService {
       },
     });
 
-    // Instant Auto-Reply for Inbound SMS Messages (10-minute cooldown prevents duplicate loops)
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-    const recentBotReply = await Message.findOne({
-      conversationId: conversation._id,
-      senderType: 'bot',
-      createdAt: { $gte: tenMinutesAgo },
-    });
+    // Opt-in Workspace-Configured Auto-Reply for Inbound SMS Messages (10-minute cooldown prevents duplicate loops)
+    if (providerDoc?.configuration?.autoReplyEnabled === true) {
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+      const recentBotReply = await Message.findOne({
+        conversationId: conversation._id,
+        senderType: 'bot',
+        createdAt: { $gte: tenMinutesAgo },
+      });
 
-    if (!recentBotReply) {
-      try {
-        const provider = await ProviderManager.getProvider(clientId, 'sms');
-        const autoReplyText =
-          "Hi, thanks for contacting FlumenX! We've received your SMS and our team will get back to you shortly.";
+      if (!recentBotReply) {
+        try {
+          const provider = await ProviderManager.getProvider(clientId, 'sms');
+          const autoReplyText =
+            "Hi, thanks for contacting FlumenX! We've received your SMS and our team will get back to you shortly.";
 
-        const sendResult = await provider.sendMessage({
-          to: senderPhone,
-          channel: 'sms',
-          body: autoReplyText,
-        });
-
-        if (sendResult.success) {
-          await Message.create({
-            clientId: clientObjectId,
-            conversationId: conversation._id,
-            senderType: 'bot',
-            senderName: 'FlumenX Assistant',
+          const sendResult = await provider.sendMessage({
+            to: senderPhone,
             channel: 'sms',
-            direction: 'outbound',
             body: autoReplyText,
-            deliveryStatus: 'sent',
-            deliveredAt: new Date(),
           });
-          conversation.lastMessageSnippet = autoReplyText;
-          await conversation.save();
-          logger.info(`[SMS AutoReply] Automated SMS reply dispatched to ${senderPhone}`);
+
+          if (sendResult.success) {
+            await Message.create({
+              clientId: clientObjectId,
+              conversationId: conversation._id,
+              senderType: 'bot',
+              senderName: 'FlumenX Assistant',
+              channel: 'sms',
+              direction: 'outbound',
+              body: autoReplyText,
+              deliveryStatus: 'sent',
+              deliveredAt: new Date(),
+            });
+            conversation.lastMessageSnippet = autoReplyText;
+            await conversation.save();
+            logger.info(`[SMS AutoReply] Automated SMS reply dispatched to ${senderPhone}`);
+          }
+        } catch (autoErr) {
+          logger.warn('[SMS AutoReply] Failed to dispatch automated SMS reply:', autoErr);
         }
-      } catch (autoErr) {
-        logger.warn('[SMS AutoReply] Failed to dispatch automated SMS reply:', autoErr);
       }
     }
 

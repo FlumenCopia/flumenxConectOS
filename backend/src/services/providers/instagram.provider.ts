@@ -4,6 +4,7 @@ import {
   IProviderSendResult,
 } from './provider.interface';
 import { logger } from '../../config/logger';
+import { resolveMetaWebhookAppSecret, verifyMetaWebhookHeaders } from '../../utils/crypto';
 
 export interface IInstagramProviderConfig {
   instagramAccountId: string;
@@ -32,11 +33,11 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       };
     }
 
-    if (!this.config.pageAccessToken) {
+    if (!this.config.instagramAccountId || !this.config.pageAccessToken) {
       return {
         success: false,
         deliveryStatus: 'failed',
-        failureReason: 'Instagram Page Access Token is missing.',
+        failureReason: 'Instagram Business Account ID and Page Access Token are required.',
       };
     }
 
@@ -49,24 +50,28 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       };
     }
 
-    // Check if sending as a template message (e.g. misc_website_view)
-    const isTemplate =
-      params.metadata?.type === 'template' ||
-      params.metadata?.templateName ||
-      params.body?.trim() === '[TEMPLATE:misc_website_view]' ||
-      params.body?.trim() === 'misc_website_view' ||
-      params.body?.includes('[Template:');
+    const websiteUrl =
+      params.metadata?.websiteUrl ||
+      params.metadata?.buttons?.[0]?.url ||
+      '';
+    const imageUrl =
+      params.attachments?.[0]?.url ||
+      params.metadata?.headerImageUrl ||
+      '';
+    const hasTemplateCard = Boolean(
+      (params.metadata?.type === 'template' || params.metadata?.templateName) &&
+      websiteUrl
+    );
 
     let messagePayload: Record<string, any>;
 
-    if (isTemplate) {
+    if (hasTemplateCard) {
       let recipientName =
         params.metadata?.variableValues?.['name'] ||
         params.metadata?.variableValues?.['1'] ||
         params.metadata?.recipientName ||
         '';
 
-      // Discard placeholder names so users never see robotic strings
       if (
         !recipientName ||
         recipientName.startsWith('Instagram User') ||
@@ -77,16 +82,10 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       }
 
       const greeting = recipientName ? `Hi ${recipientName}!` : 'Hi there!';
-
-      const websiteUrl =
-        params.metadata?.websiteUrl ||
-        params.metadata?.buttons?.[0]?.url ||
-        'https://miscarchive.com/';
-
-      const imageUrl =
-        params.attachments?.[0]?.url ||
-        params.metadata?.headerImageUrl ||
-        'https://miscarchive.com/assets/images/42.png';
+      const cardTitle = params.metadata?.templateTitle || 'Explore More';
+      const cardSubtitle =
+        params.metadata?.templateSubtitle ||
+        `${greeting} View details and connect with our team.`.slice(0, 80);
 
       messagePayload = {
         attachment: {
@@ -96,9 +95,9 @@ export class InstagramProvider implements ICommunicationProviderInterface {
             image_aspect_ratio: 'square',
             elements: [
               {
-                title: 'Welcome to Misc Archive! ✨',
-                subtitle: `${greeting} Explore our services and special offers.`.slice(0, 80),
-                image_url: imageUrl,
+                title: cardTitle,
+                subtitle: cardSubtitle,
+                ...(imageUrl ? { image_url: imageUrl } : {}),
                 default_action: {
                   type: 'web_url',
                   url: websiteUrl,
@@ -107,7 +106,7 @@ export class InstagramProvider implements ICommunicationProviderInterface {
                   {
                     type: 'web_url',
                     url: websiteUrl,
-                    title: 'Visit website',
+                    title: params.metadata?.buttons?.[0]?.title || 'Visit website',
                   },
                 ],
               },
@@ -142,13 +141,9 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       message: messagePayload,
     };
 
-    // Primary Instagram Direct messaging endpoints:
-    const endpointsToTry: string[] = [];
-    if (this.config.instagramAccountId) {
-      endpointsToTry.push(`https://graph.facebook.com/${this.apiVersion}/${this.config.instagramAccountId}/messages`);
-    }
-    endpointsToTry.push(`https://graph.facebook.com/${this.apiVersion}/122115183549504182/messages`);
-    endpointsToTry.push(`https://graph.facebook.com/${this.apiVersion}/me/messages`);
+    const endpointsToTry: string[] = [
+      `https://graph.facebook.com/${this.apiVersion}/${this.config.instagramAccountId}/messages`,
+    ];
 
     let lastError = 'Failed to dispatch Instagram message';
 
@@ -190,7 +185,11 @@ export class InstagramProvider implements ICommunicationProviderInterface {
   }
 
   verifyWebhook(headers: Record<string, any>, rawBody: any, secret?: string): boolean {
-    return true;
+    return verifyMetaWebhookHeaders(
+      headers,
+      rawBody,
+      secret !== undefined ? secret : resolveMetaWebhookAppSecret('instagram')
+    );
   }
 
   async processWebhook(headers: Record<string, any>, body: any): Promise<any> {

@@ -50,6 +50,16 @@ import {
   ProviderType,
 } from '@/lib/conversations';
 
+const META_VERIFY_TOKEN_GUIDANCE = (
+  <>
+    Configure your private Meta Verify Token in the backend environment variable{' '}
+    <code className="font-mono text-slate-800 bg-slate-100 px-1 py-0.5 rounded">
+      META_VERIFY_TOKEN
+    </code>
+    . The value configured in Meta must match the backend value.
+  </>
+);
+
 // Configuration Tooltip Data for (i) icons
 const FIELD_TIPS: Record<string, { title: string; steps: string[]; link?: { url: string; label: string } }> = {
   // WhatsApp
@@ -84,10 +94,10 @@ const FIELD_TIPS: Record<string, { title: string; steps: string[]; link?: { url:
     link: { url: 'https://business.facebook.com/settings/system-users', label: 'Meta System Users' },
   },
   whatsapp_verifyToken: {
-    title: 'Webhook Verify Token',
+    title: 'Meta Webhook Verify Token',
     steps: [
-      'Create a secret verification string (e.g. "flumenx_wa_secret_token_2026").',
-      'Paste the exact same string into your Meta App > WhatsApp > Configuration > Edit Webhook.',
+      'Configure your private Meta Verify Token in the backend environment variable META_VERIFY_TOKEN.',
+      'Paste that exact same token into Meta App > Configuration > Edit Webhook > Verify token.',
       'Meta will make a GET challenge request with this token to verify your webhook URL.',
     ],
   },
@@ -459,6 +469,11 @@ function IntegrationsContent() {
     typeof window !== 'undefined'
       ? `${window.location.origin}/api/v1/conversations/webhook`
       : 'https://api.flumenx.com/api/v1/conversations/webhook';
+
+  const leadsWebhookUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/api/v1/client/webhooks/leads`
+      : 'https://api.flumenx.com/api/v1/client/webhooks/leads';
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
@@ -1211,21 +1226,8 @@ function IntegrationsContent() {
                       </label>
                       <InfoTooltip fieldKey="whatsapp_verifyToken" />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        readOnly
-                        value="flumenx_conect_verify_token_secure"
-                        className="flex-1 p-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-[11px] text-slate-700"
-                      />
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => copyToClipboard('flumenx_conect_verify_token_secure', 'verify_token')}
-                        className="shrink-0 h-8"
-                      >
-                        {copiedKey === 'verify_token' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-                      </Button>
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-600 leading-relaxed">
+                      {META_VERIFY_TOKEN_GUIDANCE}
                     </div>
                   </div>
                 </div>
@@ -1252,13 +1254,13 @@ function IntegrationsContent() {
                       <input
                         type="text"
                         readOnly
-                        value={typeof window !== 'undefined' ? `${window.location.origin}/api/v1/client/leads/intake` : 'https://api.flumenx.com/api/v1/client/leads/intake'}
+                        value={leadsWebhookUrl}
                         className="flex-1 p-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-[11px] text-slate-700 select-all"
                       />
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => copyToClipboard(typeof window !== 'undefined' ? `${window.location.origin}/api/v1/client/leads/intake` : '', 'leads_webhook')}
+                        onClick={() => copyToClipboard(leadsWebhookUrl, 'leads_webhook')}
                         className="shrink-0 h-8"
                       >
                         {copiedKey === 'leads_webhook' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
@@ -1361,6 +1363,24 @@ function IntegrationsContent() {
                         })
                       }
                       placeholder="e.g. 293847561029384"
+                      className="w-full p-2.5 rounded-lg border border-slate-300 font-mono text-xs focus:ring-1 focus:ring-brand-500"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center mb-1">
+                      <label className="font-semibold text-slate-700">Meta App ID (Optional, for Avatar Upload):</label>
+                    </div>
+                    <input
+                      type="text"
+                      value={providerForm.configuration.appId || ''}
+                      onChange={(e) =>
+                        setProviderForm({
+                          ...providerForm,
+                          configuration: { ...providerForm.configuration, appId: e.target.value.trim() },
+                        })
+                      }
+                      placeholder="e.g. 109283746592817"
                       className="w-full p-2.5 rounded-lg border border-slate-300 font-mono text-xs focus:ring-1 focus:ring-brand-500"
                     />
                   </div>
@@ -1811,21 +1831,8 @@ function IntegrationsContent() {
                   <label className="font-semibold text-slate-700">Meta Webhook Verify Token:</label>
                   <InfoTooltip fieldKey="whatsapp_verifyToken" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    readOnly
-                    value="flumenx_conect_verify_token_secure"
-                    className="flex-1 min-w-0 p-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-[11px] text-slate-700 select-all"
-                  />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => copyToClipboard('flumenx_conect_verify_token_secure', 'drawer_verify')}
-                    className="shrink-0"
-                  >
-                    {copiedKey === 'drawer_verify' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-                  </Button>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 leading-relaxed">
+                  {META_VERIFY_TOKEN_GUIDANCE}
                 </div>
               </div>
 

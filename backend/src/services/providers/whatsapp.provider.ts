@@ -4,6 +4,7 @@ import {
   IProviderSendResult,
 } from './provider.interface';
 import { logger } from '../../config/logger';
+import { verifyMetaWebhookHeaders } from '../../utils/crypto';
 
 export interface IWhatsAppProviderConfig {
   phoneNumberId: string;
@@ -12,6 +13,7 @@ export interface IWhatsAppProviderConfig {
   appSecret?: string;
   defaultTemplateName?: string;
   defaultTemplateLanguage?: string;
+  defaultHeaderImageUrl?: string;
 }
 
 export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
@@ -27,6 +29,7 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
       appSecret: config.appSecret?.trim(),
       defaultTemplateName: config.defaultTemplateName || 'hello_world',
       defaultTemplateLanguage: config.defaultTemplateLanguage || 'en_US',
+      defaultHeaderImageUrl: config.defaultHeaderImageUrl?.trim(),
     };
   }
 
@@ -36,7 +39,12 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
    * e.g. "+91 90488-49412" -> "919048849412"
    */
   private cleanPhoneNumber(phone: string): string {
-    return phone.replace(/\D/g, '');
+    let digits = phone.replace(/\D/g, '');
+    // Auto-normalize 10-digit Indian numbers (starting with 6, 7, 8, 9) by adding country code 91
+    if (digits.length === 10 && /^[6-9]/.test(digits)) {
+      digits = `91${digits}`;
+    }
+    return digits;
   }
 
   /**
@@ -75,10 +83,10 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
 
     if (isTemplate) {
       const templateName = params.metadata?.templateName || this.config.defaultTemplateName || 'hello_world';
-      const isEnglish = templateName === 'misc_website_view' || templateName === 'misc_test_utility_message';
       const templateLang =
         params.metadata?.templateLanguage ||
-        (isEnglish ? 'en' : this.config.defaultTemplateLanguage || 'en_US');
+        this.config.defaultTemplateLanguage ||
+        'en_US';
 
       let components = params.metadata?.components;
 
@@ -91,48 +99,36 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
           params.metadata?.recipientName ||
           'Valued Customer';
 
-        // 1. Resolve Header Image (custom upload, URL override, or branding fallback)
+        // 1. Resolve Header Image (explicit attachment, metadata, or tenant provider default)
         let headerImg =
           params.attachments?.[0]?.url ||
           params.metadata?.headerImageUrl ||
-          (params.metadata?.headerFormat === 'IMAGE' ||
-            templateName === 'misc_website_view' ||
-            templateName === 'misc_test_utility_message' ||
-            templateName === 'jaspers_market_image_cta_v1'
-            ? 'https://connectos.flumenx.in/images/logo.png'
-            : null);
+          this.config.defaultHeaderImageUrl ||
+          null;
 
         if (headerImg) {
           if (!headerImg.startsWith('http://') && !headerImg.startsWith('https://')) {
-            const baseUrl = process.env.APP_URL || 'https://connectos.flumenx.in';
-            headerImg = `${baseUrl.replace(/\/$/, '')}${headerImg.startsWith('/') ? '' : '/'}${headerImg}`;
+            const baseUrl = (process.env.APP_URL || '').trim().replace(/\/$/, '');
+            if (baseUrl) {
+              headerImg = `${baseUrl}${headerImg.startsWith('/') ? '' : '/'}${headerImg}`;
+            }
           }
 
-          builtComponents.push({
-            type: 'header',
-            parameters: [
-              {
-                type: 'image',
-                image: { link: headerImg },
-              },
-            ],
-          });
+          if (headerImg.startsWith('http://') || headerImg.startsWith('https://')) {
+            builtComponents.push({
+              type: 'header',
+              parameters: [
+                {
+                  type: 'image',
+                  image: { link: headerImg },
+                },
+              ],
+            });
+          }
         }
 
         // 2. Resolve Body Variables ({{1}}, {{2}}, {{name}}, etc.)
-        if (templateName === 'misc_website_view') {
-          // misc_website_view requires exactly 1 body parameter: {{1}} (Customer name)
-          const val = String(varVals['1'] || varVals['name'] || recipientName || 'Valued Customer');
-          builtComponents.push({
-            type: 'body',
-            parameters: [
-              {
-                type: 'text',
-                text: val,
-              },
-            ],
-          });
-        } else if (templateName !== 'hello_world' && templateName !== 'misc_test_utility_message') {
+        if (templateName !== 'hello_world') {
           const keys = Object.keys(varVals);
           if (keys.length > 0) {
             // Deduplicate if both numeric '1' and named 'name' alias are present
@@ -206,8 +202,15 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
 
       let mediaUrl = attachment.url;
       if (!mediaUrl.startsWith('http://') && !mediaUrl.startsWith('https://')) {
-        const baseUrl = process.env.APP_URL || 'https://connectos.flumenx.in';
-        mediaUrl = `${baseUrl.replace(/\/$/, '')}${mediaUrl.startsWith('/') ? '' : '/'}${mediaUrl}`;
+        const baseUrl = (process.env.APP_URL || '').trim().replace(/\/$/, '');
+        if (!baseUrl) {
+          return {
+            success: false,
+            deliveryStatus: 'failed',
+            failureReason: 'APP_URL must be configured to resolve relative WhatsApp attachment URLs.',
+          };
+        }
+        mediaUrl = `${baseUrl}${mediaUrl.startsWith('/') ? '' : '/'}${mediaUrl}`;
       }
 
       const mediaPayload: Record<string, any> = { link: mediaUrl };
@@ -301,11 +304,14 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
   }
 
   /**
-   * Verifies Meta webhook payload signature (X-Hub-Signature-256)
+   * Verifies Meta webhook payload signature (X-Hub-Signature-256) using HMAC-SHA256.
    */
   verifyWebhook(headers: Record<string, any>, rawBody: any, secret?: string): boolean {
-    // If no secret configured or Meta challenge mode, allow standard handling
-    return true;
+    return verifyMetaWebhookHeaders(
+      headers,
+      rawBody,
+      secret !== undefined ? secret : this.config.appSecret
+    );
   }
 
   /**

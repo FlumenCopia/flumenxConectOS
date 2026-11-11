@@ -54,8 +54,8 @@ import {
 import {
   WhatsAppTemplateItem,
   WhatsAppBusinessProfile,
-  getWhatsAppTemplatesApi,
-  getWhatsAppBusinessProfileApi,
+  getWhatsAppTemplatesInfoApi,
+  getWhatsAppBusinessProfileInfoApi,
   updateWhatsAppBusinessProfileApi,
   uploadWhatsAppProfilePictureApi,
   getWhatsAppHealthApi,
@@ -86,14 +86,18 @@ export default function BroadcastPage() {
   // Meta Template Mode State
   const [useMetaTemplate, setUseMetaTemplate] = useState(false);
   const [availableTemplates, setAvailableTemplates] = useState<WhatsAppTemplateItem[]>([]);
-  const [selectedTemplateName, setSelectedTemplateName] = useState('misc_website_view');
-  const [selectedTemplateLanguage, setSelectedTemplateLanguage] = useState('en');
+  const [templatesConfigured, setTemplatesConfigured] = useState(false);
+  const [waWabaId, setWaWabaId] = useState<string | null>(null);
+  const [templatesError, setTemplatesError] = useState<string | null>(null);
+  const [selectedTemplateName, setSelectedTemplateName] = useState('');
+  const [selectedTemplateLanguage, setSelectedTemplateLanguage] = useState('en_US');
   const [templateVariableMappings, setTemplateVariableMappings] = useState<Record<string, string>>({});
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
   const [showFailureDetails, setShowFailureDetails] = useState(false);
 
   // WhatsApp Business Profile & Health State
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [isProfileConfigured, setIsProfileConfigured] = useState(false);
   const [profileData, setProfileData] = useState<WhatsAppBusinessProfile>({
     about: '',
     description: '',
@@ -101,8 +105,9 @@ export default function BroadcastPage() {
     email: '',
     websites: [''],
     vertical: 'PROF_SERVICES',
-    phoneNumber: '+91 79070 64848',
-    verifiedName: 'miscarchive',
+    phoneNumber: '',
+    verifiedName: '',
+    phoneNumberId: '',
   });
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -116,7 +121,27 @@ export default function BroadcastPage() {
     try {
       setIsLoadingProfile(true);
       setProfileFeedback(null);
-      const data = await getWhatsAppBusinessProfileApi();
+      const info = await getWhatsAppBusinessProfileInfoApi();
+      if (!info.configured || !info.profile) {
+        setIsProfileConfigured(false);
+        setHealthData(null);
+        setProfilePicturePreview(null);
+        setProfileData({
+          about: '',
+          description: '',
+          address: '',
+          email: '',
+          websites: [''],
+          vertical: 'PROF_SERVICES',
+          phoneNumber: '',
+          verifiedName: '',
+          phoneNumberId: '',
+        });
+        return;
+      }
+
+      setIsProfileConfigured(true);
+      const data = info.profile;
       setProfileData({
         about: data.about || '',
         description: data.description || '',
@@ -124,14 +149,15 @@ export default function BroadcastPage() {
         email: data.email || '',
         websites: data.websites && data.websites.length > 0 ? data.websites : [''],
         vertical: data.vertical || 'PROF_SERVICES',
-        phoneNumber: data.phoneNumber || '+91 79070 64848',
-        verifiedName: data.verifiedName || 'miscarchive',
+        phoneNumber: data.phoneNumber || '',
+        verifiedName: data.verifiedName || '',
+        phoneNumberId: data.phoneNumberId || '',
       });
       if (data.profile_picture_url) {
         setProfilePicturePreview(data.profile_picture_url);
       }
 
-      // Fetch live WhatsApp health metrics non-blockingly
+      // Fetch live WhatsApp health metrics non-blockingly only when configured
       try {
         const health = await getWhatsAppHealthApi();
         setHealthData(health);
@@ -139,6 +165,7 @@ export default function BroadcastPage() {
         // non-blocking
       }
     } catch (err: any) {
+      setIsProfileConfigured(true);
       setProfileFeedback({
         type: 'error',
         text: err.response?.data?.message || err.message || 'Failed to load profile from Meta',
@@ -307,23 +334,28 @@ export default function BroadcastPage() {
   }, [activeTab]);
 
   useEffect(() => {
-    if (channel === 'whatsapp') {
+    if (channel === 'whatsapp' && activeClient?.clientId) {
       setIsLoadingTemplates(true);
-      getWhatsAppTemplatesApi()
-        .then((data) => {
-          setAvailableTemplates(data);
-          if (data.length > 0) {
-            const hasExisting = data.some((t) => t.name === selectedTemplateName);
-            if (!hasExisting) {
-              setSelectedTemplateName(data[0].name);
-              setSelectedTemplateLanguage(data[0].language);
-            }
+      setTemplatesError(null);
+      setAvailableTemplates([]);
+      setSelectedTemplateName('');
+      getWhatsAppTemplatesInfoApi()
+        .then((info) => {
+          setAvailableTemplates(info.templates || []);
+          setTemplatesConfigured(Boolean(info.configured));
+          setWaWabaId(info.wabaId || null);
+          if (info.templates && info.templates.length > 0) {
+            setSelectedTemplateName(info.templates[0].name);
+            setSelectedTemplateLanguage(info.templates[0].language);
           }
         })
-        .catch(() => {})
+        .catch((err: any) => {
+          setAvailableTemplates([]);
+          setTemplatesError(err?.response?.data?.message || 'Failed to fetch WhatsApp templates from Meta');
+        })
         .finally(() => setIsLoadingTemplates(false));
     }
-  }, [channel]);
+  }, [channel, activeClient?.clientId]);
 
   // Load sample default contacts if none uploaded
   useEffect(() => {
@@ -1246,40 +1278,69 @@ export default function BroadcastPage() {
                             >
                               <Settings className="w-2.5 h-2.5 text-emerald-700" /> WhatsApp Profile & Details
                             </button>
-                            <a
-                              href="https://business.facebook.com/wa/manage/message-templates/?waba_id=2381123346055633"
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-[10px] text-emerald-700 hover:text-emerald-900 underline flex items-center gap-0.5 font-medium"
-                            >
-                              Meta Template Manager <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
+                            {waWabaId ? (
+                              <a
+                                href={`https://business.facebook.com/wa/manage/message-templates/?waba_id=${encodeURIComponent(waWabaId)}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[10px] text-emerald-700 hover:text-emerald-900 underline flex items-center gap-0.5 font-medium"
+                              >
+                                Meta Template Manager <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
+                            ) : (
+                              <Link
+                                href="/client/integrations"
+                                className="text-[10px] text-emerald-700 hover:text-emerald-900 underline flex items-center gap-0.5 font-medium"
+                              >
+                                Integrations Settings
+                              </Link>
+                            )}
                           </div>
                         </div>
 
-                        <select
-                          value={selectedTemplateName}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setSelectedTemplateName(val);
-                            const found = availableTemplates.find((t) => t.name === val);
-                            if (found) {
-                              setSelectedTemplateLanguage(found.language);
-                              if (found.bodyText) setMessageBody(found.bodyText);
-                            }
-                          }}
-                          className="w-full text-xs bg-white border border-emerald-300 rounded-lg p-2 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                        >
-                          {availableTemplates.length === 0 ? (
-                            <option value="hello_world">hello_world (en_US) · APPROVED</option>
-                          ) : (
-                            availableTemplates.map((tmpl) => (
-                              <option key={`${tmpl.name}_${tmpl.language}`} value={tmpl.name}>
-                                {tmpl.name} ({tmpl.language}) · {tmpl.status}
-                              </option>
-                            ))
-                          )}
-                        </select>
+                        {templatesError ? (
+                          <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800 flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                            <span>{templatesError}</span>
+                          </div>
+                        ) : !templatesConfigured && !isLoadingTemplates ? (
+                          <div className="p-3 bg-white border border-emerald-200 rounded-lg text-xs text-slate-600 flex items-center justify-between gap-2">
+                            <span>
+                              WhatsApp Cloud API is not configured for this workspace. Connect your WhatsApp provider to load approved Meta templates.
+                            </span>
+                            <Link
+                              href="/client/integrations"
+                              className="font-semibold text-emerald-800 hover:underline shrink-0"
+                            >
+                              Configure →
+                            </Link>
+                          </div>
+                        ) : (
+                          <select
+                            value={selectedTemplateName}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setSelectedTemplateName(val);
+                              const found = availableTemplates.find((t) => t.name === val);
+                              if (found) {
+                                setSelectedTemplateLanguage(found.language);
+                                if (found.bodyText) setMessageBody(found.bodyText);
+                              }
+                            }}
+                            disabled={availableTemplates.length === 0}
+                            className="w-full text-xs bg-white border border-emerald-300 rounded-lg p-2 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:opacity-60"
+                          >
+                            {availableTemplates.length === 0 ? (
+                              <option value="">{isLoadingTemplates ? 'Loading templates...' : 'No approved templates available'}</option>
+                            ) : (
+                              availableTemplates.map((tmpl) => (
+                                <option key={`${tmpl.name}_${tmpl.language}`} value={tmpl.name}>
+                                  {tmpl.name} ({tmpl.language}) · {tmpl.status}
+                                </option>
+                              ))
+                            )}
+                          </select>
+                        )}
 
                         {/* Selected template interactive preview card */}
                         {(() => {
@@ -1287,10 +1348,7 @@ export default function BroadcastPage() {
                             (t) => t.name === selectedTemplateName
                           );
                           if (!currentTmpl) return null;
-                          const hasImageHeader =
-                            currentTmpl.headerFormat === 'IMAGE' ||
-                            currentTmpl.name.includes('image') ||
-                            currentTmpl.name.startsWith('misc_');
+                          const hasImageHeader = currentTmpl.headerFormat === 'IMAGE';
 
                           return (
                             <div className="space-y-3">
@@ -1769,13 +1827,13 @@ export default function BroadcastPage() {
                         </div>
                       ) : useMetaTemplate && (() => {
                         const currentTmpl = availableTemplates.find((t) => t.name === selectedTemplateName);
-                        const hasImg = currentTmpl?.headerFormat === 'IMAGE' || selectedTemplateName.includes('image') || selectedTemplateName.startsWith('misc_');
+                        const hasImg = currentTmpl?.headerFormat === 'IMAGE' || selectedTemplateName.includes('image');
                         if (!hasImg) return null;
                         return (
                           <div className="rounded-xl overflow-hidden bg-white border border-slate-200">
                             <img
-                              src="https://connectos.flumenx.in/images/logo.png"
-                              alt="Header Logo"
+                              src={profilePicturePreview || '/images/logo.png'}
+                              alt="Template Header Preview"
                               className="w-full max-h-36 object-contain p-2 bg-white"
                             />
                           </div>
@@ -2359,6 +2417,25 @@ export default function BroadcastPage() {
                 <RefreshCw className="w-6 h-6 animate-spin text-emerald-600" />
                 <span className="text-xs font-medium">Fetching profile from Meta Cloud API...</span>
               </div>
+            ) : !isProfileConfigured ? (
+              <div className="py-10 px-4 text-center space-y-3 bg-slate-50 rounded-xl border border-slate-200">
+                <Smartphone className="w-8 h-8 text-slate-400 mx-auto" />
+                <p className="text-sm font-semibold text-slate-800">
+                  WhatsApp Cloud API Not Configured
+                </p>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  Connect your workspace&apos;s WhatsApp Phone Number ID and Permanent Access Token in Integrations to view and edit your Meta Business Profile.
+                </p>
+                <div>
+                  <Link
+                    href="/client/integrations"
+                    onClick={() => setShowProfileModal(false)}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3.5 py-2 rounded-lg"
+                  >
+                    Configure in Integrations
+                  </Link>
+                </div>
+              </div>
             ) : (
               <div className="space-y-4">
                 {/* Profile Photo (Avatar) Uploader & Health Status */}
@@ -2437,19 +2514,19 @@ export default function BroadcastPage() {
                   <div>
                     <span className="text-slate-500 block text-[10px]">Connected Phone Number</span>
                     <span className="font-mono font-bold text-slate-900 text-sm">
-                      {profileData.phoneNumber || '+91 79070 64848'}
+                      {profileData.phoneNumber || '—'}
                     </span>
                   </div>
                   <div>
                     <span className="text-slate-500 block text-[10px]">Verified Display Name</span>
                     <span className="font-semibold text-slate-800">
-                      {profileData.verifiedName || 'miscarchive'}
+                      {profileData.verifiedName || '—'}
                     </span>
                   </div>
                   <div>
                     <span className="text-slate-500 block text-[10px]">Phone Number ID</span>
                     <span className="font-mono text-slate-600 text-[11px]">
-                      1284439638095450
+                      {profileData.phoneNumberId || '—'}
                     </span>
                   </div>
                 </div>
@@ -2540,7 +2617,7 @@ export default function BroadcastPage() {
                           websites: [e.target.value, profileData.websites?.[1] || ''],
                         })
                       }
-                      placeholder="https://conectos.flumenx.in"
+                      placeholder="https://yourdomain.com"
                       className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500"
                     />
                   </div>
@@ -2597,7 +2674,7 @@ export default function BroadcastPage() {
               <Button
                 type="button"
                 size="sm"
-                disabled={isSavingProfile || isLoadingProfile}
+                disabled={isSavingProfile || isLoadingProfile || !isProfileConfigured}
                 onClick={handleSaveProfile}
                 className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1.5 shadow-sm"
               >

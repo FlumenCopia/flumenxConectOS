@@ -1,51 +1,66 @@
 
 import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
 import { connectDatabase, disconnectDatabase } from '../config/db';
 import { CommunicationProvider } from '../models/CommunicationProvider';
 import { Client } from '../models/Client';
 import { logger } from '../config/logger';
+import { encryptProviderConfiguration } from '../utils/crypto';
 
 async function run() {
   try {
-    await connectDatabase();
-    const clients = await Client.find({ isArchived: false });
-
-    const pageId = process.env.META_PAGE_ID || '1383901031476683';
+    const clientSlug = process.env.CLIENT_SLUG;
+    const clientId = process.env.CLIENT_ID;
+    const pageId = process.env.META_PAGE_ID;
     const pageAccessToken =
-      process.env.META_PAGE_ACCESS_TOKEN ||
-      process.env.MESSENGER_PAGE_ACCESS_TOKEN;
+      process.env.MESSENGER_PAGE_ACCESS_TOKEN ||
+      process.env.META_PAGE_ACCESS_TOKEN;
 
-    if (!pageAccessToken) {
-      logger.error('META_PAGE_ACCESS_TOKEN must be set in .env');
+    if (!clientSlug && !clientId) {
+      logger.error('CLIENT_SLUG or CLIENT_ID must be set to target a specific workspace.');
+      process.exit(1);
+    }
+    if (!pageId || !pageAccessToken) {
+      logger.error('META_PAGE_ID and MESSENGER_PAGE_ACCESS_TOKEN (or META_PAGE_ACCESS_TOKEN) must be set.');
       process.exit(1);
     }
 
-    for (const client of clients) {
-      const provider = await CommunicationProvider.findOneAndUpdate(
-        { clientId: client._id, providerType: 'meta_messenger' },
-        {
-          $set: {
-            clientId: client._id,
-            displayName: 'Facebook Messenger (Flumenconnect OS)',
-            providerType: 'meta_messenger',
-            status: 'active',
-            isDefault: false,
-            configuration: {
-              pageId,
-              pageAccessToken,
-            },
-          },
-        },
-        { upsert: true, new: true }
-      );
-      logger.info(
-        `[✓] Configured Messenger Provider for client ${client.name} (${client.slug}) -> Provider ID: ${provider._id}`
-      );
+    await connectDatabase();
+    const client = await Client.findOne(
+      clientId ? { _id: clientId, isArchived: false } : { slug: clientSlug, isArchived: false }
+    );
+    if (!client) {
+      logger.error('Target active client workspace not found.');
+      await disconnectDatabase();
+      process.exit(1);
     }
 
-    logger.info('Facebook Messenger provider configured successfully across workspaces!');
+    const configuration = encryptProviderConfiguration({
+      pageId,
+      pageAccessToken,
+    });
+
+    const provider = await CommunicationProvider.findOneAndUpdate(
+      { clientId: client._id, providerType: 'meta_messenger' },
+      {
+        $set: {
+          clientId: client._id,
+          displayName: `Facebook Messenger (${pageId})`,
+          providerType: 'meta_messenger',
+          status: 'active',
+          isDefault: false,
+          configuration,
+        },
+      },
+      { upsert: true, new: true }
+    );
+    logger.info(
+      `[✓] Configured Messenger Provider for client ${client.name} (${client.slug}) -> Provider ID: ${provider._id}`
+    );
+
     await disconnectDatabase();
     process.exit(0);
   } catch (err) {

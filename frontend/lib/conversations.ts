@@ -290,9 +290,29 @@ export interface WhatsAppTemplateItem {
   parameterFormat?: 'NAMED' | 'POSITIONAL';
 }
 
+export interface WhatsAppTemplatesResponse {
+  templates: WhatsAppTemplateItem[];
+  count: number;
+  configured: boolean;
+  phoneNumberId?: string | null;
+  wabaId?: string | null;
+}
+
+export const getWhatsAppTemplatesInfoApi = async (): Promise<WhatsAppTemplatesResponse> => {
+  const res = await apiClient.get<ApiResponse<WhatsAppTemplatesResponse>>('/conversations/templates');
+  const data = res.data.data;
+  return {
+    templates: data?.templates || [],
+    count: data?.count ?? data?.templates?.length ?? 0,
+    configured: data?.configured ?? false,
+    phoneNumberId: data?.phoneNumberId ?? null,
+    wabaId: data?.wabaId ?? null,
+  };
+};
+
 export const getWhatsAppTemplatesApi = async (): Promise<WhatsAppTemplateItem[]> => {
-  const res = await apiClient.get<ApiResponse<{ templates: WhatsAppTemplateItem[]; count: number }>>('/conversations/templates');
-  return res.data.data?.templates || [];
+  const info = await getWhatsAppTemplatesInfoApi();
+  return info.templates;
 };
 
 export interface QuickReplyItem {
@@ -352,6 +372,7 @@ export const uploadConversationAttachmentApi = async (file: {
 
 export interface WhatsAppBusinessProfile {
   phoneNumberId?: string;
+  wabaId?: string;
   phoneNumber?: string;
   verifiedName?: string;
   about?: string;
@@ -364,9 +385,23 @@ export interface WhatsAppBusinessProfile {
   messaging_product?: string;
 }
 
+export interface WhatsAppBusinessProfileResponse {
+  configured: boolean;
+  profile: WhatsAppBusinessProfile | null;
+}
+
+export const getWhatsAppBusinessProfileInfoApi = async (): Promise<WhatsAppBusinessProfileResponse> => {
+  const res = await apiClient.get<ApiResponse<WhatsAppBusinessProfileResponse>>('/conversations/whatsapp/profile');
+  const data = res.data.data;
+  return {
+    configured: data?.configured ?? Boolean(data?.profile),
+    profile: data?.profile ?? null,
+  };
+};
+
 export const getWhatsAppBusinessProfileApi = async (): Promise<WhatsAppBusinessProfile> => {
-  const res = await apiClient.get<ApiResponse<{ profile: WhatsAppBusinessProfile }>>('/conversations/whatsapp/profile');
-  return res.data.data?.profile || {};
+  const info = await getWhatsAppBusinessProfileInfoApi();
+  return info.profile || {};
 };
 
 export const updateWhatsAppBusinessProfileApi = async (data: Partial<WhatsAppBusinessProfile>): Promise<boolean> => {
@@ -386,8 +421,9 @@ export const uploadWhatsAppProfilePictureApi = async (
 };
 
 export const getWhatsAppHealthApi = async (): Promise<any> => {
-  const res = await apiClient.get<ApiResponse<{ health: any }>>('/conversations/whatsapp/health');
-  return res.data.data?.health || {};
+  const res = await apiClient.get<ApiResponse<{ configured?: boolean; health: any }>>('/conversations/whatsapp/health');
+  if (res.data.data?.configured === false) return null;
+  return res.data.data?.health || null;
 };
 
 
