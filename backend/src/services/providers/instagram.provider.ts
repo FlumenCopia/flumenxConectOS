@@ -29,7 +29,8 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       return {
         success: false,
         deliveryStatus: 'failed',
-        failureReason: 'Instagram recipient user ID is required to dispatch DM.',
+        failureReason:
+          'Instagram recipient user ID is required to dispatch DM. The customer must message your Instagram account first.',
       };
     }
 
@@ -141,8 +142,14 @@ export class InstagramProvider implements ICommunicationProviderInterface {
       message: messagePayload,
     };
 
+    const isInstagramUserToken = this.config.pageAccessToken.startsWith('IGAA');
+    const graphBaseUrl = isInstagramUserToken
+      ? `https://graph.instagram.com/${this.apiVersion}`
+      : `https://graph.facebook.com/${this.apiVersion}`;
+
     const endpointsToTry: string[] = [
-      `https://graph.facebook.com/${this.apiVersion}/${this.config.instagramAccountId}/messages`,
+      `${graphBaseUrl}/${this.config.instagramAccountId}/messages`,
+      `${graphBaseUrl}/me/messages`,
     ];
 
     let lastError = 'Failed to dispatch Instagram message';

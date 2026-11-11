@@ -18,6 +18,30 @@ const sanitizeContent = (input: string): string => {
     .replace(/javascript:/gi, '');
 };
 
+const resolveRecipientTarget = (channel: string, contact: any): string => {
+  if (channel === 'email') {
+    return contact?.email || 'customer@example.com';
+  }
+  if (channel === 'meta_instagram') {
+    return (
+      (contact?.metadata?.instagramScopedId as string) ||
+      (contact?.metadata?.instagramId as string) ||
+      (contact?.metadata?.recipientId as string) ||
+      ''
+    );
+  }
+  if (channel === 'meta_messenger') {
+    return (
+      (contact?.metadata?.messengerScopedId as string) ||
+      (contact?.metadata?.facebookScopedId as string) ||
+      (contact?.metadata?.recipientId as string) ||
+      contact?.phone ||
+      ''
+    );
+  }
+  return contact?.phone || 'customer-phone';
+};
+
 export class MessageService {
   static async getMessages(
     clientId: string,
@@ -97,14 +121,7 @@ export class MessageService {
 
     // 4. Resolve recipient contact
     const contact = await Contact.findById(conversation.contactId);
-    const recipientTarget =
-      channel === 'email'
-        ? contact?.email || 'customer@example.com'
-        : channel === 'meta_instagram'
-        ? (contact?.metadata?.instagramScopedId as string) || contact?.phone || 'instagram-user'
-        : channel === 'meta_messenger'
-        ? (contact?.metadata?.messengerScopedId as string) || (contact?.metadata?.facebookScopedId as string) || (contact?.metadata?.recipientId as string) || contact?.phone || ''
-        : contact?.phone || 'customer-phone';
+    const recipientTarget = resolveRecipientTarget(channel, contact);
 
     // 5. Create Message in pending state
     const message = await Message.create({
@@ -230,14 +247,7 @@ export class MessageService {
 
     const conversation = await Conversation.findById(conversationObjectId);
     const contact = await Contact.findById(conversation?.contactId);
-    const recipientTarget =
-      message.channel === 'email'
-        ? contact?.email || 'customer@example.com'
-        : message.channel === 'meta_instagram'
-        ? (contact?.metadata?.instagramScopedId as string) || contact?.phone || 'instagram-user'
-        : message.channel === 'meta_messenger'
-        ? (contact?.metadata?.messengerScopedId as string) || (contact?.metadata?.facebookScopedId as string) || (contact?.metadata?.recipientId as string) || contact?.phone || ''
-        : contact?.phone || 'customer-phone';
+    const recipientTarget = resolveRecipientTarget(message.channel, contact);
 
     // Retry sending via provider
     const provider = await ProviderManager.getProvider(clientId, message.channel);

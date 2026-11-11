@@ -292,10 +292,10 @@ export class ConversationWebhookService {
         // Resolve client workspace strictly owning this phone number ID
         const providerDoc = phoneNumberId
           ? await CommunicationProvider.findOne({
-              'configuration.phoneNumberId': phoneNumberId,
-              providerType: 'whatsapp',
-              status: 'active',
-            })
+            'configuration.phoneNumberId': phoneNumberId,
+            providerType: 'whatsapp',
+            status: 'active',
+          })
           : null;
 
         if (!providerDoc) {
@@ -314,10 +314,10 @@ export class ConversationWebhookService {
               status.status === 'read'
                 ? 'read'
                 : status.status === 'delivered'
-                ? 'delivered'
-                : status.status === 'failed'
-                ? 'failed'
-                : 'sent';
+                  ? 'delivered'
+                  : status.status === 'failed'
+                    ? 'failed'
+                    : 'sent';
 
             const updated = await Message.findOneAndUpdate(
               { clientId: clientObjectId, externalMessageId },
@@ -350,12 +350,12 @@ export class ConversationWebhookService {
               (msg.type === 'image'
                 ? '[Image Attachment]'
                 : msg.type === 'document'
-                ? '[Document Attachment]'
-                : msg.type === 'video'
-                ? '[Video Attachment]'
-                : msg.type === 'audio'
-                ? '[Audio Message]'
-                : `[WhatsApp ${msg.type || 'message'}]`);
+                  ? '[Document Attachment]'
+                  : msg.type === 'video'
+                    ? '[Video Attachment]'
+                    : msg.type === 'audio'
+                      ? '[Audio Message]'
+                      : `[WhatsApp ${msg.type || 'message'}]`);
 
             // Idempotency check
             const existingMessage = await Message.findOne({
@@ -453,11 +453,11 @@ export class ConversationWebhookService {
                     body: configuredMessage,
                     metadata: configuredTemplateName
                       ? {
-                          type: 'template',
-                          templateName: configuredTemplateName,
-                          templateLanguage: providerDoc.configuration?.autoReplyTemplateLanguage || 'en_US',
-                          recipientName,
-                        }
+                        type: 'template',
+                        templateName: configuredTemplateName,
+                        templateLanguage: providerDoc.configuration?.autoReplyTemplateLanguage || 'en_US',
+                        recipientName,
+                      }
                       : undefined,
                   });
 
@@ -545,10 +545,10 @@ export class ConversationWebhookService {
       // Resolve communication provider strictly for this Instagram Business Account ID
       const providerDoc = accountId
         ? await CommunicationProvider.findOne({
-            'configuration.instagramAccountId': accountId,
-            providerType: 'meta_instagram',
-            status: 'active',
-          })
+          'configuration.instagramAccountId': accountId,
+          providerType: 'meta_instagram',
+          status: 'active',
+        })
         : null;
 
       if (!providerDoc) {
@@ -605,8 +605,11 @@ export class ConversationWebhookService {
 
         if (token) {
           try {
+            const profileGraphBase = token.startsWith('IGAA')
+              ? 'https://graph.instagram.com'
+              : 'https://graph.facebook.com';
             const profileRes = await fetch(
-              `https://graph.facebook.com/v21.0/${encodeURIComponent(senderId)}?fields=name,username,profile_pic`,
+              `${profileGraphBase}/v21.0/${encodeURIComponent(senderId)}?fields=name,username,profile_pic`,
               {
                 headers: { Authorization: `Bearer ${token}` },
                 signal: AbortSignal.timeout(3500),
@@ -734,12 +737,12 @@ export class ConversationWebhookService {
                 body: autoReplyText,
                 metadata: websiteUrl
                   ? {
-                      type: 'template',
-                      templateName: providerDoc.configuration?.autoReplyTemplateName || 'welcome',
-                      websiteUrl,
-                      headerImageUrl: providerDoc.configuration?.defaultHeaderImageUrl,
-                      recipientName: recipientGreetingName,
-                    }
+                    type: 'template',
+                    templateName: providerDoc.configuration?.autoReplyTemplateName || 'welcome',
+                    websiteUrl,
+                    headerImageUrl: providerDoc.configuration?.defaultHeaderImageUrl,
+                    recipientName: recipientGreetingName,
+                  }
                   : undefined,
               });
 
@@ -822,13 +825,13 @@ export class ConversationWebhookService {
 
       const providerDoc = pageId
         ? await CommunicationProvider.findOne({
-            providerType: 'meta_messenger',
-            $or: [
-              { 'configuration.pageId': pageId },
-              { 'configuration.facebookPageId': pageId },
-            ],
-            status: 'active',
-          })
+          providerType: 'meta_messenger',
+          $or: [
+            { 'configuration.pageId': pageId },
+            { 'configuration.facebookPageId': pageId },
+          ],
+          status: 'active',
+        })
         : null;
 
       if (!providerDoc) {
@@ -1008,12 +1011,12 @@ export class ConversationWebhookService {
                 body: autoReplyText,
                 metadata: websiteUrl
                   ? {
-                      type: 'template',
-                      templateName: providerDoc.configuration?.autoReplyTemplateName || 'welcome',
-                      websiteUrl,
-                      headerImageUrl: providerDoc.configuration?.defaultHeaderImageUrl,
-                      recipientName: recipientGreetingName,
-                    }
+                    type: 'template',
+                    templateName: providerDoc.configuration?.autoReplyTemplateName || 'welcome',
+                    websiteUrl,
+                    headerImageUrl: providerDoc.configuration?.defaultHeaderImageUrl,
+                    recipientName: recipientGreetingName,
+                  }
                   : undefined,
               });
 
@@ -1291,7 +1294,12 @@ export class ConversationWebhookService {
       if (!recentBotReply) {
         try {
           const provider = await ProviderManager.getProvider(clientId, 'sms');
+          const customSmsReply =
+            typeof providerDoc?.configuration?.autoReplyMessage === 'string'
+              ? providerDoc.configuration.autoReplyMessage.trim()
+              : '';
           const autoReplyText =
+            customSmsReply ||
             "Hi, thanks for contacting FlumenX! We've received your SMS and our team will get back to you shortly.";
 
           const sendResult = await provider.sendMessage({

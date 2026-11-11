@@ -545,45 +545,40 @@ function IntegrationsContent() {
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar scrollbar-none flex-nowrap -mx-4 px-4 sm:mx-0 sm:px-0">
         <button
           onClick={() => setActiveTab('messaging')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
-            activeTab === 'messaging'
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${activeTab === 'messaging'
               ? 'bg-brand-800 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-          }`}
+            }`}
         >
           <MessageSquare className="w-4 h-4 shrink-0" />
           <span>Messaging & Inbox Channels</span>
-          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-            activeTab === 'messaging' ? 'bg-brand-900/60 text-white' : 'bg-slate-200 text-slate-700'
-          }`}>
+          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === 'messaging' ? 'bg-brand-900/60 text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
             {providers.length}
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('ads')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
-            activeTab === 'ads'
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${activeTab === 'ads'
               ? 'bg-brand-800 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-          }`}
+            }`}
         >
           <Megaphone className="w-4 h-4 shrink-0" />
           <span>Advertising & Lead Gen</span>
-          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-            activeTab === 'ads' ? 'bg-brand-900/60 text-white' : 'bg-slate-200 text-slate-700'
-          }`}>
+          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === 'ads' ? 'bg-brand-900/60 text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
             {adConnections.length}
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('webhooks')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
-            activeTab === 'webhooks'
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${activeTab === 'webhooks'
               ? 'bg-brand-800 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-          }`}
+            }`}
         >
           <Radio className="w-4 h-4 shrink-0" />
           <span>Webhook & Callback URLs</span>
@@ -1107,11 +1102,10 @@ function IntegrationsContent() {
                       <tr key={c._id} className="hover:bg-slate-50/70 transition-colors">
                         <td className="py-3 px-4 whitespace-nowrap">
                           <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold uppercase ${
-                              c.platform === 'meta'
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold uppercase ${c.platform === 'meta'
                                 ? 'bg-blue-50 text-blue-700'
                                 : 'bg-amber-50 text-amber-700'
-                            }`}
+                              }`}
                           >
                             {c.platform === 'meta' ? 'Meta Ads' : 'Google Ads'}
                           </span>
@@ -1295,9 +1289,9 @@ function IntegrationsContent() {
                 <div>
                   <h3 className="font-bold text-slate-900 text-sm">
                     Configure {activeProviderModal === 'whatsapp' ? 'WhatsApp Cloud API' :
-                              activeProviderModal === 'meta_instagram' ? 'Instagram Direct' :
-                              activeProviderModal === 'meta_messenger' ? 'Facebook Messenger' :
-                              activeProviderModal === 'twilio' ? 'Twilio SMS' : 'Resend Email'}
+                      activeProviderModal === 'meta_instagram' ? 'Instagram Direct' :
+                        activeProviderModal === 'meta_messenger' ? 'Facebook Messenger' :
+                          activeProviderModal === 'twilio' ? 'Twilio SMS' : 'Resend Email'}
                   </h3>
                   <p className="text-[11px] text-slate-400">
                     Click the <Info className="w-3 h-3 inline text-slate-400" /> icons next to any field for instructions on where to get keys.
@@ -1607,6 +1601,109 @@ function IntegrationsContent() {
                 </>
               )}
 
+              {/* Opt-in Automatic Reply Settings (Inbound Messaging Channels) */}
+              {(['whatsapp', 'meta_instagram', 'meta_messenger', 'twilio'] as ProviderType[]).includes(
+                activeProviderModal
+              ) && (
+                  <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="autoReplyEnabledCheckbox"
+                        checked={providerForm.configuration.autoReplyEnabled === true}
+                        onChange={(e) =>
+                          setProviderForm({
+                            ...providerForm,
+                            configuration: {
+                              ...providerForm.configuration,
+                              autoReplyEnabled: e.target.checked,
+                            },
+                          })
+                        }
+                        className="rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                      />
+                      <label
+                        htmlFor="autoReplyEnabledCheckbox"
+                        className="text-slate-800 font-semibold cursor-pointer"
+                      >
+                        Enable automatic reply for incoming messages
+                      </label>
+                    </div>
+
+                    {providerForm.configuration.autoReplyEnabled === true && (
+                      <div className="space-y-2 pt-1">
+                        <div>
+                          <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                            Auto-Reply Message (Optional):
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={providerForm.configuration.autoReplyMessage || ''}
+                            onChange={(e) =>
+                              setProviderForm({
+                                ...providerForm,
+                                configuration: {
+                                  ...providerForm.configuration,
+                                  autoReplyMessage: e.target.value,
+                                },
+                              })
+                            }
+                            placeholder="Leave blank to use default workspace welcome message"
+                            className="w-full p-2 rounded-lg border border-slate-300 bg-white text-xs focus:ring-1 focus:ring-brand-500"
+                          />
+                        </div>
+
+                        {(activeProviderModal === 'meta_instagram' ||
+                          activeProviderModal === 'meta_messenger') && (
+                            <div>
+                              <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                                Website URL for Welcome Card (Optional):
+                              </label>
+                              <input
+                                type="url"
+                                value={providerForm.configuration.websiteUrl || ''}
+                                onChange={(e) =>
+                                  setProviderForm({
+                                    ...providerForm,
+                                    configuration: {
+                                      ...providerForm.configuration,
+                                      websiteUrl: e.target.value.trim(),
+                                    },
+                                  })
+                                }
+                                placeholder="https://yourdomain.com"
+                                className="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono text-xs focus:ring-1 focus:ring-brand-500"
+                              />
+                            </div>
+                          )}
+
+                        {activeProviderModal === 'whatsapp' && (
+                          <div>
+                            <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                              Approved Template Name (Optional):
+                            </label>
+                            <input
+                              type="text"
+                              value={providerForm.configuration.autoReplyTemplateName || ''}
+                              onChange={(e) =>
+                                setProviderForm({
+                                  ...providerForm,
+                                  configuration: {
+                                    ...providerForm.configuration,
+                                    autoReplyTemplateName: e.target.value.trim(),
+                                  },
+                                })
+                              }
+                              placeholder="e.g. hello_world (leave blank for plain text reply)"
+                              className="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono text-xs focus:ring-1 focus:ring-brand-500"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
               {/* Default Channel Checkbox */}
               <div className="flex items-center gap-2 pt-2">
                 <input
@@ -1624,11 +1721,10 @@ function IntegrationsContent() {
               {/* Test Connection Output */}
               {testResult && (
                 <div
-                  className={`p-3 rounded-xl border text-xs flex items-center gap-2 ${
-                    testResult.success
+                  className={`p-3 rounded-xl border text-xs flex items-center gap-2 ${testResult.success
                       ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                       : 'bg-rose-50 border-rose-200 text-rose-800'
-                  }`}
+                    }`}
                 >
                   {testResult.success ? (
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />

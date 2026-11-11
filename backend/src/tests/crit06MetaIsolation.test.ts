@@ -25,6 +25,7 @@ import {
   isEncryptedValue,
 } from '../utils/crypto';
 import { ProviderManager } from '../services/providers/provider.manager';
+import { InstagramProvider } from '../services/providers/instagram.provider';
 
 interface TestResult {
   name: string;
@@ -1009,6 +1010,142 @@ const runCrit06Tests = async () => {
         ),
       'Scenario E: Opt-in autoReplyEnabled sends workspace-configured message via Workspace A credentials'
     );
+
+    // Scenario F: Instagram outbound /me/messages fallback, IGAA graph.instagram.com routing & missing IGSID guard
+    {
+      const savedMockFetch = globalThis.fetch;
+      const fallbackUrls: string[] = [];
+      globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.startsWith('https://graph.facebook.com/') || url.startsWith('https://graph.instagram.com/')) {
+          fallbackUrls.push(url);
+          if (url.endsWith('/ig_alpha_001/messages')) {
+            return new Response(
+              JSON.stringify({
+                error: { message: '(#100) The requested user cannot be found.', code: 100 },
+              }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+          if (url === 'https://graph.facebook.com/v21.0/me/messages') {
+            return new Response(
+              JSON.stringify({ message_id: 'mid.me_fallback_001' }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+          if (url.startsWith('https://graph.instagram.com/v21.0/')) {
+            return new Response(
+              JSON.stringify({ message_id: 'mid.ig_login_001' }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+        }
+        return savedMockFetch(input as any, init);
+      }) as typeof fetch;
+
+      try {
+        const igFallbackResult = await igAdapterA.sendMessage({
+          to: 'ig_sender_901',
+          channel: 'meta_instagram',
+          body: 'Reply via /me/messages fallback',
+        });
+        assert(
+          igFallbackResult.success === true &&
+            igFallbackResult.externalMessageId === 'mid.me_fallback_001' &&
+            fallbackUrls.includes('https://graph.facebook.com/v21.0/ig_alpha_001/messages') &&
+            fallbackUrls.includes('https://graph.facebook.com/v21.0/me/messages'),
+          'Scenario F: InstagramProvider falls back cleanly to /me/messages when /{igAccountId}/messages returns #100'
+        );
+
+        const igLoginProvider = new InstagramProvider({
+          instagramAccountId: 'ig_login_acct_001',
+          pageAccessToken: 'IGAA_test_instagram_login_token',
+        });
+        const igLoginResult = await igLoginProvider.sendMessage({
+          to: 'ig_scoped_login_01',
+          channel: 'meta_instagram',
+          body: 'Hello via graph.instagram.com',
+        });
+        assert(
+          igLoginResult.success === true &&
+            igLoginResult.externalMessageId === 'mid.ig_login_001' &&
+            fallbackUrls.includes('https://graph.instagram.com/v21.0/ig_login_acct_001/messages'),
+          'Scenario F: InstagramProvider uses graph.instagram.com for IGAA Instagram Login tokens'
+        );
+      } finally {
+        globalThis.fetch = savedMockFetch;
+      }
+
+      // Phone-only contact must fail safely without dispatching phone number as Instagram recipient ID
+      graphCalls.length = 0;
+      const phoneOnlyContact = await Contact.create({
+        clientId: clientA._id,
+        name: 'Phone Only Lead',
+        phone: '918888777666',
+      });
+      const phoneOnlyConv = await Conversation.create({
+        clientId: clientA._id,
+        contactId: phoneOnlyContact._id,
+        channel: 'whatsapp',
+        subject: 'Phone Only Thread',
+      });
+      const missingIgsidRes = await fetch(
+        `${baseUrl}/conversations/${phoneOnlyConv._id}/messages?clientId=${clientAId}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Cookie: alphaCookie },
+          body: JSON.stringify({
+            channel: 'meta_instagram',
+            body: 'Attempt IG reply on phone-only contact',
+          }),
+        }
+      );
+      const missingIgsidJson = (await missingIgsidRes.json()) as any;
+      assert(
+        missingIgsidRes.status === 201 &&
+          missingIgsidJson.data?.deliveryStatus === 'failed' &&
+          missingIgsidJson.data?.failureReason?.includes('Instagram recipient user ID is required') &&
+          graphCalls.length === 0,
+        'Scenario F: MessageService rejects meta_instagram dispatch on phone-only contact without sending phone to Graph API'
+      );
+
+      // Contact with instagramScopedId dispatches cleanly via Workspace A IG credentials
+      graphCalls.length = 0;
+      const igScopedContact = await Contact.create({
+        clientId: clientA._id,
+        name: 'NIDHIN Test',
+        metadata: { instagramScopedId: 'ig_scoped_nidhin_001' },
+      });
+      const igScopedConv = await Conversation.create({
+        clientId: clientA._id,
+        contactId: igScopedContact._id,
+        channel: 'meta_instagram',
+        subject: 'IG chat with NIDHIN Test',
+      });
+      const igReplyRes = await fetch(
+        `${baseUrl}/conversations/${igScopedConv._id}/messages?clientId=${clientAId}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Cookie: alphaCookie },
+          body: JSON.stringify({
+            channel: 'meta_instagram',
+            body: 'Hello NIDHIN from Inbox',
+          }),
+        }
+      );
+      const igReplyJson = (await igReplyRes.json()) as any;
+      assert(
+        igReplyRes.status === 201 &&
+          igReplyJson.data?.deliveryStatus === 'delivered' &&
+          graphCalls.some(
+            (c) =>
+              c.url.includes('/ig_alpha_001/messages') &&
+              c.authorization === `Bearer ${mockIgToken}` &&
+              c.body?.includes('ig_scoped_nidhin_001')
+          ),
+        'Scenario F: MessageService delivers meta_instagram reply cleanly using metadata.instagramScopedId'
+      );
+    }
   } finally {
     if (previousMetaAppSecret !== undefined) process.env.META_APP_SECRET = previousMetaAppSecret;
     else delete process.env.META_APP_SECRET;
