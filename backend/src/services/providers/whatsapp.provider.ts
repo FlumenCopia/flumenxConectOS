@@ -83,10 +83,11 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
 
     if (isTemplate) {
       const templateName = params.metadata?.templateName || this.config.defaultTemplateName || 'hello_world';
+      const isEnglish = templateName === 'misc_website_view' || templateName === 'misc_test_utility_message';
       const templateLang =
         params.metadata?.templateLanguage ||
         this.config.defaultTemplateLanguage ||
-        'en_US';
+        (isEnglish ? 'en' : 'en_US');
 
       let components = params.metadata?.components;
 
@@ -99,12 +100,14 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
           params.metadata?.recipientName ||
           'Valued Customer';
 
-        // 1. Resolve Header Image (explicit attachment, metadata, or tenant provider default)
+        // 1. Resolve Header Image (explicit attachment, metadata, branding fallback, or tenant provider default)
         let headerImg =
           params.attachments?.[0]?.url ||
           params.metadata?.headerImageUrl ||
           this.config.defaultHeaderImageUrl ||
-          null;
+          (templateName === 'misc_website_view' || templateName === 'misc_test_utility_message'
+            ? 'https://connectos.flumenx.in/images/logo.png'
+            : null);
 
         if (headerImg) {
           if (!headerImg.startsWith('http://') && !headerImg.startsWith('https://')) {

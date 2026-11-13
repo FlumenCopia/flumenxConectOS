@@ -428,8 +428,9 @@ export class ConversationWebhookService {
               deliveredAt: new Date(),
             });
 
-            // Optional Workspace-Configured Auto-Reply for WhatsApp (10-min cooldown prevents loops)
-            if (providerDoc.configuration?.autoReplyEnabled === true) {
+            // Instant Auto-Reply for WhatsApp (enabled by default unless explicitly disabled; 10-min cooldown prevents loops)
+            const autoReplyEnabled = providerDoc.configuration?.autoReplyEnabled !== false;
+            if (autoReplyEnabled) {
               const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
               const recentBotReply = await Message.findOne({
                 conversationId: conversation._id,
@@ -442,43 +443,50 @@ export class ConversationWebhookService {
                   const provider = await ProviderManager.getProvider(clientId, 'whatsapp');
                   const recipientName =
                     contact.name && !contact.name.startsWith('+') ? contact.name : 'Valued Customer';
-                  const configuredTemplateName = providerDoc.configuration?.autoReplyTemplateName;
-                  const configuredMessage =
+                  const templateName =
+                    providerDoc.configuration?.autoReplyTemplateName ||
+                    providerDoc.configuration?.defaultTemplateName ||
+                    'misc_website_view';
+                  const templateLanguage =
+                    providerDoc.configuration?.autoReplyTemplateLanguage ||
+                    providerDoc.configuration?.defaultTemplateLanguage ||
+                    (templateName === 'misc_website_view' ? 'en' : 'en_US');
+                  const autoReplyText =
                     providerDoc.configuration?.autoReplyMessage ||
-                    `Hi ${recipientName}, thanks for contacting us! We've received your message and our team will get back to you shortly.`;
+                    `Hi ${recipientName}, thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
 
                   const sendResult = await provider.sendMessage({
                     to: contact.phone || `+${fromPhone}`,
                     channel: 'whatsapp',
-                    body: configuredMessage,
-                    metadata: configuredTemplateName
-                      ? {
-                        type: 'template',
-                        templateName: configuredTemplateName,
-                        templateLanguage: providerDoc.configuration?.autoReplyTemplateLanguage || 'en_US',
-                        recipientName,
-                      }
-                      : undefined,
+                    body: autoReplyText,
+                    metadata: {
+                      type: 'template',
+                      templateName,
+                      templateLanguage,
+                      recipientName,
+                      headerImageUrl:
+                        providerDoc.configuration?.defaultHeaderImageUrl ||
+                        'https://connectos.flumenx.in/images/logo.png',
+                    },
                   });
 
                   if (sendResult.success) {
-                    const storedSnippet = configuredTemplateName
-                      ? `[Template: ${configuredTemplateName}]`
-                      : configuredMessage;
                     await Message.create({
                       clientId: clientObjectId,
                       conversationId: conversation._id,
                       senderType: 'bot',
-                      senderName: 'Assistant',
+                      senderName: 'FlumenX Assistant',
                       channel: 'whatsapp',
                       direction: 'outbound',
-                      body: storedSnippet,
+                      body: `[Template: ${templateName}]`,
                       deliveryStatus: 'sent',
                       deliveredAt: new Date(),
                     });
-                    conversation.lastMessageSnippet = storedSnippet.slice(0, 120);
+                    conversation.lastMessageSnippet = `[Template: ${templateName}]`;
                     await conversation.save();
                     logger.info(`[WhatsApp AutoReply] Automated reply dispatched to ${fromPhone}`);
+                  } else {
+                    logger.warn(`[WhatsApp AutoReply] Provider dispatch failed for ${fromPhone}:`, sendResult.failureReason);
                   }
                 } catch (autoErr) {
                   logger.warn('[WhatsApp AutoReply] Failed to dispatch automated reply:', autoErr);
