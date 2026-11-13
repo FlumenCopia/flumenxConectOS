@@ -35,6 +35,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     { label: 'Tasks', href: '/client/tasks', icon: CheckSquare },
   ];
 
+  const isInbox = pathname === '/client/inbox';
+
   return (
     <ProtectedRoute>
       <div className="flex h-screen bg-[#F7F8F5] overflow-hidden text-sage-900">
@@ -68,7 +70,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         )}
 
         {/* Main Content Viewport */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <div className={cn('flex-1 flex flex-col min-w-0', isInbox ? 'overflow-hidden h-full' : 'overflow-y-auto')}>
           {/* Mobile Top Header (hidden on md and up) */}
           <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-sage-200/90 sticky top-0 z-20 shadow-soft-xs">
             <div className="flex items-center gap-2.5">
@@ -108,7 +110,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </div>
 
           {/* Scrollable Page Content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8">
+          <main
+            className={cn(
+              'flex-1 w-full mx-auto min-h-0',
+              isInbox
+                ? 'p-2 sm:p-4 lg:p-5 max-w-7xl h-[calc(100dvh-4rem)] md:h-[calc(100vh-4rem)] overflow-hidden flex flex-col pb-20 md:pb-4'
+                : 'p-4 sm:p-6 lg:p-8 max-w-7xl pb-24 md:pb-8'
+            )}
+          >
             {children}
           </main>
 

@@ -645,11 +645,11 @@ function UnifiedInboxContent() {
   };
 
   return (
-    <div className="-m-4 sm:m-0 flex h-[calc(100vh-8.5rem)] md:h-[calc(100vh-6rem)] overflow-hidden bg-white border-y sm:border border-sage-200/90 rounded-none sm:rounded-2xl shadow-none sm:shadow-soft-xs relative">
+    <div className="flex-1 flex h-full min-h-0 w-full overflow-hidden bg-white border-y sm:border border-sage-200/90 rounded-none sm:rounded-2xl shadow-none sm:shadow-soft-xs relative">
       {/* ------------------------------------------------------------- */}
-      {/* PANE 1: Quick Folders & Channel Filter (Hidden on < lg, 208px on lg+) */}
+      {/* PANE 1: Quick Folders & Channel Filter (Hidden on < xl, 208px on xl+) */}
       {/* ------------------------------------------------------------- */}
-      <div className="hidden lg:flex w-52 border-r border-sage-200/90 bg-sage-50/50 flex-col shrink-0">
+      <div className="hidden xl:flex w-52 border-r border-sage-200/90 bg-sage-50/50 flex-col shrink-0">
         <div className="p-3 border-b border-sage-100 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-sage-500">Inbox Hub</span>
           <Button
@@ -859,7 +859,7 @@ function UnifiedInboxContent() {
           </div>
 
           {/* Mobile/Tablet quick folder & channel pill scroller */}
-          <div className="lg:hidden flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
+          <div className="xl:hidden flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
             <button
               type="button"
               onClick={() => {
@@ -1050,7 +1050,7 @@ function UnifiedInboxContent() {
               </div>
 
               {/* Thread Action Controls */}
-              <div className="flex items-center gap-1.5 ml-auto">
+              <div className="flex items-center gap-1.5 ml-auto flex-wrap">
                 {/* Status selector */}
                 <select
                   value={activeConversation.status}
@@ -1476,7 +1476,7 @@ function UnifiedInboxContent() {
 
                       {/* Quick Replies Popover */}
                       {showQuickRepliesPopover && (
-                        <div className="absolute left-0 bottom-full mb-1.5 w-80 max-w-[calc(100vw-32px)] bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-30 animate-in fade-in duration-100 max-h-96 flex flex-col">
+                        <div className="absolute left-0 bottom-full mb-1.5 w-80 max-w-[calc(100vw-2rem)] bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-30 animate-in fade-in duration-100 max-h-80 sm:max-h-96 flex flex-col">
                           <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
                             <span className="font-bold text-xs text-slate-800 flex items-center gap-1.5">
                               <MessageSquare className="w-3.5 h-3.5 text-brand-700" /> Predefined Quick Replies
@@ -1654,7 +1654,7 @@ function UnifiedInboxContent() {
                     )}
                   </div>
 
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-slate-400 hidden sm:inline">
                     Press <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[10px]">Enter</kbd> to send
                   </span>
                 </div>
