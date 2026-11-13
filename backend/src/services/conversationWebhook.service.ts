@@ -710,8 +710,9 @@ export class ConversationWebhookService {
           deliveredAt: new Date(),
         });
 
-        // Optional Workspace-Configured Auto-Reply for Inbound Instagram Messages (10-min cooldown)
-        if (providerDoc.configuration?.autoReplyEnabled === true) {
+        // Instant Auto-Reply for Inbound Instagram Messages (enabled by default unless explicitly disabled; 10-min cooldown)
+        const autoReplyEnabled = providerDoc.configuration?.autoReplyEnabled !== false;
+        if (autoReplyEnabled) {
           const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
           const recentBotReply = await Message.findOne({
             conversationId: conversation._id,
@@ -726,24 +727,26 @@ export class ConversationWebhookService {
               const greetingWord = recipientGreetingName ? `Hi ${recipientGreetingName}!` : 'Hi there!';
               const autoReplyText =
                 providerDoc.configuration?.autoReplyMessage ||
-                `${greetingWord} Thanks for contacting us! We've received your message and our team will get back to you shortly.`;
+                `${greetingWord} Thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
 
               const provider = await ProviderManager.getProvider(clientId, 'meta_instagram');
-              const websiteUrl = providerDoc.configuration?.websiteUrl;
+              const websiteUrl =
+                providerDoc.configuration?.websiteUrl || 'https://miscarchive.com/';
+              const headerImageUrl =
+                providerDoc.configuration?.defaultHeaderImageUrl ||
+                'https://miscarchive.com/assets/images/42.png';
 
               const sendResult = await provider.sendMessage({
                 to: senderId,
                 channel: 'meta_instagram',
                 body: autoReplyText,
-                metadata: websiteUrl
-                  ? {
-                    type: 'template',
-                    templateName: providerDoc.configuration?.autoReplyTemplateName || 'welcome',
-                    websiteUrl,
-                    headerImageUrl: providerDoc.configuration?.defaultHeaderImageUrl,
-                    recipientName: recipientGreetingName,
-                  }
-                  : undefined,
+                metadata: {
+                  type: 'template',
+                  templateName: providerDoc.configuration?.autoReplyTemplateName || 'misc_website_view',
+                  websiteUrl,
+                  headerImageUrl,
+                  recipientName: recipientGreetingName,
+                },
               });
 
               if (sendResult.success) {
@@ -751,14 +754,14 @@ export class ConversationWebhookService {
                   clientId: clientObjectId,
                   conversationId: conversation._id,
                   senderType: 'bot',
-                  senderName: 'Assistant',
+                  senderName: 'FlumenX Assistant',
                   channel: 'meta_instagram',
                   direction: 'outbound',
-                  body: autoReplyText,
+                  body: `[Template: misc_website_view]`,
                   deliveryStatus: 'sent',
                   deliveredAt: new Date(),
                 });
-                conversation.lastMessageSnippet = autoReplyText.slice(0, 120);
+                conversation.lastMessageSnippet = `[Template: misc_website_view]`;
                 await conversation.save();
                 logger.info(`[Instagram AutoReply] Automated reply successfully dispatched to ${senderId}`);
               } else {
@@ -984,8 +987,9 @@ export class ConversationWebhookService {
           deliveredAt: new Date(),
         });
 
-        // Optional Workspace-Configured Auto-Reply for Inbound Messenger Messages (10-min cooldown)
-        if (providerDoc.configuration?.autoReplyEnabled === true) {
+        // Instant Auto-Reply for Inbound Messenger Messages (enabled by default unless explicitly disabled; 10-min cooldown)
+        const autoReplyEnabled = providerDoc.configuration?.autoReplyEnabled !== false;
+        if (autoReplyEnabled) {
           const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
           const recentBotReply = await Message.findOne({
             conversationId: conversation._id,
@@ -1000,24 +1004,26 @@ export class ConversationWebhookService {
               const greetingWord = recipientGreetingName ? `Hi ${recipientGreetingName}!` : 'Hi there!';
               const autoReplyText =
                 providerDoc.configuration?.autoReplyMessage ||
-                `${greetingWord} Thanks for contacting us! We've received your message and our team will get back to you shortly.`;
+                `${greetingWord} Thanks for contacting FlumenX! We've received your message and our team will get back to you shortly. Explore our services at https://miscarchive.com/`;
 
               const provider = await ProviderManager.getProvider(clientId, 'meta_messenger');
-              const websiteUrl = providerDoc.configuration?.websiteUrl;
+              const websiteUrl =
+                providerDoc.configuration?.websiteUrl || 'https://miscarchive.com/';
+              const headerImageUrl =
+                providerDoc.configuration?.defaultHeaderImageUrl ||
+                'https://miscarchive.com/assets/images/42.png';
 
               const sendResult = await provider.sendMessage({
                 to: senderId,
                 channel: 'meta_messenger',
                 body: autoReplyText,
-                metadata: websiteUrl
-                  ? {
-                    type: 'template',
-                    templateName: providerDoc.configuration?.autoReplyTemplateName || 'welcome',
-                    websiteUrl,
-                    headerImageUrl: providerDoc.configuration?.defaultHeaderImageUrl,
-                    recipientName: recipientGreetingName,
-                  }
-                  : undefined,
+                metadata: {
+                  type: 'template',
+                  templateName: providerDoc.configuration?.autoReplyTemplateName || 'misc_website_view',
+                  websiteUrl,
+                  headerImageUrl,
+                  recipientName: recipientGreetingName,
+                },
               });
 
               if (sendResult.success) {
@@ -1025,14 +1031,14 @@ export class ConversationWebhookService {
                   clientId: clientObjectId,
                   conversationId: conversation._id,
                   senderType: 'bot',
-                  senderName: 'Assistant',
+                  senderName: 'FlumenX Assistant',
                   channel: 'meta_messenger',
                   direction: 'outbound',
-                  body: autoReplyText,
+                  body: `[Template: misc_website_view]`,
                   deliveryStatus: 'sent',
                   deliveredAt: new Date(),
                 });
-                conversation.lastMessageSnippet = autoReplyText.slice(0, 120);
+                conversation.lastMessageSnippet = `[Template: misc_website_view]`;
                 await conversation.save();
                 logger.info(`[Messenger AutoReply] Automated reply successfully dispatched to ${senderId}`);
               } else {

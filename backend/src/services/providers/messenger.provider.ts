@@ -56,18 +56,30 @@ export class MessengerProvider implements ICommunicationProviderInterface {
       };
     }
 
+    const isMiscArchiveTemplate = Boolean(
+      params.metadata?.templateName === 'misc_website_view' ||
+      params.body?.trim() === '[TEMPLATE:misc_website_view]' ||
+      params.body?.trim() === 'misc_website_view' ||
+      params.body?.includes('[Template: misc_website_view]') ||
+      params.body?.includes('[Template:')
+    );
+
+    const isTemplate = Boolean(
+      params.metadata?.type === 'template' ||
+      params.metadata?.templateName ||
+      isMiscArchiveTemplate
+    );
+
     const websiteUrl =
       params.metadata?.websiteUrl ||
       params.metadata?.buttons?.[0]?.url ||
-      '';
+      (isMiscArchiveTemplate ? 'https://miscarchive.com/' : '');
     const imageUrl =
       params.attachments?.[0]?.url ||
       params.metadata?.headerImageUrl ||
-      '';
-    const hasTemplateCard = Boolean(
-      (params.metadata?.type === 'template' || params.metadata?.templateName) &&
-      websiteUrl
-    );
+      (isMiscArchiveTemplate ? 'https://miscarchive.com/assets/images/42.png' : '');
+
+    const hasTemplateCard = Boolean(isTemplate && websiteUrl);
 
     let messagePayload: Record<string, any>;
 
@@ -89,10 +101,16 @@ export class MessengerProvider implements ICommunicationProviderInterface {
       }
 
       const greeting = recipientName ? `Hi ${recipientName}!` : 'Hi there!';
-      const cardTitle = params.metadata?.templateTitle || 'Explore More';
+      const cardTitle =
+        params.metadata?.templateTitle ||
+        (isMiscArchiveTemplate || websiteUrl.includes('miscarchive')
+          ? 'Welcome to Misc Archive! ✨'
+          : 'Explore More');
       const cardSubtitle =
         params.metadata?.templateSubtitle ||
-        `${greeting} View details and connect with our team.`.slice(0, 80);
+        (isMiscArchiveTemplate || websiteUrl.includes('miscarchive')
+          ? `${greeting} Explore our services and special offers.`.slice(0, 80)
+          : `${greeting} View details and connect with our team.`.slice(0, 80));
 
       messagePayload = {
         attachment: {
