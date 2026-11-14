@@ -40,6 +40,10 @@ export class WhatsAppCloudProvider implements ICommunicationProviderInterface {
    */
   private cleanPhoneNumber(phone: string): string {
     let digits = phone.replace(/\D/g, '');
+    // Strip leading zero if 11 digits starting with 0 followed by [6-9] (e.g. 08590503567 -> 8590503567)
+    if (digits.length === 11 && digits.startsWith('0') && /^[6-9]/.test(digits.slice(1))) {
+      digits = digits.slice(1);
+    }
     // Auto-normalize 10-digit Indian numbers (starting with 6, 7, 8, 9) by adding country code 91
     if (digits.length === 10 && /^[6-9]/.test(digits)) {
       digits = `91${digits}`;

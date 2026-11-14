@@ -784,9 +784,9 @@ export default function ClientLeadsPage() {
 
       {/* New Lead Modal */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-lg w-full overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full max-h-[calc(100dvh-2rem)] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150 my-auto">
+            <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
               <div>
                 <h3 className="text-base font-semibold text-slate-900">Add New Lead</h3>
                 <p className="text-xs text-slate-500">Record a new prospective lead in your client CRM</p>
@@ -794,137 +794,139 @@ export default function ClientLeadsPage() {
               <button
                 type="button"
                 onClick={() => setIsCreateOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-md"
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleCreateSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">First Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={newLead.firstName}
+                      onChange={(e) => setNewLead({ ...newLead, firstName: e.target.value })}
+                      placeholder="e.g. Sarah"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Last Name</label>
+                    <input
+                      type="text"
+                      value={newLead.lastName}
+                      onChange={(e) => setNewLead({ ...newLead, lastName: e.target.value })}
+                      placeholder="e.g. Jenkins"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      value={newLead.email}
+                      onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
+                      placeholder="sarah@example.com"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number</label>
+                    <input
+                      type="tel"
+                      value={newLead.phone}
+                      onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
+                      placeholder="+1 555-0199"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Company</label>
+                    <input
+                      type="text"
+                      value={newLead.company}
+                      onChange={(e) => setNewLead({ ...newLead, company: e.target.value })}
+                      placeholder="Apex Marketing LLC"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Job Title</label>
+                    <input
+                      type="text"
+                      value={newLead.title}
+                      onChange={(e) => setNewLead({ ...newLead, title: e.target.value })}
+                      placeholder="VP of Growth"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Acquisition Source</label>
+                    <select
+                      value={newLead.source}
+                      onChange={(e) => setNewLead({ ...newLead, source: e.target.value as LeadSource })}
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500 bg-white"
+                    >
+                      {SOURCE_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Assign Representative</label>
+                    <select
+                      value={newLead.assignedTo}
+                      onChange={(e) => setNewLead({ ...newLead, assignedTo: e.target.value })}
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500 bg-white"
+                    >
+                      <option value="">Unassigned</option>
+                      {teamMembers.map((m) => (
+                        <option key={m.userId} value={m.userId}>
+                          {m.name} ({m.roleName})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">First Name *</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Follow-Up Date</label>
                   <input
-                    type="text"
-                    required
-                    value={newLead.firstName}
-                    onChange={(e) => setNewLead({ ...newLead, firstName: e.target.value })}
-                    placeholder="e.g. Sarah"
+                    type="date"
+                    value={newLead.followUpDate}
+                    onChange={(e) => setNewLead({ ...newLead, followUpDate: e.target.value })}
                     className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Last Name</label>
-                  <input
-                    type="text"
-                    value={newLead.lastName}
-                    onChange={(e) => setNewLead({ ...newLead, lastName: e.target.value })}
-                    placeholder="e.g. Jenkins"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Notes</label>
+                  <textarea
+                    rows={3}
+                    value={newLead.notes}
+                    onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
+                    placeholder="Inquired about full-service Google Ads management..."
+                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500 resize-none"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
-                  <input
-                    type="email"
-                    value={newLead.email}
-                    onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
-                    placeholder="sarah@example.com"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number</label>
-                  <input
-                    type="tel"
-                    value={newLead.phone}
-                    onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
-                    placeholder="+1 555-0199"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Company</label>
-                  <input
-                    type="text"
-                    value={newLead.company}
-                    onChange={(e) => setNewLead({ ...newLead, company: e.target.value })}
-                    placeholder="Apex Marketing LLC"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Job Title</label>
-                  <input
-                    type="text"
-                    value={newLead.title}
-                    onChange={(e) => setNewLead({ ...newLead, title: e.target.value })}
-                    placeholder="VP of Growth"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Acquisition Source</label>
-                  <select
-                    value={newLead.source}
-                    onChange={(e) => setNewLead({ ...newLead, source: e.target.value as LeadSource })}
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500 bg-white"
-                  >
-                    {SOURCE_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Assign Representative</label>
-                  <select
-                    value={newLead.assignedTo}
-                    onChange={(e) => setNewLead({ ...newLead, assignedTo: e.target.value })}
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500 bg-white"
-                  >
-                    <option value="">Unassigned</option>
-                    {teamMembers.map((m) => (
-                      <option key={m.userId} value={m.userId}>
-                        {m.name} ({m.roleName})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Follow-Up Date</label>
-                <input
-                  type="date"
-                  value={newLead.followUpDate}
-                  onChange={(e) => setNewLead({ ...newLead, followUpDate: e.target.value })}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Notes</label>
-                <textarea
-                  rows={3}
-                  value={newLead.notes}
-                  onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
-                  placeholder="Inquired about full-service Google Ads management..."
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+              <div className="px-5 py-3 sm:px-6 sm:py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-end gap-2.5 shrink-0">
                 <Button
                   type="button"
                   variant="outline"

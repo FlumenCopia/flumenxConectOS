@@ -142,9 +142,23 @@ export class ContactService {
         $or: queryConditions,
       });
       if (existing) {
-        // Update name or lead if needed
-        if (data.leadId && !existing.leadId) {
+        let changed = false;
+        // Update lead link if provided
+        if (data.leadId && (!existing.leadId || existing.leadId.toString() !== data.leadId.toString())) {
           existing.leadId = new mongoose.Types.ObjectId(data.leadId);
+          changed = true;
+        }
+        // Update phone if newly provided and changed (prevents stale placeholder numbers from persisting)
+        if (data.phone && data.phone.trim() && existing.phone !== data.phone.trim()) {
+          existing.phone = data.phone.trim();
+          changed = true;
+        }
+        // Update name if newly provided and changed
+        if (data.name && data.name.trim() && existing.name !== data.name.trim()) {
+          existing.name = data.name.trim();
+          changed = true;
+        }
+        if (changed) {
           await existing.save();
         }
         return existing;
